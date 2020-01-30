@@ -15,14 +15,13 @@ class TwoTPUtils {
   // Loads all the TOTPitems from a JSON
   static Future<List<TOTPItem>> loadItemsFromFile(String filename) async {
     // If there is no file, there is no items
-    if(!await FileUtils.fileExists(filename))
-      return [];
+    if (!await FileUtils.fileExists(filename)) return [];
 
     // Read the file
     var data = await FileUtils.readFile(filename);
     List decoded = json.decode(data);
     List res = [];
-    for(Map<String, dynamic> item in decoded) {
+    for (Map<String, dynamic> item in decoded) {
       // Get the secret from secured storage
       String secret = await _secureStorage.read(key: "${item["id"]}");
       res.add(TOTPItem.fromJSON(item, secret));
@@ -33,7 +32,7 @@ class TwoTPUtils {
   // Converts files to JSON while encrypting secret keys and saving
   static Future saveItemsToFile(List<TOTPItem> items, String filename) {
     List jsonList = [];
-    for(TOTPItem item in items) {
+    for (TOTPItem item in items) {
       // Save the secret in a secured storage
       _secureStorage.write(key: "${item.id}", value: "${item.secret}");
       jsonList.add(item.toJSON());
