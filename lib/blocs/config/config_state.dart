@@ -9,7 +9,6 @@ abstract class ConfigState extends Equatable {
 
   @override
   List<Object> get props => configProps;
-  ConfigState getStateCopy();
 }
 
 // Uninitialized Configuration
@@ -18,11 +17,6 @@ class UnitConfigState extends ConfigState {
   String toString() {
     return "UnitConfigState";
   }
-
-  @override
-  ConfigState getStateCopy() {
-    return UnitConfigState();
-  }
 }
 
 // Initialized config
@@ -30,11 +24,6 @@ class InitConfigState extends ConfigState {
   @override
   String toString() {
     return "InitConfigState";
-  }
-
-  @override
-  ConfigState getStateCopy() {
-    return InitConfigState();
   }
 }
 
@@ -47,10 +36,5 @@ class ErrorConfigState extends ConfigState {
   @override
   String toString() {
     return "ErrorConfigState";
-  }
-
-  @override
-  ConfigState getStateCopy() {
-    return ErrorConfigState(error);
   }
 }

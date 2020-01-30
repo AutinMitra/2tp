@@ -77,6 +77,7 @@ class TOTPItem extends Equatable {
             algorithm == "SHA256" ||
             algorithm == "SHA512");
 
+  // Generates a code, with the option of being formatted
   String generateCode(int time, {pretty = false}) {
     String code = TOTP.generateOTP(secret, time,
         digits: this.digits, period: this.period, algorithm: this.algorithm);
@@ -84,6 +85,10 @@ class TOTPItem extends Equatable {
     return (pretty) ? TOTP.formatOTP(code) : code;
   }
 
+  /// Parses the otpauth URI
+  /// References
+  /// * https://github.com/YC/another_authenticator/blob/master/lib/totp/totp_item.dart
+  /// * https://github.com/google/google-authenticator/wiki/Key-Uri-Format
   static TOTPItem parseURI(String uri) {
     var parsed = Uri.parse(uri);
     if (parsed.authority != "totp" || parsed.scheme != "otpauth")
@@ -98,7 +103,7 @@ class TOTPItem extends Equatable {
     String accountName = "";
     String issuer = "";
 
-    // The first path of the OTP contains issuer and account name separated by :
+    // Label may contain a color to separate information
     var splitFirstPath = parsed.pathSegments[0].split(":");
     accountName = splitFirstPath[0];
 
@@ -130,6 +135,7 @@ class TOTPItem extends Equatable {
     }
   }
 
+  // Parses JSON alongside with additional key
   TOTPItem.fromJSON(Map<String, dynamic> json, String secretKey)
       : digits = json["digits"],
         period = json["period"],
@@ -139,6 +145,7 @@ class TOTPItem extends Equatable {
         id = json["id"],
         secret = secretKey;
 
+  // Makes everything in JSON format except secret
   Map<String, dynamic> toJSON() {
     return {
       "digits": digits,
