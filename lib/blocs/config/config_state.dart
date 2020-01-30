@@ -25,6 +25,7 @@ class UnitConfigState extends ConfigState {
   }
 }
 
+// Initialized config
 class InitConfigState extends ConfigState {
   @override
   String toString() {
@@ -34,5 +35,22 @@ class InitConfigState extends ConfigState {
   @override
   ConfigState getStateCopy() {
     return InitConfigState();
+  }
+}
+
+// Error happened in config
+class ErrorConfigState extends ConfigState {
+  final String error;
+
+  ErrorConfigState(this.error);
+
+  @override
+  String toString() {
+    return "ErrorConfigState";
+  }
+
+  @override
+  ConfigState getStateCopy() {
+    return ErrorConfigState(error);
   }
 }

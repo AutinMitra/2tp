@@ -1,23 +1,26 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:twotp/utils/twotp_utils.dart';
 
 import 'config_event.dart';
 import 'config_state.dart';
 
 class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
-  @override
-  // TODO: implement initialState
-  ConfigState get initialState => null;
+  int darkModeOn = 0;
 
   @override
-  Stream<ConfigState> mapEventToState(ConfigEvent event) {
-    // TODO: implement mapEventToState
-    return null;
+  Stream<ConfigState> mapEventToState(ConfigEvent event) async* {
+    try {
+      if(event is ChangeDarkMode) {
+        TwoTPUtils.prefs.setInt("darkModeOn", event.value);
+        yield InitConfigState();
+      }
+    } catch(error, trace) {
+      print('$error $trace');
+      yield ErrorConfigState(error.message);
+    }
   }
 
   @override
-  // TODO: implement props
-  List<Object> get props => null;
-
+  ConfigState get initialState => new UnitConfigState();
 }

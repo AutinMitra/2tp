@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:twotp/totp/totp.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   // TOTP algorithm test cases
@@ -36,7 +37,7 @@ void main() {
     String uri =
         "otpauth://totp/Alice?secret=OADV5KKZ2UUWJT5J&issuer=BigCompany&algorithm=SHA256&digits=6&period=30";
     TOTPItem fromURI = TOTPItem.parseURI(uri);
-    TOTPItem expected = new TOTPItem("OADV5KKZ2UUWJT5J",
+    TOTPItem expected = new TOTPItem("OADV5KKZ2UUWJT5J", Uuid().v4(),
         digits: 6,
         period: 30,
         algorithm: "SHA256",

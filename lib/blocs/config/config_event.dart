@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 @immutable
 abstract class ConfigEvent {}
 
-class ConfigValueChanged extends ConfigEvent {
-  final String key;
-  final bool value;
-  ConfigValueChanged(this.key, this.value);
+class ChangeDarkMode extends ConfigEvent {
+  static const int LIGHT_MODE = 0;
+  static const int DARK_MODE = 1;
+  static const int FOLLOW_SYSTEM = 2;
+
+  final int value;
+
+  ChangeDarkMode(this.value) : assert(value >= 0 && value <= 2);
 }
-
-
-

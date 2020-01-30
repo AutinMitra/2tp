@@ -3,12 +3,13 @@ import 'dart:typed_data';
 
 import "package:crypto/crypto.dart" show Hmac, sha1, sha256, sha512;
 import "package:base32/base32.dart" show base32;
+import 'package:equatable/equatable.dart';
+import 'package:uuid/uuid.dart';
 
 /// Generates TOTP codes
 /// References
 /// * https://www.youtube.com/watch?v=VOYxF12K1vE
 /// * https://github.com/YC/another_authenticator/blob/master/lib/totp/totp_algorithm.dart
-/// * https://github.com/YC/another_authenticator
 class TOTP {
   static String generateOTP(String secret, int time,
       {int digits = 6, int period = 30, String algorithm = "SHA1"}) {
@@ -55,15 +56,16 @@ class TOTP {
 }
 
 // A basic model of TOTP to be used with widgets
-class TOTPItem {
+class TOTPItem extends Equatable {
   final String secret;
+  final String id;
   final int digits;
   final int period;
   final String algorithm;
   final String accountName;
   final String issuer;
 
-  TOTPItem(this.secret,
+  TOTPItem(this.secret, this.id,
       {this.digits = 6,
       this.period = 30,
       this.algorithm = "SHA1",
@@ -74,14 +76,6 @@ class TOTPItem {
         assert(algorithm == "SHA1" ||
             algorithm == "SHA256" ||
             algorithm == "SHA512");
-
-//  TOTPItem.fromJSON(Map<String, dynamic> json)
-//      : this.secret = json["secret"],
-//        this.digits = json["digits"],
-//        this.period = json["period"],
-//        this.algorithm = json["algorithm"],
-//        this.accountName = json["accountName"],
-//        this.issuer = json["issuer"];
 
   String generateCode(int time, {pretty = false}) {
     String code = TOTP.generateOTP(secret, time,
@@ -125,7 +119,7 @@ class TOTPItem {
     if (queryParameters.containsKey("algorithm"))
       algorithm = queryParameters["algorithm"].toUpperCase();
     try {
-      return new TOTPItem(secret,
+      return new TOTPItem(secret, Uuid().v4(),
           digits: digits,
           period: period,
           algorithm: algorithm,
@@ -136,24 +130,26 @@ class TOTPItem {
     }
   }
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is TOTPItem &&
-          runtimeType == other.runtimeType &&
-          secret == other.secret &&
-          digits == other.digits &&
-          period == other.period &&
-          algorithm == other.algorithm &&
-          accountName == other.accountName &&
-          issuer == other.issuer;
+  TOTPItem.fromJSON(Map<String, dynamic> json, String secretKey)
+      : digits = json["digits"],
+        period = json["period"],
+        algorithm = json["algorithm"],
+        accountName = json["accountName"],
+        issuer = json["issuer"],
+        id = json["id"],
+        secret = secretKey;
+
+  Map<String, dynamic> toJSON() {
+    return {
+      "digits": digits,
+      "period": period,
+      "algorithm": algorithm,
+      "accountName": accountName,
+      "issuer": issuer,
+      "id": id
+    };
+  }
 
   @override
-  int get hashCode =>
-      secret.hashCode ^
-      digits.hashCode ^
-      period.hashCode ^
-      algorithm.hashCode ^
-      accountName.hashCode ^
-      issuer.hashCode;
+  List<Object> get props => [digits, period, algorithm, accountName, issuer];
 }
