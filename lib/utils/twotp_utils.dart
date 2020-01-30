@@ -7,6 +7,8 @@ import 'package:twotp/utils/file_utils.dart';
 
 class TwoTPUtils {
   // SharedPreferences store configs, secureStorage stores secrets
+
+  static String darkModePrefs = "darkModeOn";
   static SharedPreferences prefs;
   static FlutterSecureStorage _secureStorage = new FlutterSecureStorage();
 

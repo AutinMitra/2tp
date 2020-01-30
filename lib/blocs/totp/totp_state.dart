@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
 
 class TOTPState extends Equatable {
@@ -6,11 +5,14 @@ class TOTPState extends Equatable {
   TOTPState([this._props]) : super();
 
   @override
-  List get props => props;
+  List get props => _props;
 }
 
 class UnitTOTPState extends TOTPState {}
-class InitTOTPState extends TOTPState {}
+class ChangedTOTPState extends TOTPState {
+  final List items;
+  ChangedTOTPState(this.items);
+}
 class ErrorTOTPState extends TOTPState {
   final String error;
 

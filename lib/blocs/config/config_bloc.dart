@@ -13,7 +13,7 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
     try {
       if(event is ChangeDarkMode) {
         TwoTPUtils.prefs.setInt("darkModeOn", event.value);
-        yield InitConfigState();
+        yield ChangedConfigState(event.value);
       }
     } catch(error, trace) {
       print('$error $trace');

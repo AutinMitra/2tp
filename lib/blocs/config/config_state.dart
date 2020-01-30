@@ -20,7 +20,10 @@ class UnitConfigState extends ConfigState {
 }
 
 // Initialized config
-class InitConfigState extends ConfigState {
+class ChangedConfigState extends ConfigState {
+  final int value;
+  ChangedConfigState(this.value);
+  
   @override
   String toString() {
     return "InitConfigState";
