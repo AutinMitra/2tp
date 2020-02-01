@@ -7,16 +7,16 @@ import 'package:twotp/utils/twotp_utils.dart';
 class TOTPBloc extends Bloc<TOTPEvent, TOTPState> {
   final String _filename = 'totp_items.json';
 
-  List<TOTPItem> items = [];
+  List<TOTPItem> items;
 
   @override
   TOTPState get initialState => UnitTOTPState();
 
   @override
   Stream<TOTPState> mapEventToState(TOTPEvent event) async* {
-    if (event is FetchItemsEvent)
+    if (event is FetchItemsEvent) {
       yield* mapFetchItemsEventToState(event);
-    else if (event is AddItemEvent) {
+    } else if (event is AddItemEvent) {
       yield* mapAddItemsEventToState(event);
     } else if (event is RemoveItemEvent) {
       yield* mapRemoveItemsEventToState(event);

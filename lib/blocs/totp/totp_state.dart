@@ -17,9 +17,4 @@ class ErrorTOTPState extends TOTPState {
   final String error;
 
   ErrorTOTPState(this.error);
-
-  @override
-  String toString() {
-    return "ErrorConfigState";
-  }
 }
