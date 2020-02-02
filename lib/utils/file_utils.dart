@@ -25,6 +25,6 @@ class FileUtils {
 
   // Write a string to a file
   static Future<File> writeFile(String file, String content) async {
-    return (await getFile(content)).writeAsString(content);
+    return (await getFile(file)).writeAsString(content);
   }
 }

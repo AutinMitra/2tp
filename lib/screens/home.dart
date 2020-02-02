@@ -25,11 +25,14 @@ class HomePage extends StatelessWidget {
       ),
       child: SafeArea(
         child: Scaffold(
-            body: Column(
-              children: <Widget>[
-                _TOTPAppBar(),
-                _TOTPList()
-              ],
+            body: ScrollConfiguration(
+              behavior: NoOverScrollBehavior(),
+              child: ListView(
+                children: <Widget>[
+                  _TOTPAppBar(),
+                  _TOTPList()
+                ],
+              ),
             )
         ),
       ),
@@ -53,7 +56,9 @@ class _TOTPAppBar extends StatelessWidget {
           new Text("TwoTP", style: TextStyles.appBarTitle),
           IconButton(
             icon: new Icon(Icons.add),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/add/qr');
+            },
           ),
         ],
       ),
@@ -81,6 +86,7 @@ class _TOTPListState extends State<_TOTPList> {
         // TODO: Replace with more fancy indicator, like an illustration
         return Expanded(child: Center(
           child: ListView(
+            physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             children: <Widget>[
               Center(
@@ -90,22 +96,23 @@ class _TOTPListState extends State<_TOTPList> {
             ],
           ),
         ));
-      } else if (state is ChangedTOTPState) {
+      } else if (state is ErrorTOTPState) {
+        return Text("An error occured");
+      } else {
         // TODO: Add fancy intro animation
-        return ScrollConfiguration(
-            behavior: NoOverScrollBehavior(),
-            child: ListView(
-              children: <Widget>[
-                SizedBox(height: 12),
-                for (var item in state.items)
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(24, 0, 24, 18),
-                    child: TwoTPCard(item, color: Color(0xFFF96F6F)),
-                  )
-              ],
-            ));
+        return ListView(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          children: <Widget>[
+            SizedBox(height: 12),
+            for (var item in totpBloc.items)
+              Padding(
+                padding: EdgeInsets.fromLTRB(24, 0, 24, 18),
+                child: TwoTPCard(item, color: Color(0xFFF96F6F)),
+              )
+          ],
+        );
       }
-      return Text("An error occured");
     });
   }
 }

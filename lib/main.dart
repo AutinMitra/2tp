@@ -6,6 +6,7 @@ import 'package:twotp/blocs/config/config_state.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/screens/home.dart';
+import 'package:twotp/screens/qr_scan.dart';
 import 'package:twotp/theme/themes.dart';
 import 'package:twotp/utils/twotp_utils.dart';
 
@@ -46,11 +47,14 @@ class _TwoTPState extends State<TwoTP> {
 
       // The final material app
       return MaterialApp(
-          title: 'TwoTP',
-          debugShowCheckedModeBanner: false,
-          theme: tLight,
-          darkTheme: tDark,
-          home: HomePage()
+        title: 'TwoTP',
+        debugShowCheckedModeBanner: false,
+        theme: tLight,
+        darkTheme: tDark,
+        home: HomePage(),
+        routes: {
+          '/add/qr': (context) => QRScanPage(),
+        },
       );
     });
   }

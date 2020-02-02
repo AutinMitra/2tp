@@ -20,7 +20,7 @@ class TwoTPUtils {
     // Read the file
     var data = await FileUtils.readFile(filename);
     List decoded = json.decode(data);
-    List res = [];
+    List<TOTPItem> res = [];
     for (Map<String, dynamic> item in decoded) {
       // Get the secret from secured storage
       String secret = await _secureStorage.read(key: "${item["id"]}");

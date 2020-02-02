@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import "package:crypto/crypto.dart" show Hmac, sha1, sha256, sha512;
 import "package:base32/base32.dart" show base32;
+import "package:crypto/crypto.dart" show Hmac, sha1, sha256, sha512;
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
 
@@ -105,7 +105,10 @@ class TOTPItem extends Equatable {
 
     // Label may contain a color to separate information
     var splitFirstPath = parsed.pathSegments[0].split(":");
-    accountName = splitFirstPath[0];
+    if (splitFirstPath.length > 1)
+      accountName = splitFirstPath[1];
+    else
+      accountName = splitFirstPath[0];
 
     Map<String, dynamic> queryParameters = parsed.queryParameters;
     // Make sure that the secret exists (fundamental to algorithm)
