@@ -8,7 +8,7 @@ class TwoTPCard extends StatefulWidget {
   final TOTPItem totpItem;
   final Color color;
 
-  TwoTPCard(this.totpItem, {this.color = const Color(0xFF9D9D9D)});
+  TwoTPCard(this.totpItem, {this.color = Palette.defaultCardColor});
 
   @override
   _TwoTPCardState createState() => _TwoTPCardState();
@@ -76,6 +76,14 @@ class _TwoTPCardState extends State<TwoTPCard>
                   0, 5
               )
           ),
+          BoxShadow(
+              color: ColorUtils.changeAlphaValue(Colors.black, 0x10),
+              blurRadius: 16.0,
+              spreadRadius: 2,
+              offset: Offset(
+                  0, 5
+              )
+          ),
         ],
       ),
       child: InkWell(
@@ -87,7 +95,7 @@ class _TwoTPCardState extends State<TwoTPCard>
           Clipboard.setData(ClipboardData(text: _code));
         },
         child: Container(
-          padding: EdgeInsets.all(28),
+          padding: EdgeInsets.all(24),
           child: Stack(
             children: <Widget>[
               Column(
@@ -133,12 +141,12 @@ class _TwoTPCardState extends State<TwoTPCard>
                   animation: _animation,
                   builder: (context, child) =>
                       Container(
-                        width: 20,
-                        height: 20,
-                        margin: EdgeInsets.only(right: 8.0),
+                        width: 24,
+                        height: 24,
+                        margin: EdgeInsets.only(right: 4.0),
                         child: CircularProgressIndicator(
                           value: _animation.value,
-                          strokeWidth: 4,
+                          strokeWidth: 5,
                           backgroundColor: Color(0x3AFFFFFF),
                           valueColor: new AlwaysStoppedAnimation(
                               Palette.textDark),

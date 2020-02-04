@@ -11,31 +11,31 @@ import 'package:twotp/theme/text_styles.dart';
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-        statusBarColor: Theme
-            .of(context)
-            .backgroundColor,
-        statusBarIconBrightness:
-        (Theme
-            .of(context)
-            .brightness == Brightness.dark)
-            ? Brightness.light
-            : Brightness.dark,
-      ),
-      child: SafeArea(
-        child: Scaffold(
-            body: ScrollConfiguration(
-              behavior: NoOverScrollBehavior(),
-              child: ListView(
-                children: <Widget>[
-                  _TOTPAppBar(),
-                  _TOTPList()
-                ],
-              ),
-            )
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness:
+      (Theme
+          .of(context)
+          .brightness == Brightness.dark)
+          ? Brightness.light
+          : Brightness.dark,
+    ));
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(0.0),
+        child: AppBar(
+          backgroundColor: Colors.transparent,
         ),
       ),
+        body: ScrollConfiguration(
+          behavior: NoOverScrollBehavior(),
+          child: ListView(
+            children: <Widget>[
+              _TOTPAppBar(),
+              _TOTPList()
+            ],
+          ),
+        )
     );
   }
 }
@@ -51,7 +51,9 @@ class _TOTPAppBar extends StatelessWidget {
         children: <Widget>[
           IconButton(
             icon: new Icon(Icons.settings),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, "/settings");
+            },
           ),
           new Text("TwoTP", style: TextStyles.appBarTitle),
           IconButton(
@@ -108,7 +110,7 @@ class _TOTPListState extends State<_TOTPList> {
             for (var item in totpBloc.items)
               Padding(
                 padding: EdgeInsets.fromLTRB(24, 0, 24, 18),
-                child: TwoTPCard(item, color: Color(0xFFF96F6F)),
+                child: TwoTPCard(item),
               )
           ],
         );

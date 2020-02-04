@@ -19,37 +19,37 @@ class _QRScanPageState extends State<QRScanPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-        statusBarColor: Theme.of(context).backgroundColor,
-        statusBarIconBrightness:
-            (Theme.of(context).brightness == Brightness.dark)
-                ? Brightness.light
-                : Brightness.dark,
-      ),
-      child: Scaffold(
-        body: Column(
-          children: <Widget>[
-            Expanded(
-                flex: 2,
-                child: Stack(
-                  children: <Widget>[
-                    QRView(
-                      key: qrKey,
-                      onQRViewCreated: (controller) {
-                        _onQRViewCreated(context, controller);
-                      },
-                      overlay: QrScannerOverlayShape(
-                          borderRadius: 10,
-                          borderColor: Palette.accent,
-                          borderWidth: 16.0,
-                          overlayColor: Color(0x9A000000)),
-                    ),
-                    _QRBottomBar()
-                  ],
-                )),
-          ],
-        ),
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness:
+      (Theme
+          .of(context)
+          .brightness == Brightness.dark)
+          ? Brightness.light
+          : Brightness.dark,
+    ));
+    return Scaffold(
+      body: Column(
+        children: <Widget>[
+          Expanded(
+              flex: 2,
+              child: Stack(
+                children: <Widget>[
+                  QRView(
+                    key: qrKey,
+                    onQRViewCreated: (controller) {
+                      _onQRViewCreated(context, controller);
+                    },
+                    overlay: QrScannerOverlayShape(
+                        borderRadius: 10,
+                        borderColor: Palette.accent,
+                        borderWidth: 16.0,
+                        overlayColor: Color(0x9A000000)),
+                  ),
+                  _QRBottomBar()
+                ],
+              )),
+        ],
       ),
     );
   }

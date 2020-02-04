@@ -7,6 +7,7 @@ import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/screens/home.dart';
 import 'package:twotp/screens/qr_scan.dart';
+import 'package:twotp/screens/settings.dart';
 import 'package:twotp/theme/themes.dart';
 import 'package:twotp/utils/twotp_utils.dart';
 
@@ -54,6 +55,7 @@ class _TwoTPState extends State<TwoTP> {
         home: HomePage(),
         routes: {
           '/add/qr': (context) => QRScanPage(),
+          '/settings': (context) => SettingsPage()
         },
       );
     });
