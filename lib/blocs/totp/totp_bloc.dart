@@ -7,7 +7,7 @@ import 'package:twotp/utils/twotp_utils.dart';
 class TOTPBloc extends Bloc<TOTPEvent, TOTPState> {
   final String _filename = 'totp_items.json';
 
-  List<TOTPItem> items;
+  List<TOTPItem> items = [];
 
   @override
   TOTPState get initialState => UnitTOTPState();
@@ -35,9 +35,10 @@ class TOTPBloc extends Bloc<TOTPEvent, TOTPState> {
 
   Stream<TOTPState> mapAddItemsEventToState(AddItemEvent event) async* {
     try {
-      items.add(event.item);
-      await TwoTPUtils.saveItemsToFile(items, _filename);
+      if (!items.contains(event.item))
+        items.add(event.item);
       yield ChangedTOTPState(items);
+      await TwoTPUtils.saveItemsToFile(items, _filename);
     } catch (error, trace) {
       print('$error $trace');
       yield ErrorTOTPState(error.message);
@@ -47,8 +48,8 @@ class TOTPBloc extends Bloc<TOTPEvent, TOTPState> {
   Stream<TOTPState> mapRemoveItemsEventToState(RemoveItemEvent event) async* {
     try {
       items.remove(event.item);
-      await TwoTPUtils.saveItemsToFile(items, _filename);
       yield ChangedTOTPState(items);
+      await TwoTPUtils.saveItemsToFile(items, _filename);
     } catch (error, trace) {
       print('$error $trace');
       yield ErrorTOTPState(error.message);

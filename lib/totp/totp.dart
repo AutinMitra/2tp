@@ -138,6 +138,21 @@ class TOTPItem extends Equatable {
     }
   }
 
+  static bool isValid(TOTPItem item) {
+    try {
+      assert(item.digits == 6 || item.digits == 8);
+      assert(item.algorithm == 'SHA1' || item.algorithm == 'SHA256' ||
+          item.algorithm == 'SHA512');
+      assert(item.period > 0);
+      assert(item.id != "" || item.id != null);
+      assert(item.accountName != null);
+      base32.decode(item.secret);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   // Parses JSON alongside with additional key
   TOTPItem.fromJSON(Map<String, dynamic> json, String secretKey)
       : digits = json["digits"],

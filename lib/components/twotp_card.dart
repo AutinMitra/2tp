@@ -72,25 +72,19 @@ class _TwoTPCardState extends State<TwoTPCard>
               color: ColorUtils.changeAlphaValue(widget.color, 0x70),
               blurRadius: 16.0,
               spreadRadius: 2,
-              offset: Offset(
-                  0, 5
-              )
-          ),
+              offset: Offset(0, 5)),
           BoxShadow(
               color: ColorUtils.changeAlphaValue(Colors.black, 0x10),
               blurRadius: 16.0,
               spreadRadius: 2,
-              offset: Offset(
-                  0, 5
-              )
-          ),
+              offset: Offset(0, 5)),
         ],
       ),
       child: InkWell(
         splashColor: Color(0x2AFFFFFF),
         highlightColor: Colors.transparent,
-        customBorder: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32)),
+        customBorder:
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
         onTap: () {
           Clipboard.setData(ClipboardData(text: _code));
         },
@@ -114,7 +108,8 @@ class _TwoTPCardState extends State<TwoTPCard>
                     SizedBox(
                       height: 2,
                     ),
-                    widget.totpItem.issuer != ""
+                    (widget.totpItem.issuer != "" &&
+                        widget.totpItem.issuer != null)
                         ? Text(
                       widget.totpItem.issuer,
                       style: TextStyle(

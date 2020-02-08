@@ -12,8 +12,8 @@ class Themes {
     brightness: Brightness.light,
     primaryColorBrightness: Brightness.light,
     buttonTheme: ButtonThemeData(
-      buttonColor: Palette.primary,
-      textTheme: ButtonTextTheme.accent,
+      buttonColor: Palette.accent,
+      textTheme: ButtonTextTheme.primary,
       padding: EdgeInsets.all(12.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
@@ -33,8 +33,8 @@ class Themes {
     brightness: Brightness.dark,
     primaryColorBrightness: Brightness.dark,
     buttonTheme: ButtonThemeData(
-      buttonColor: Palette.primary,
-      textTheme: ButtonTextTheme.accent,
+      buttonColor: Palette.accent,
+      textTheme: ButtonTextTheme.primary,
       padding: EdgeInsets.all(12.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),

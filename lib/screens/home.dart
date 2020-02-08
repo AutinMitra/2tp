@@ -30,13 +30,8 @@ class HomePage extends StatelessWidget {
       ),
         body: ScrollConfiguration(
           behavior: NoOverScrollBehavior(),
-          child: ListView(
-            children: <Widget>[
-              _TOTPAppBar(),
-              _TOTPList()
-            ],
-          ),
-        )
+            child: _TOTPList()
+        ),
     );
   }
 }
@@ -95,34 +90,46 @@ class _TOTPListState extends State<_TOTPList> {
             .size
             .height;
         var spacer = (screenHeight - Values.navbarHeight) / 2 - 100;
-        return Center(
-          child: Column(
-            children: <Widget>[
-              SizedBox(height: spacer),
-              Center(
-                  child: Text("Nothing added", style: TextStyles.bodyInfoH1)),
-              Center(child: Text(
-                  "Click the + to add a token", style: TextStyles.bodyInfoH2)),
-              SizedBox(height: spacer)
-            ],
-          ),
-        );
-      } else if (state is ErrorTOTPState) {
-        return Text("An error occured");
-      } else {
-        // TODO: Add fancy intro animation
         return ListView(
-          physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           children: <Widget>[
+            _TOTPAppBar(),
+            Center(
+              child: Column(
+                children: <Widget>[
+                  SizedBox(height: spacer),
+                  Center(
+                      child: Text(
+                          "Nothing added", style: TextStyles.bodyInfoH1)),
+                  Center(child: Text(
+                      "Click the + to add a token",
+                      style: TextStyles.bodyInfoH2)),
+                  SizedBox(height: spacer)
+                ],
+              ),
+            ),
+          ],
+        );
+      } else if (state is ChangedTOTPState) {
+        // TODO: Add fancy intro animation
+        return ListView(
+          shrinkWrap: true,
+          children: <Widget>[
+            _TOTPAppBar(),
             SizedBox(height: 12),
-            for (var item in totpBloc.items)
+            for (var item in state.items)
               Padding(
                 padding: EdgeInsets.fromLTRB(24, 0, 24, 18),
                 child: TwoTPCard(item),
               )
           ],
         );
+
+      } else {
+        return Column(children: <Widget>[
+          _TOTPAppBar(),
+          Text("An error occured")
+        ]);
       }
     });
   }

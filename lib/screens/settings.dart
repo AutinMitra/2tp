@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -12,7 +11,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Theme.of(context).backgroundColor,
+      statusBarColor: Colors.transparent,
       statusBarIconBrightness:
       (Theme
           .of(context)

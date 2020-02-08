@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Palette {
   static const accent = Color(0xFF673AB7);
-  static const primary = Color(0xFFD1C4E9);
+  static const primary = Color(0xFFEDE7F6);
   static const lightRed = Color(0xFFffcdd2);
   static const darkRed = Color(0xFFEF5350);
   static const defaultCardColor = Color(0xFF474A53);

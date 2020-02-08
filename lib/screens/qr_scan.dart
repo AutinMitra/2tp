@@ -16,6 +16,19 @@ class QRScanPage extends StatefulWidget {
 
 class _QRScanPageState extends State<QRScanPage> {
   GlobalKey qrKey = GlobalKey();
+  QRViewController controller;
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (controller != null) controller.dispose();
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    if (controller != null) controller.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +68,7 @@ class _QRScanPageState extends State<QRScanPage> {
   }
 
   void _onQRViewCreated(BuildContext context, QRViewController controller) {
+    this.controller = controller;
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
 
@@ -93,8 +107,8 @@ class _QRBottomBar extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   child: RaisedButton(
-                      color: Palette.lightRed,
-                      textColor: Palette.darkRed,
+                      color: Palette.darkRed,
+                      textColor: Palette.lightRed,
                       child: Text("Cancel", style: TextStyles.buttonText),
                       onPressed: () {
                         Navigator.pop(context);
@@ -105,7 +119,9 @@ class _QRBottomBar extends StatelessWidget {
                   child: RaisedButton(
                       child:
                           Text("Input Manually", style: TextStyles.buttonText),
-                      onPressed: () {}),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/add/advanced');
+                      }),
                 ),
               ],
             ),

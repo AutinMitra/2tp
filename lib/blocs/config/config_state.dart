@@ -4,11 +4,12 @@ import 'package:meta/meta.dart';
 
 @immutable
 abstract class ConfigState extends Equatable {
-  final List configProps;
-  ConfigState([this.configProps]) : super();
+  final List _props;
+
+  ConfigState([this._props]) : super();
 
   @override
-  List<Object> get props => configProps;
+  List<Object> get props => _props;
 }
 
 // Uninitialized Configuration
@@ -22,12 +23,8 @@ class UnitConfigState extends ConfigState {
 // Initialized config
 class ChangedConfigState extends ConfigState {
   final int value;
-  ChangedConfigState(this.value);
-  
-  @override
-  String toString() {
-    return "InitConfigState";
-  }
+
+  ChangedConfigState(this.value) : super([value]);
 }
 
 // Error happened in config
