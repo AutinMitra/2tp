@@ -57,7 +57,7 @@ class _TwoTPState extends State<TwoTP> {
         routes: {
           '/add/qr': (context) => QRScanPage(),
           '/add/advanced': (context) => AdvancedTOTPPage(),
-          '/settings': (context) => SettingsPage()
+          '/settings': (context) => SettingsPage(),
         },
       );
     });

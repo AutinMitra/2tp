@@ -15,3 +15,9 @@ class RemoveItemEvent extends TOTPEvent {
   final TOTPItem item;
   RemoveItemEvent(this.item);
 }
+
+class ReplaceItemEvent extends TOTPEvent {
+  final TOTPItem a, b;
+
+  ReplaceItemEvent(this.a, this.b);
+}

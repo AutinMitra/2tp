@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/blocs/totp/totp_state.dart';
+import 'package:twotp/components/cards.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
-import 'package:twotp/components/twotp_card.dart';
 import 'package:twotp/theme/text_styles.dart';
 import 'package:twotp/theme/values.dart';
 
@@ -120,7 +120,7 @@ class _TOTPListState extends State<_TOTPList> {
             for (var item in state.items)
               Padding(
                 padding: EdgeInsets.fromLTRB(24, 0, 24, 18),
-                child: TwoTPCard(item),
+                child: Hero(tag: item.toString(), child: TwoTPCard(item)),
               )
           ],
         );

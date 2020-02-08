@@ -19,6 +19,18 @@ class _QRScanPageState extends State<QRScanPage> {
   QRViewController _controller;
 
   @override
+  void initState() {
+    super.initState();
+    _controller?.resumeCamera();
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    _controller?.dispose();
+  }
+
+  @override
   void dispose() {
     super.dispose();
     _controller?.dispose();
@@ -101,7 +113,7 @@ class _QRBottomBar extends StatelessWidget {
                 Expanded(
                   child: RaisedButton(
                       color: Palette.darkRed,
-                      textColor: Palette.lightRed,
+                      textColor: Colors.white,
                       child: Text("Cancel", style: TextStyles.buttonText),
                       onPressed: () {
                         Navigator.pop(context);
@@ -115,7 +127,8 @@ class _QRBottomBar extends StatelessWidget {
                       child:
                       Text("Input Manually", style: TextStyles.buttonText),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/add/advanced');
+                        Navigator.pushReplacementNamed(
+                            context, '/add/advanced');
                       }),
                 ),
               ],

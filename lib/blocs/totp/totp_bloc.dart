@@ -17,9 +17,11 @@ class TOTPBloc extends Bloc<TOTPEvent, TOTPState> {
     if (event is FetchItemsEvent) {
       yield* mapFetchItemsEventToState(event);
     } else if (event is AddItemEvent) {
-      yield* mapAddItemsEventToState(event);
+      yield* mapAddItemEventToState(event);
     } else if (event is RemoveItemEvent) {
-      yield* mapRemoveItemsEventToState(event);
+      yield* mapRemoveItemEventToState(event);
+    } else if (event is ReplaceItemEvent) {
+      yield* mapReplaceItemEventToState(event);
     }
   }
 
@@ -33,7 +35,7 @@ class TOTPBloc extends Bloc<TOTPEvent, TOTPState> {
     }
   }
 
-  Stream<TOTPState> mapAddItemsEventToState(AddItemEvent event) async* {
+  Stream<TOTPState> mapAddItemEventToState(AddItemEvent event) async* {
     try {
       if (!items.contains(event.item))
         items.add(event.item);
@@ -45,9 +47,21 @@ class TOTPBloc extends Bloc<TOTPEvent, TOTPState> {
     }
   }
 
-  Stream<TOTPState> mapRemoveItemsEventToState(RemoveItemEvent event) async* {
+  Stream<TOTPState> mapRemoveItemEventToState(RemoveItemEvent event) async* {
     try {
       items.remove(event.item);
+      yield ChangedTOTPState(items);
+      await TwoTPUtils.saveItemsToFile(items, _filename);
+    } catch (error, trace) {
+      print('$error $trace');
+      yield ErrorTOTPState(error.message);
+    }
+  }
+
+  Stream<TOTPState> mapReplaceItemEventToState(ReplaceItemEvent event) async* {
+    try {
+      int aIndex = items.indexOf(event.a);
+      items[aIndex] = event.b;
       yield ChangedTOTPState(items);
       await TwoTPUtils.saveItemsToFile(items, _filename);
     } catch (error, trace) {

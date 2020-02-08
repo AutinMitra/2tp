@@ -1,5 +1,4 @@
 import 'package:base32/base32.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,14 +10,17 @@ import 'package:twotp/components/text_fields.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
 import 'package:twotp/totp/totp.dart';
-import 'package:uuid/uuid.dart';
 
-class AdvancedTOTPPage extends StatefulWidget {
+class EditItemPage extends StatefulWidget {
+  final TOTPItem totpItem;
+
+  EditItemPage(this.totpItem);
+
   @override
-  _AdvancedTOTPPageState createState() => _AdvancedTOTPPageState();
+  _EditItemPageState createState() => _EditItemPageState();
 }
 
-class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
+class _EditItemPageState extends State<EditItemPage> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   TextEditingController _secretController = TextEditingController();
@@ -30,32 +32,6 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
       TextEditingController() ?? "SHA1";
 
   FakeTwoTPCard _card;
-
-  void addItem(BuildContext context) {
-    // ignore: close_sinks
-    final TOTPBloc totpBloc =
-    BlocProvider.of<TOTPBloc>(context);
-
-    if (_formKey.currentState.validate()) {
-      var secret = _validateString(_secretController.text);
-      var accountName =
-      _validateString(_accountNameController.text);
-      var issuer = _validateString(_issuerController.text);
-      var digits = _validateInt(_digitsController.text) ?? 6;
-      var period = _validateInt(_periodController.text) ?? 30;
-      var algorithm =
-          _validateString(_algorithmController.text) ?? "SHA1";
-      TOTPItem item = TOTPItem(secret, Uuid().v4(),
-          accountName: accountName,
-          issuer: issuer,
-          digits: digits,
-          period: period,
-          algorithm: algorithm);
-      totpBloc.add(AddItemEvent(item));
-      Navigator.pushNamedAndRemoveUntil(
-          context, "/", (r) => false);
-    }
-  }
 
   int _validateInt(String val) {
     try {
@@ -71,12 +47,14 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
   }
 
   Widget _generateCard() {
-    var accountName =
-        _validateString(_accountNameController.text) ?? "Account Name";
-    var issuer = _validateString(_issuerController.text);
-    var digits = _validateInt(_digitsController.text) ?? 6;
-    var period = _validateInt(_periodController.text) ?? 30;
-    var algorithm = _validateString(_algorithmController.text) ?? "SHA1";
+    var accountName = _validateString(_accountNameController.text) ??
+        widget.totpItem.accountName;
+    var issuer =
+        _validateString(_issuerController.text) ?? widget.totpItem.issuer;
+    var digits = _validateInt(_digitsController.text) ?? widget.totpItem.digits;
+    var period = _validateInt(_periodController.text) ?? widget.totpItem.period;
+    var algorithm =
+        _validateString(_algorithmController.text) ?? widget.totpItem.algorithm;
 
     setState(() {
       _card = FakeTwoTPCard(
@@ -89,59 +67,103 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
     return _card;
   }
 
+  void remove(BuildContext context) {
+    // ignore: close_sinks
+    final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
+
+    // TODO: Are you sure? + toast
+    totpBloc.add(RemoveItemEvent(widget.totpItem));
+    Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
+  }
+
+  void save(BuildContext context) {
+    // ignore: close_sinks
+    final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
+
+    TOTPItem item = widget.totpItem;
+    if (_formKey.currentState.validate()) {
+      var secret = _validateString(_secretController.text) ?? item.secret;
+      var accountName =
+          _validateString(_accountNameController.text) ?? item.accountName;
+      var issuer = _validateString(_issuerController.text) ?? item.issuer;
+      var digits = _validateInt(_digitsController.text) ?? item.digits;
+      var period = _validateInt(_periodController.text) ?? item.period;
+      var algorithm =
+          _validateString(_algorithmController.text) ?? item.algorithm;
+      TOTPItem replacement = TOTPItem(secret, item.id,
+          accountName: accountName,
+          issuer: issuer,
+          digits: digits,
+          period: period,
+          algorithm: algorithm);
+      totpBloc.add(ReplaceItemEvent(item, replacement));
+      Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
+
+      // TODO: Toast/Confirmation
+    }
+  }
+
   @override
-  void dispose() {
-    super.dispose();
-    _secretController.dispose();
-    _accountNameController.dispose();
-    _issuerController.dispose();
-    _digitsController.dispose();
-    _periodController.dispose();
-    _algorithmController.dispose();
+  void initState() {
+    super.initState();
+    TOTPItem item = widget.totpItem;
+    _secretController.text = item.secret;
+    _accountNameController.text = item.accountName;
+    _issuerController.text = item.issuer;
+    _digitsController.text = item.digits.toString();
+    _periodController.text = item.period.toString();
+    _algorithmController.text = item.algorithm.toString();
   }
 
   @override
   Widget build(BuildContext context) {
-    _generateCard();
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: (Theme
-          .of(context)
-          .brightness == Brightness.dark)
+      statusBarIconBrightness: (Theme.of(context).brightness == Brightness.dark)
           ? Brightness.light
           : Brightness.dark,
     ));
-    return Scaffold(
+
+    return new Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Theme
-            .of(context)
-            .backgroundColor,
-        title: Text("Manual Input", style: TextStyles.appBarTitle),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        backgroundColor: Theme.of(context).backgroundColor,
+        title: Text("Edit Item", style: TextStyles.appBarTitle),
       ),
       body: ScrollConfiguration(
         behavior: NoOverScrollBehavior(),
         child: Form(
           key: _formKey,
           child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            padding: EdgeInsets.fromLTRB(24, 0, 24, 18),
             children: <Widget>[
+              SizedBox(height: 8),
+              Hero(tag: widget.totpItem.toString(), child: _generateCard()),
               SizedBox(height: 16),
-              _card ?? FakeTwoTPCard(),
-              SizedBox(height: 16),
-              RaisedButton(
-                  color: Palette.primary,
-                  textColor: Colors.white,
-                  child: Text("Add Item", style: TextStyles.buttonText),
-                  onPressed: () {
-                    addItem(context);
-                  }),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Expanded(
+                    child: RaisedButton(
+                        color: Palette.darkRed,
+                        textColor: Colors.white,
+                        child: Text("Remove", style: TextStyles.buttonText),
+                        onPressed: () {
+                          remove(context);
+                        }),
+                  ),
+                  SizedBox(width: 12.0),
+                  Expanded(
+                    child: RaisedButton(
+                        color: Palette.primary,
+                        textColor: Colors.white,
+                        child: Text("Save", style: TextStyles.buttonText),
+                        onPressed: () {
+                          save(context);
+                        }),
+                  ),
+                ],
+              ),
               SizedBox(height: 16),
               AdvancedFormTextField(
                 obscureText: true,
@@ -189,7 +211,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
                   return null;
                 },
                 controller: _digitsController,
-                labelText: "Digits (default: 6)",
+                labelText: "Digits",
                 onChanged: (_) {
                   _generateCard();
                 },
@@ -208,7 +230,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
                   return null;
                 },
                 controller: _periodController,
-                labelText: "Period (default: 30)",
+                labelText: "Period",
                 onChanged: (_) {
                   _generateCard();
                 },
@@ -224,7 +246,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
                   return null;
                 },
                 controller: _algorithmController,
-                labelText: "Algorithm (default: SHA1)",
+                labelText: "Algorithm",
                 onChanged: (_) {
                   _generateCard();
                 },

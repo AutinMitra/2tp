@@ -176,5 +176,10 @@ class TOTPItem extends Equatable {
   }
 
   @override
+  String toString() {
+    return 'TOTPItem{id: $id, digits: $digits, period: $period, algorithm: $algorithm, accountName: $accountName, issuer: $issuer}';
+  }
+
+  @override
   List<Object> get props => [digits, period, algorithm, accountName, issuer];
 }
