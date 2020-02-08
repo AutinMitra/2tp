@@ -7,6 +7,7 @@ import 'package:twotp/blocs/totp/totp_state.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/components/twotp_card.dart';
 import 'package:twotp/theme/text_styles.dart';
+import 'package:twotp/theme/values.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -43,26 +44,29 @@ class HomePage extends StatelessWidget {
 class _TOTPAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          IconButton(
-            icon: new Icon(Icons.settings),
-            onPressed: () {
-              Navigator.pushNamed(context, "/settings");
-            },
-          ),
-          new Text("TwoTP", style: TextStyles.appBarTitle),
-          IconButton(
-            icon: new Icon(Icons.add),
-            onPressed: () {
-              Navigator.pushNamed(context, '/add/qr');
-            },
-          ),
-        ],
+    return Container(
+      height: Values.navbarHeight,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            IconButton(
+              icon: new Icon(Icons.settings),
+              onPressed: () {
+                Navigator.pushNamed(context, "/settings");
+              },
+            ),
+            new Text("TwoTP", style: TextStyles.appBarTitle),
+            IconButton(
+              icon: new Icon(Icons.add),
+              onPressed: () {
+                Navigator.pushNamed(context, '/add/qr');
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -86,18 +90,23 @@ class _TOTPListState extends State<_TOTPList> {
         return Container();
       } else if (state is ChangedTOTPState && state.items.length == 0) {
         // TODO: Replace with more fancy indicator, like an illustration
-        return Expanded(child: Center(
-          child: ListView(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
+        var screenHeight = MediaQuery
+            .of(context)
+            .size
+            .height;
+        var spacer = (screenHeight - Values.navbarHeight) / 2 - 100;
+        return Center(
+          child: Column(
             children: <Widget>[
+              SizedBox(height: spacer),
               Center(
                   child: Text("Nothing added", style: TextStyles.bodyInfoH1)),
               Center(child: Text(
                   "Click the + to add a token", style: TextStyles.bodyInfoH2)),
+              SizedBox(height: spacer)
             ],
           ),
-        ));
+        );
       } else if (state is ErrorTOTPState) {
         return Text("An error occured");
       } else {

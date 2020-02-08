@@ -64,6 +64,7 @@ class _QRScanPageState extends State<QRScanPage> {
         try {
           item = TOTPItem.parseURI(data);
           controller.pauseCamera();
+          // TODO: If their is a duplicate, confirm with the user
           totpBloc.add(AddItemEvent(item));
           // TODO: Add notif/indicator of success
 
