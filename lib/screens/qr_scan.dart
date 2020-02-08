@@ -16,26 +16,19 @@ class QRScanPage extends StatefulWidget {
 
 class _QRScanPageState extends State<QRScanPage> {
   GlobalKey qrKey = GlobalKey();
-  QRViewController controller;
+  QRViewController _controller;
 
   @override
   void dispose() {
     super.dispose();
-    if (controller != null) controller.dispose();
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-    if (controller != null) controller.dispose();
+    _controller?.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness:
-      (Theme
+      statusBarIconBrightness: (Theme
           .of(context)
           .brightness == Brightness.dark)
           ? Brightness.light
@@ -68,7 +61,7 @@ class _QRScanPageState extends State<QRScanPage> {
   }
 
   void _onQRViewCreated(BuildContext context, QRViewController controller) {
-    this.controller = controller;
+    this._controller = controller;
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
 
@@ -117,8 +110,10 @@ class _QRBottomBar extends StatelessWidget {
                 SizedBox(width: 12.0),
                 Expanded(
                   child: RaisedButton(
+                      color: Colors.white,
+                      textColor: Colors.black,
                       child:
-                          Text("Input Manually", style: TextStyles.buttonText),
+                      Text("Input Manually", style: TextStyles.buttonText),
                       onPressed: () {
                         Navigator.pushNamed(context, '/add/advanced');
                       }),

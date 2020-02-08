@@ -64,18 +64,24 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
 
   @override
   Widget build(BuildContext context) {
-    var darkMode = Theme.of(context).brightness == Brightness.dark;
+    var darkMode = Theme
+        .of(context)
+        .brightness == Brightness.dark;
     _generateCard();
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: (Theme.of(context).brightness == Brightness.dark)
+      statusBarIconBrightness: (Theme
+          .of(context)
+          .brightness == Brightness.dark)
           ? Brightness.light
           : Brightness.dark,
     ));
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme
+            .of(context)
+            .backgroundColor,
         title: Text("Manual Input", style: TextStyles.appBarTitle),
       ),
       body: ScrollConfiguration(
@@ -88,8 +94,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
               SizedBox(height: 16),
               _card ?? _FakeTwoTPCard(),
               SizedBox(height: 32),
-              TextFormField(
-                obscureText: true,
+              AdvancedFormTextField(
                 validator: (value) {
                   if (value.isEmpty) return 'Required';
                   try {
@@ -99,87 +104,67 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
                   }
                   return null;
                 },
-                cursorColor: (darkMode) ? Palette.textDark : Palette.textLight,
                 controller: _secretController,
-                decoration: InputDecoration(
-                  hintText: "Secret*",
-                  filled: true,
-                ),
+                hintText: "Secret*",
                 onChanged: (_) {
                   _generateCard();
                 },
               ),
               SizedBox(height: 16),
-              TextFormField(
+              AdvancedFormTextField(
                 validator: (value) {
                   if (value.isEmpty) return "Required";
                   return null;
                 },
-                cursorColor: (darkMode) ? Palette.textDark : Palette.textLight,
                 controller: _accountNameController,
-                decoration: InputDecoration(
-                  hintText: "Account Name*",
-                  filled: true,
-                ),
+                hintText: "Account Name*",
                 onChanged: (_) {
                   _generateCard();
                 },
               ),
               SizedBox(height: 16),
-              TextFormField(
-                cursorColor: (darkMode) ? Palette.textDark : Palette.textLight,
+              AdvancedFormTextField(
                 controller: _issuerController,
-                decoration: InputDecoration(
-                  hintText: "Issuer",
-                  filled: true,
-                ),
+                hintText: "Issuer",
                 onChanged: (_) {
                   _generateCard();
                 },
               ),
               SizedBox(height: 16),
-              TextFormField(
+              AdvancedFormTextField(
                 validator: (value) {
                   if (value.isNotEmpty) if (value.toString() != "6" &&
                       value != "8")
                     return "Invalid digits, only 6 or 8 allowed";
                   return null;
                 },
-                cursorColor: (darkMode) ? Palette.textDark : Palette.textLight,
                 controller: _digitsController,
-                decoration: InputDecoration(
-                  hintText: "Digits (default: 6)",
-                  filled: true,
-                ),
+                hintText: "Digits (default: 6)",
                 onChanged: (_) {
                   _generateCard();
                 },
               ),
               SizedBox(height: 16),
-              TextFormField(
+              AdvancedFormTextField(
                 validator: (value) {
                   if (value.isNotEmpty) {
                     try {
                       if (int.parse(value) <= 0)
-                        return "Time must be greater than 0";
+                        return "Period must be greater than 0";
                     } catch (e) {
                       return "Only integer values allowed";
                     }
                   }
                   return null;
                 },
-                cursorColor: (darkMode) ? Palette.textDark : Palette.textLight,
                 controller: _periodController,
-                decoration: InputDecoration(
-                  hintText: "Period (default: 30)",
-                  filled: true,
-                ),
+                hintText: "Period (default: 30)",
                 onChanged: (_) {
                   _generateCard();
                 },
               ),
               SizedBox(height: 16),
-              TextFormField(
+              AdvancedFormTextField(
                 validator: (value) {
                   if (value.isNotEmpty &&
                       (value != "SHA1" ||
@@ -188,28 +173,26 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
                     return "Only SHA1, SHA256, or SHA512 is available";
                   return null;
                 },
-                cursorColor: (darkMode) ? Palette.textDark : Palette.textLight,
                 controller: _algorithmController,
-                decoration: InputDecoration(
-                  hintText: "Algorithm (default: SHA1)",
-                  filled: true,
-                ),
+                hintText: "Algorithm (default: SHA1)",
                 onChanged: (_) {
                   _generateCard();
                 },
               ),
               SizedBox(height: 16),
               RaisedButton(
+                  color: Palette.primary,
+                  textColor: Colors.white,
                   child: Text("Add Item", style: TextStyles.buttonText),
                   onPressed: () {
                     // ignore: close_sinks
                     final TOTPBloc totpBloc =
-                        BlocProvider.of<TOTPBloc>(context);
+                    BlocProvider.of<TOTPBloc>(context);
 
                     if (_formKey.currentState.validate()) {
                       var secret = _validateString(_secretController.text);
                       var accountName =
-                          _validateString(_accountNameController.text);
+                      _validateString(_accountNameController.text);
                       var issuer = _validateString(_issuerController.text);
                       var digits = _validateInt(_digitsController.text) ?? 6;
                       var period = _validateInt(_periodController.text) ?? 30;
@@ -222,6 +205,8 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
                           period: period,
                           algorithm: algorithm);
                       totpBloc.add(AddItemEvent(item));
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, "/", (r) => false);
                     }
                   }),
             ],
@@ -240,13 +225,12 @@ class _FakeTwoTPCard extends StatelessWidget {
   final String issuer;
   final Color color;
 
-  _FakeTwoTPCard(
-      {this.digits = 6,
-      this.period = 30,
-      this.algorithm = "SHA1",
-      this.accountName = "",
-      this.issuer = "",
-      this.color = Palette.defaultCardColor});
+  _FakeTwoTPCard({this.digits = 6,
+    this.period = 30,
+    this.algorithm = "SHA1",
+    this.accountName = "",
+    this.issuer = "",
+    this.color = Palette.defaultCardColor});
 
   String _generateCode() {
     String s = "";
@@ -281,7 +265,7 @@ class _FakeTwoTPCard extends StatelessWidget {
         splashColor: Color(0x2AFFFFFF),
         highlightColor: Colors.transparent,
         customBorder:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
         onTap: () {},
         child: Container(
           padding: EdgeInsets.all(24),
@@ -293,24 +277,24 @@ class _FakeTwoTPCard extends StatelessWidget {
                   children: <Widget>[
                     accountName != "" && accountName != null
                         ? Text(
-                            accountName,
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Palette.textDark,
-                                fontWeight: FontWeight.w500),
-                          )
+                      accountName,
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Palette.textDark,
+                          fontWeight: FontWeight.w500),
+                    )
                         : Container(),
                     SizedBox(
                       height: 2,
                     ),
                     issuer != "" && issuer != null
                         ? Text(
-                            issuer,
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Palette.textDark,
-                                fontWeight: FontWeight.w700),
-                          )
+                      issuer,
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Palette.textDark,
+                          fontWeight: FontWeight.w700),
+                    )
                         : Container(),
                     SizedBox(
                       height: 4,
@@ -342,6 +326,37 @@ class _FakeTwoTPCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class AdvancedFormTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final Function validator;
+  final Function onChanged;
+  final String hintText;
+
+  AdvancedFormTextField(
+      {this.controller, this.validator, this.onChanged, this.hintText = ""});
+
+  @override
+  Widget build(BuildContext context) {
+    var darkMode = Theme
+        .of(context)
+        .brightness == Brightness.dark;
+    return TextFormField(
+        validator: validator,
+        cursorColor: (darkMode) ? Palette.textDark : Palette.textLight,
+        controller: controller,
+        decoration: InputDecoration(
+            hintText: hintText,
+            filled: true,
+            border: UnderlineInputBorder(
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(12.0),
+                    topRight: Radius.circular(12.0))
+            )
+        ),
+        onChanged: onChanged
     );
   }
 }
