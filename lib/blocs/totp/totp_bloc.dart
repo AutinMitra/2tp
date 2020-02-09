@@ -60,6 +60,7 @@ class TOTPBloc extends Bloc<TOTPEvent, TOTPState> {
 
   Stream<TOTPState> mapReplaceItemEventToState(ReplaceItemEvent event) async* {
     try {
+      TwoTPUtils.removeFromSecureStorage(event.a);
       int aIndex = items.indexOf(event.a);
       items[aIndex] = event.b;
       yield ChangedTOTPState(items);

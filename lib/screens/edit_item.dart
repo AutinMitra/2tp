@@ -2,11 +2,13 @@ import 'package:base32/base32.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/components/cards.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/components/text_fields.dart';
+import 'package:twotp/components/toast.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
 import 'package:twotp/totp/totp.dart';
@@ -74,6 +76,10 @@ class _EditItemPageState extends State<EditItemPage> {
     // TODO: Are you sure? + toast
     totpBloc.add(RemoveItemEvent(widget.totpItem));
     Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
+
+    // Toast
+    showToastWidget(ToastMessage(message: "Removed!"),
+        position: ToastPosition.bottom);
   }
 
   void save(BuildContext context) {
@@ -100,6 +106,8 @@ class _EditItemPageState extends State<EditItemPage> {
       Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
 
       // TODO: Toast/Confirmation
+      showToastWidget(ToastMessage(message: "Saved!"),
+          position: ToastPosition.bottom);
     }
   }
 

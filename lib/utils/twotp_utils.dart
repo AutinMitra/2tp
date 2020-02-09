@@ -41,4 +41,8 @@ class TwoTPUtils {
     var data = json.encode(jsonList);
     return FileUtils.writeFile(filename, data).then((file) => {});
   }
+
+  static void removeFromSecureStorage(TOTPItem item) {
+    _secureStorage.delete(key: item.id);
+  }
 }

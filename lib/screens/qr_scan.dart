@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_code_scanner/qr_scanner_overlay_shape.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
+import 'package:twotp/components/toast.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
 import 'package:twotp/totp/totp.dart';
@@ -40,9 +42,7 @@ class _QRScanPageState extends State<QRScanPage> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: (Theme
-          .of(context)
-          .brightness == Brightness.dark)
+      statusBarIconBrightness: (Theme.of(context).brightness == Brightness.dark)
           ? Brightness.light
           : Brightness.dark,
     ));
@@ -82,13 +82,20 @@ class _QRScanPageState extends State<QRScanPage> {
         TOTPItem item;
         try {
           item = TOTPItem.parseURI(data);
-          controller.pauseCamera();
-          // TODO: If their is a duplicate, confirm with the user
-          totpBloc.add(AddItemEvent(item));
-          // TODO: Add notif/indicator of success
-
-          Navigator.pop(context);
-          Navigator.pushNamed(context, "/");
+          if (!totpBloc.items.contains(item)) {
+            controller.pauseCamera();
+            totpBloc.add(AddItemEvent(item));
+            // TODO: Add notif/indicator of success
+            showToastWidget(ToastMessage(message: "Added!"),
+                position: ToastPosition.bottom);
+            Navigator.pop(context);
+            Navigator.pushNamed(context, "/");
+          } else {
+            showToastWidget(
+              ToastMessage(message: "Already Exists!", error: true),
+              duration: Duration(seconds: 1)
+            );
+          }
         } on FormatException catch (e) {
           // TODO: Add modal/notification of incorrect qr
         }
@@ -125,7 +132,7 @@ class _QRBottomBar extends StatelessWidget {
                       color: Colors.white,
                       textColor: Colors.black,
                       child:
-                      Text("Input Manually", style: TextStyles.buttonText),
+                          Text("Input Manually", style: TextStyles.buttonText),
                       onPressed: () {
                         Navigator.pushReplacementNamed(
                             context, '/add/advanced');
