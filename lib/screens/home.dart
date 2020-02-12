@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,18 +7,17 @@ import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/blocs/totp/totp_state.dart';
 import 'package:twotp/components/cards.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
+import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
 import 'package:twotp/theme/values.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var darkMode = Theme.of(context).brightness == Brightness.dark;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness:
-      (Theme
-          .of(context)
-          .brightness == Brightness.dark)
+      statusBarIconBrightness: (Theme.of(context).brightness == Brightness.dark)
           ? Brightness.light
           : Brightness.dark,
     ));
@@ -28,44 +28,72 @@ class HomePage extends StatelessWidget {
           backgroundColor: Colors.transparent,
         ),
       ),
-        body: ScrollConfiguration(
-          behavior: NoOverScrollBehavior(),
-            child: _TOTPList()
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Palette.accent,
+        elevation: 2.0,
+        icon: Icon(Icons.add, color: Palette.primary),
+        label: Text("Add Item", style: TextStyles.addItemButtonText),
+        onPressed: () {
+          Navigator.pushNamed(context, "/add/qr");
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: Material(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        clipBehavior: Clip.hardEdge,
+        elevation: 16.0,
+        child: Container(
+          height: 52,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                IconButton(
+                  icon: new Icon(Icons.settings),
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/settings");
+                  },
+                ),
+                IconButton(
+                  icon: new Icon(Icons.search),
+                  onPressed: () {
+//                Navigator.pushNamed(context, '/add/qr');
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
+      ),
+      body: ScrollConfiguration(
+          behavior: NoOverScrollBehavior(), child: _TOTPList()),
     );
   }
 }
 
-class _TOTPAppBar extends StatelessWidget {
+class _TwoTPAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: Values.navbarHeight,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            IconButton(
-              icon: new Icon(Icons.settings),
-              onPressed: () {
-                Navigator.pushNamed(context, "/settings");
-              },
-            ),
-            new Text("TwoTP", style: TextStyles.appBarTitle),
-            IconButton(
-              icon: new Icon(Icons.add),
-              onPressed: () {
-                Navigator.pushNamed(context, '/add/qr');
-              },
-            ),
-          ],
-        ),
+        child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text("TwoTP", style: TextStyles.largeAppBarTitle),
+          ),
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {},
+          )
+        ],
       ),
-    );
+    ));
   }
-
 }
 
 class _TOTPList extends StatefulWidget {
@@ -85,25 +113,22 @@ class _TOTPListState extends State<_TOTPList> {
         return Container();
       } else if (state is ChangedTOTPState && state.items.length == 0) {
         // TODO: Replace with more fancy indicator, like an illustration
-        var screenHeight = MediaQuery
-            .of(context)
-            .size
-            .height;
+        var screenHeight = MediaQuery.of(context).size.height;
         var spacer = (screenHeight - Values.navbarHeight) / 2 - 100;
         return ListView(
           shrinkWrap: true,
           children: <Widget>[
-            _TOTPAppBar(),
+            _TwoTPAppBar(),
             Center(
               child: Column(
                 children: <Widget>[
                   SizedBox(height: spacer),
                   Center(
-                      child: Text(
-                          "Nothing added", style: TextStyles.bodyInfoH1)),
-                  Center(child: Text(
-                      "Click the + to add a token",
-                      style: TextStyles.bodyInfoH2)),
+                      child:
+                          Text("Nothing added", style: TextStyles.bodyInfoH1)),
+                  Center(
+                      child: Text("Click the + to add a token",
+                          style: TextStyles.bodyInfoH2)),
                   SizedBox(height: spacer)
                 ],
               ),
@@ -115,8 +140,7 @@ class _TOTPListState extends State<_TOTPList> {
         return ListView(
           shrinkWrap: true,
           children: <Widget>[
-            _TOTPAppBar(),
-            SizedBox(height: 12),
+            _TwoTPAppBar(),
             for (var item in state.items)
               Padding(
                 padding: EdgeInsets.fromLTRB(24, 0, 24, 18),
@@ -124,12 +148,9 @@ class _TOTPListState extends State<_TOTPList> {
               )
           ],
         );
-
       } else {
-        return Column(children: <Widget>[
-          _TOTPAppBar(),
-          Text("An error occured")
-        ]);
+        return Column(
+            children: <Widget>[_TwoTPAppBar(), Text("An error occured")]);
       }
     });
   }
