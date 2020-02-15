@@ -12,6 +12,7 @@ import 'package:twotp/components/text_fields.dart';
 import 'package:twotp/components/toast.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
+import 'package:twotp/theme/values.dart';
 import 'package:twotp/totp/totp.dart';
 import 'package:uuid/uuid.dart';
 
@@ -35,8 +36,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
 
   void addItem(BuildContext context) {
     // ignore: close_sinks
-    final TOTPBloc totpBloc =
-    BlocProvider.of<TOTPBloc>(context);
+    final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
 
     if (_formKey.currentState.validate()) {
       var secret = _validateString(_secretController.text);
@@ -58,10 +58,14 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
         Navigator.pushNamedAndRemoveUntil(
             context, "/", (r) => false);
         showToastWidget(ToastMessage(message: "Added!"),
-            position: ToastPosition.bottom);
+          position: ToastPosition.bottom,
+          duration: Values.toastDuration
+        );
       } else {
         showToastWidget(ToastMessage(message: "Already Exists!"),
-            position: ToastPosition.bottom);
+          position: ToastPosition.bottom,
+          duration: Values.toastDuration
+        );
       }
     }
   }
@@ -122,6 +126,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
     ));
     return Scaffold(
       appBar: AppBar(
+        elevation: 8.0,
         centerTitle: true,
         backgroundColor: Theme
             .of(context)

@@ -9,6 +9,7 @@ import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/components/toast.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
+import 'package:twotp/theme/values.dart';
 import 'package:twotp/totp/totp.dart';
 
 class QRScanPage extends StatefulWidget {
@@ -19,6 +20,7 @@ class QRScanPage extends StatefulWidget {
 class _QRScanPageState extends State<QRScanPage> {
   GlobalKey qrKey = GlobalKey();
   QRViewController _controller;
+  String _lastQrScan = "";
 
   @override
   void initState() {
@@ -82,24 +84,27 @@ class _QRScanPageState extends State<QRScanPage> {
         TOTPItem item;
         try {
           item = TOTPItem.parseURI(data);
-          if (!totpBloc.items.contains(item)) {
+          if (!totpBloc.items.contains(item) && data != _lastQrScan) {
             controller.pauseCamera();
             totpBloc.add(AddItemEvent(item));
             // TODO: Add notif/indicator of success
             showToastWidget(ToastMessage(message: "Added!"),
-                position: ToastPosition.bottom);
+              position: ToastPosition.bottom,
+              duration: Values.toastDuration
+            );
             Navigator.pop(context);
             Navigator.pushNamed(context, "/");
           } else {
             showToastWidget(
               ToastMessage(message: "Already Exists!", error: true),
-              duration: Duration(seconds: 1)
+              duration: Values.toastDuration
             );
           }
         } on FormatException catch (e) {
           // TODO: Add modal/notification of incorrect qr
         }
       });
+      _lastQrScan = data;
     });
   }
 }

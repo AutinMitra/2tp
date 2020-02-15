@@ -11,6 +11,7 @@ import 'package:twotp/components/text_fields.dart';
 import 'package:twotp/components/toast.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
+import 'package:twotp/theme/values.dart';
 import 'package:twotp/totp/totp.dart';
 
 class EditItemPage extends StatefulWidget {
@@ -106,8 +107,11 @@ class _EditItemPageState extends State<EditItemPage> {
       Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
 
       // TODO: Toast/Confirmation
-      showToastWidget(ToastMessage(message: "Saved!"),
-          position: ToastPosition.bottom);
+      showToastWidget(
+        ToastMessage(message: "Saved!"),
+        position: ToastPosition.bottom,
+        duration: Values.toastDuration
+      );
     }
   }
 
@@ -134,6 +138,7 @@ class _EditItemPageState extends State<EditItemPage> {
 
     return new Scaffold(
       appBar: AppBar(
+        elevation: 8.0,
         centerTitle: true,
         backgroundColor: Theme.of(context).backgroundColor,
         title: Text("Edit Item", style: TextStyles.appBarTitle),
@@ -145,7 +150,7 @@ class _EditItemPageState extends State<EditItemPage> {
           child: ListView(
             padding: EdgeInsets.fromLTRB(24, 0, 24, 18),
             children: <Widget>[
-              SizedBox(height: 8),
+              SizedBox(height: 16),
               Hero(tag: widget.totpItem.toString(), child: _generateCard()),
               SizedBox(height: 16),
               Row(

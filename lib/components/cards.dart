@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:twotp/components/toast.dart';
 import 'package:twotp/screens/edit_item.dart';
 import 'package:twotp/theme/palette.dart';
+import 'package:twotp/theme/values.dart';
 import 'package:twotp/totp/totp.dart';
 
 class TwoTPCard extends StatefulWidget {
@@ -84,6 +87,11 @@ class _TwoTPCardState extends State<TwoTPCard>
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
           onTap: () {
             Clipboard.setData(ClipboardData(text: _code));
+            showToastWidget(
+              ToastMessage(message: "Copied!"),
+              position: ToastPosition.bottom,
+              duration: Values.toastDuration
+            );
           },
           child: Container(
             padding: EdgeInsets.all(24),

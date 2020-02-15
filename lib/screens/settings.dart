@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/theme/text_styles.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -24,6 +25,22 @@ class _SettingsPageState extends State<SettingsPage> {
         centerTitle: true,
         backgroundColor: Theme.of(context).backgroundColor,
         title: Text("Settings", style: TextStyles.appBarTitle),
+      ),
+      body: ScrollConfiguration(
+        behavior: NoOverScrollBehavior(),
+        child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+          children: <Widget>[
+            SizedBox(height: 12),
+            Row(
+              children: <Widget>[
+                Icon(Icons.palette),
+                SizedBox(width: 8.0),
+                Text("Appearance", style: TextStyles.settingsHeader),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
