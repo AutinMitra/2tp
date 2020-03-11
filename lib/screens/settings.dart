@@ -51,6 +51,12 @@ class AppearancePanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ConfigBloc, ConfigState>(builder: (context, state) {
       String mapThemeFromInt(int n) => n == 2 ? "System" : n == 1 ? "Dark" : "Light";
+
+      List<int> dropList = [0, 1, 2];
+      if(state is ChangedConfigState) {
+        if(state.value == 1) dropList = [1, 0, 2];
+        else if(state.value == 2) dropList = [2, 0, 1];
+      }
       // ignore: close_sinks
       final ConfigBloc configBloc = BlocProvider.of<ConfigBloc>(context);
       int configTheme = (state is ChangedConfigState) ? state.value : 2;
@@ -79,7 +85,7 @@ class AppearancePanel extends StatelessWidget {
                       onChanged: (val) {
                         configBloc.add(ChangeConfigEvent(val));
                       },
-                      items: [0, 1, 2].map((value) {
+                      items: dropList.map((value) {
                         return DropdownMenuItem(
                           value: value,
                           child: Text(mapThemeFromInt(value)),

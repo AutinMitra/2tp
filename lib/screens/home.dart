@@ -30,7 +30,7 @@ class HomePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Palette.accent,
-        elevation: 2.0,
+        elevation: 1.0,
         icon: Icon(Icons.add, color: Palette.primary),
         label: Text("Add Item", style: TextStyles.addItemButtonText),
         onPressed: () {
@@ -41,7 +41,7 @@ class HomePage extends StatelessWidget {
       bottomNavigationBar: Material(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         clipBehavior: Clip.hardEdge,
-        elevation: 16.0,
+        elevation: 8.0,
         child: Container(
           height: 52,
           child: Padding(
@@ -145,7 +145,7 @@ class _TOTPListState extends State<_TOTPList> {
             for (var item in state.items)
               Padding(
                 padding: EdgeInsets.fromLTRB(24, 0, 24, 18),
-                child: Hero(tag: item.toString(), child: TwoTPCard(item, color: Color(0xFFff9900))),
+                child: Hero(tag: item.toString(), child: TwoTPCard(item)),
               )
           ],
         );

@@ -67,7 +67,7 @@ class _TwoTPCardState extends State<TwoTPCard>
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 8.0,
+      elevation: 2.0,
       shadowColor: widget.color,
       borderRadius: BorderRadius.circular(24.0),
       clipBehavior: Clip.hardEdge,
@@ -191,7 +191,7 @@ class FakeTwoTPCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 8.0,
+      elevation: 2.0,
       borderRadius: BorderRadius.circular(24.0),
       clipBehavior: Clip.hardEdge,
       child: Ink(
