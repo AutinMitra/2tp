@@ -138,7 +138,7 @@ class _EditItemPageState extends State<EditItemPage> {
 
     return new Scaffold(
       appBar: AppBar(
-        elevation: 8.0,
+        elevation: 1.0,
         centerTitle: true,
         backgroundColor: Theme.of(context).backgroundColor,
         title: Text("Edit Item", style: TextStyles.appBarTitle),

@@ -10,4 +10,5 @@ class TextStyles {
   static var toastText = TextStyle(fontSize: 14, fontWeight: FontWeight.w600);
   static var addItemButtonText = TextStyle(color: Palette.primary, fontWeight: FontWeight.w700);
   static var settingsHeader = TextStyle(fontSize: 18, fontWeight: FontWeight.w700);
+  static var settingsItemHeader = TextStyle(fontSize: 16);
 }

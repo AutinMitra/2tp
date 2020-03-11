@@ -126,7 +126,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
     ));
     return Scaffold(
       appBar: AppBar(
-        elevation: 8.0,
+        elevation: 1.0,
         centerTitle: true,
         backgroundColor: Theme
             .of(context)

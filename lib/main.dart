@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twotp/blocs/config/config_bloc.dart';
+import 'package:twotp/blocs/config/config_event.dart';
 import 'package:twotp/blocs/config/config_state.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
@@ -28,16 +29,15 @@ class TwoTP extends StatefulWidget {
 }
 
 class _TwoTPState extends State<TwoTP> {
-//  TOTPItem sample = new TOTPItem("FJWBASJDHEKDFKSA", Uuid().v4(),
-//      accountName: "alice@bigCompany.com", issuer: "BigCompany");
-
   @override
   Widget build(BuildContext context) {
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
+    final ConfigBloc configBloc = BlocProvider.of<ConfigBloc>(context);
     // Load all of the data from storage before going to home
     totpBloc.add(FetchItemsEvent());
-//    while (totpBloc.items == null) sleep(new Duration(milliseconds: 10));
+    configBloc.add(FetchConfigEvent());
+
 
     // Configure theme settings
     return BlocBuilder<ConfigBloc, ConfigState>(builder: (context, state) {

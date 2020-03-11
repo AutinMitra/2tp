@@ -77,21 +77,21 @@ class _TwoTPAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Text("TwoTP", style: TextStyles.largeAppBarTitle),
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {},
-          )
-        ],
-      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Text("TwoTP", style: TextStyles.largeAppBarTitle),
+            ),
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {},
+            )
+          ],
+        ),
     ));
   }
 }
@@ -106,7 +106,6 @@ class _TOTPListState extends State<_TOTPList> {
   Widget build(BuildContext context) {
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
-
     return BlocBuilder<TOTPBloc, TOTPState>(builder: (context, state) {
       if (state is UnitTOTPState) {
         totpBloc.add(FetchItemsEvent());
@@ -127,8 +126,10 @@ class _TOTPListState extends State<_TOTPList> {
                       child:
                           Text("Nothing added", style: TextStyles.bodyInfoH1)),
                   Center(
-                      child: Text("Click the + to add a token",
-                          style: TextStyles.bodyInfoH2)),
+                    child: Text("Click the + to add a token",
+                      style: TextStyles.bodyInfoH2
+                    )
+                  ),
                   SizedBox(height: spacer)
                 ],
               ),
@@ -144,7 +145,7 @@ class _TOTPListState extends State<_TOTPList> {
             for (var item in state.items)
               Padding(
                 padding: EdgeInsets.fromLTRB(24, 0, 24, 18),
-                child: Hero(tag: item.toString(), child: TwoTPCard(item)),
+                child: Hero(tag: item.toString(), child: TwoTPCard(item, color: Color(0xFFff9900))),
               )
           ],
         );

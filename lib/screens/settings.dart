@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:twotp/blocs/config/config_bloc.dart';
+import 'package:twotp/blocs/config/config_event.dart';
+import 'package:twotp/blocs/config/config_state.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/theme/text_styles.dart';
 
@@ -9,6 +13,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -25,24 +30,68 @@ class _SettingsPageState extends State<SettingsPage> {
         centerTitle: true,
         backgroundColor: Theme.of(context).backgroundColor,
         title: Text("Settings", style: TextStyles.appBarTitle),
+        elevation: 1.0,
       ),
       body: ScrollConfiguration(
         behavior: NoOverScrollBehavior(),
         child: ListView(
           padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-          children: <Widget>[
+          children: [
             SizedBox(height: 12),
-            Row(
-              children: <Widget>[
-                Icon(Icons.palette),
-                SizedBox(width: 8.0),
-                Text("Appearance", style: TextStyles.settingsHeader),
-              ],
-            )
-          ],
+            AppearancePanel()
+          ]
         ),
       ),
     );
   }
+}
 
+class AppearancePanel extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ConfigBloc, ConfigState>(builder: (context, state) {
+      String mapThemeFromInt(int n) => n == 2 ? "System" : n == 1 ? "Dark" : "Light";
+      // ignore: close_sinks
+      final ConfigBloc configBloc = BlocProvider.of<ConfigBloc>(context);
+      int configTheme = (state is ChangedConfigState) ? state.value : 2;
+      return Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Icon(Icons.palette),
+              SizedBox(width: 8.0),
+              Text("Appearance", style: TextStyles.settingsHeader),
+            ],
+          ),
+          SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Text("Theme", style: TextStyles.settingsItemHeader),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton(
+                      hint: Text(mapThemeFromInt(configTheme)),
+                      onChanged: (val) {
+                        configBloc.add(ChangeConfigEvent(val));
+                      },
+                      items: [0, 1, 2].map((value) {
+                        return DropdownMenuItem(
+                          value: value,
+                          child: Text(mapThemeFromInt(value)),
+                        );
+                      }).toList()
+                  ),
+                ),
+              )
+            ],
+          )
+        ],
+      );
+    });
+  }
 }

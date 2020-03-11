@@ -13,12 +13,7 @@ abstract class ConfigState extends Equatable {
 }
 
 // Uninitialized Configuration
-class UnitConfigState extends ConfigState {
-  @override
-  String toString() {
-    return "UnitConfigState";
-  }
-}
+class UnitConfigState extends ConfigState { }
 
 // Initialized config
 class ChangedConfigState extends ConfigState {
@@ -32,9 +27,4 @@ class ErrorConfigState extends ConfigState {
   final String error;
 
   ErrorConfigState(this.error);
-
-  @override
-  String toString() {
-    return "ErrorConfigState";
-  }
 }
