@@ -5,9 +5,9 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_code_scanner/qr_scanner_overlay_shape.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
+import 'package:twotp/blocs/totp/totp_state.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
-import 'package:twotp/theme/values.dart';
 import 'package:twotp/totp/totp.dart';
 
 class QRScanPage extends StatefulWidget {
@@ -82,12 +82,15 @@ class _QRScanPageState extends State<QRScanPage> {
         TOTPItem item;
         try {
           item = TOTPItem.parseURI(data);
-          if (!totpBloc.items.contains(item) && data != _lastQrScan) {
+          if (totpBloc.state is ChangedTOTPState
+              && !(totpBloc.state as ChangedTOTPState).items.contains(item)
+              && data != _lastQrScan) {
             controller.pauseCamera();
             totpBloc.add(AddItemEvent(item));
             // TODO: Add notif/indicator of success
             Navigator.pop(context);
-            Navigator.pushNamed(context, "/");
+            Navigator.pushNamedAndRemoveUntil(
+                context, "/", (r) => false);
           } else {
             // TOAST: Already Exists
           }

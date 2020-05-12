@@ -124,10 +124,12 @@ packages:
   line_icons:
     dependency: "direct main"
     description:
-      name: line_icons
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.0"
+      path: "."
+      ref: HEAD
+      resolved-ref: b230099494f7d5324aebc86d85b2447571cc9693
+      url: "https://github.com/galonsos/line_icons.git"
+    source: git
+    version: "1.1.0"
   matcher:
     dependency: transitive
     description:

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
+import 'package:twotp/blocs/totp/totp_state.dart';
 import 'package:twotp/components/cards.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/components/text_fields.dart';
@@ -51,7 +52,8 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
           digits: digits,
           period: period,
           algorithm: algorithm);
-      if(!totpBloc.items.contains(item)) {
+      if (totpBloc.state is ChangedTOTPState
+          && !(totpBloc.state as ChangedTOTPState).items.contains(item)) {
         totpBloc.add(AddItemEvent(item));
         Navigator.pushNamedAndRemoveUntil(
             context, "/", (r) => false);
@@ -140,11 +142,14 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
               .scaffoldBackgroundColor
               .withOpacity(0.8),
           title: Text("Manual Input", style: TextStyles.appBarTitle),
-          leading: IconButton(
-            icon: Icon(LineIcons.angle_left),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+          leading: Padding(
+            padding: EdgeInsets.only(left: 14),
+            child: IconButton(
+              icon: Icon(LineIcons.angle_left_solid),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
           ),
         ),
         body: ScrollConfiguration(
@@ -163,7 +168,8 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
                     child: Text("Add Item", style: TextStyles.buttonText),
                     onPressed: () {
                       addItem(context);
-                    }),
+                    },
+                ),
                 SizedBox(height: 16),
                 _textFields()
               ],

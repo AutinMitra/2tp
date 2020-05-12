@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:twotp/blocs/config/config_bloc.dart';
 import 'package:twotp/blocs/config/config_event.dart';
 import 'package:twotp/blocs/config/config_state.dart';
@@ -16,30 +17,49 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness:
-      (Theme
-          .of(context)
-          .brightness == Brightness.dark)
-          ? Brightness.light
-          : Brightness.dark,
-    ));
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Theme.of(context).backgroundColor,
-        title: Text("Settings", style: TextStyles.appBarTitle),
-        elevation: 1.0,
-      ),
-      body: ScrollConfiguration(
-        behavior: NoOverScrollBehavior(),
-        child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-          children: [
-            SizedBox(height: 12),
-            AppearancePanel()
-          ]
+    var style = SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: (Theme
+            .of(context)
+            .brightness == Brightness.dark)
+            ? Brightness.light
+            : Brightness.dark,
+        systemNavigationBarColor: Theme
+            .of(context)
+            .scaffoldBackgroundColor
+    );
+    SystemChrome.setSystemUIOverlayStyle(style);
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: style,
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Theme
+              .of(context)
+              .scaffoldBackgroundColor
+              .withOpacity(0.5),
+          title: Text("Settings", style: TextStyles.appBarTitle),
+          leading: Padding(
+            padding: EdgeInsets.only(left: 14),
+            child: IconButton(
+              icon: Icon(LineIcons.angle_left_solid),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ),
+        body: ScrollConfiguration(
+          behavior: NoOverScrollBehavior(),
+          child: ListView(
+              padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+              children: [
+                SizedBox(height: 84),
+                AppearancePanel()
+              ]
+          ),
         ),
       ),
     );
@@ -64,7 +84,7 @@ class AppearancePanel extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Icon(Icons.palette),
+              Icon(LineIcons.brush_solid),
               SizedBox(width: 8.0),
               Text("Appearance", style: TextStyles.settingsHeader),
             ],

@@ -21,3 +21,9 @@ class ReplaceItemEvent extends TOTPEvent {
 
   ReplaceItemEvent(this.a, this.b);
 }
+
+class MoveItemEvent extends TOTPEvent {
+  final int from, to;
+
+  MoveItemEvent(this.from, this.to);
+}

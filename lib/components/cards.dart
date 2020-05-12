@@ -6,16 +6,17 @@ import 'package:twotp/theme/palette.dart';
 import 'package:twotp/totp/totp.dart';
 
 double _cardBorderRadius = 32;
-int elevation = 2;
+double _elevation = 16;
 Color _spinnerColor = Palette.medBlue;
-Color _spinnerBackgroundColor = Palette.scLight;
 Color _shadowColor = Color(0x1A000000);
+Color _splashColor = Color(0x2ACFCFCF);
 double _gapSize = 8;
 
 class TwoTPCard extends StatefulWidget {
   final TOTPItem totpItem;
+  final bool enableLongPress;
 
-  TwoTPCard(this.totpItem);
+  TwoTPCard(this.totpItem, {this.enableLongPress = true});
 
   @override
   _TwoTPCardState createState() => _TwoTPCardState();
@@ -51,6 +52,7 @@ class _TwoTPCardState extends State<TwoTPCard>
   @override
   void initState() {
     super.initState();
+    _warning = _timeLeft <= 10;
     _totpCode = _code;
     _animationController = AnimationController(
         duration: Duration(seconds: widget.totpItem.period),
@@ -78,25 +80,96 @@ class _TwoTPCardState extends State<TwoTPCard>
       });
   }
 
+  Widget _cardContent() {
+    var darkMode = (Theme
+        .of(context)
+        .brightness == Brightness.dark);
+
+    return Stack(
+      children: <Widget>[
+        SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              widget.totpItem.accountName != ""
+                  ? Text(
+                widget.totpItem.accountName,
+                style: TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.w500),
+              )
+                  : Container(),
+              SizedBox(
+                height: 2,
+              ),
+              (widget.totpItem.issuer != "" &&
+                  widget.totpItem.issuer != null)
+                  ? Text(
+                widget.totpItem.issuer,
+                style: TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.w700),
+              )
+                  : Container(),
+              SizedBox(
+                height: 12,
+              ),
+              _getCode(),
+            ],
+          ),
+        ),
+        Positioned(
+          right: 8,
+          top: 8,
+          child: AnimatedBuilder(
+            animation: _animation,
+            builder: (context, child) =>
+                Container(
+                  width: 24,
+                  height: 24,
+                  margin: EdgeInsets.only(right: 4.0),
+                  child: CircularProgressIndicator(
+                    value: _animation.value,
+                    strokeWidth: 5,
+                    backgroundColor: (darkMode) ? Color(0x3AFFFFFF) : Palette
+                        .scLight,
+                    valueColor: new AlwaysStoppedAnimation(
+                        (_warning) ? Palette.medRed : _spinnerColor),
+                  ),
+                ),
+          ),
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    var darkMode = (Theme
+        .of(context)
+        .brightness == Brightness.dark);
+
     return Material(
       borderRadius: BorderRadius.circular(_cardBorderRadius),
       clipBehavior: Clip.hardEdge,
-      elevation: 16,
+      elevation: _elevation,
       shadowColor: _shadowColor,
       child: Ink(
         decoration: BoxDecoration(
-          color: Theme.of(context).backgroundColor,
+          color: Theme
+              .of(context)
+              .backgroundColor,
         ),
         child: InkWell(
-          onLongPress: () {
+          onLongPress: (widget.enableLongPress) ? () {
             Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                    builder: (context) => EditItemPage(widget.totpItem)));
-          },
-          splashColor: Color(0x2ACFCFCF),
+              context,
+              MaterialPageRoute<void>(
+                builder: (context) => EditItemPage(widget.totpItem),
+              ),
+            );
+          } : null,
+          splashColor: _splashColor,
           highlightColor: Colors.transparent,
           customBorder: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(_cardBorderRadius)),
@@ -105,57 +178,8 @@ class _TwoTPCardState extends State<TwoTPCard>
             // TODO: Toast copy
           },
           child: Container(
-            padding: EdgeInsets.all(24),
-            child: Stack(
-              children: <Widget>[
-                Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      widget.totpItem.accountName != ""
-                          ? Text(
-                              widget.totpItem.accountName,
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w500),
-                            )
-                          : Container(),
-                      SizedBox(
-                        height: 2,
-                      ),
-                      (widget.totpItem.issuer != "" &&
-                              widget.totpItem.issuer != null)
-                          ? Text(
-                              widget.totpItem.issuer,
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w700),
-                            )
-                          : Container(),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      _getCode(),
-                    ]),
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: AnimatedBuilder(
-                    animation: _animation,
-                    builder: (context, child) => Container(
-                      width: 24,
-                      height: 24,
-                      margin: EdgeInsets.only(right: 4.0),
-                      child: CircularProgressIndicator(
-                        value: _animation.value,
-                        strokeWidth: 5,
-                        backgroundColor: _spinnerBackgroundColor,
-                        valueColor: new AlwaysStoppedAnimation(
-                            (_warning) ? Palette.medRed : _spinnerColor),
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
+              padding: EdgeInsets.all(24),
+              child: _cardContent()
           ),
         ),
       ),
@@ -214,8 +238,12 @@ class FakeTwoTPCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var darkMode = (Theme
+        .of(context)
+        .brightness == Brightness.dark);
+
     return Material(
-      elevation: 16,
+      elevation: _elevation,
       shadowColor: _shadowColor,
       borderRadius: BorderRadius.circular(_cardBorderRadius),
       clipBehavior: Clip.hardEdge,
@@ -224,7 +252,7 @@ class FakeTwoTPCard extends StatelessWidget {
           color: Theme.of(context).backgroundColor,
         ),
         child: InkWell(
-          splashColor: Color(0x2AFFFFFF),
+          splashColor: _splashColor,
           highlightColor: Colors.transparent,
           customBorder: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(_cardBorderRadius)),
@@ -270,7 +298,8 @@ class FakeTwoTPCard extends StatelessWidget {
                     child: CircularProgressIndicator(
                       value: 0.3,
                       strokeWidth: 5,
-                      backgroundColor: _spinnerBackgroundColor,
+                      backgroundColor: (darkMode) ? Color(0x3AFFFFFF) : Palette
+                          .scLight,
                       valueColor: new AlwaysStoppedAnimation(_spinnerColor),
                     ),
                   ),

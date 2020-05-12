@@ -144,11 +144,14 @@ class _EditItemPageState extends State<EditItemPage> {
               .scaffoldBackgroundColor
               .withOpacity(0.5),
           title: Text("Edit Item", style: TextStyles.appBarTitle),
-          leading: IconButton(
-            icon: Icon(LineIcons.angle_left),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+          leading: Padding(
+            padding: EdgeInsets.only(left: 14),
+            child: IconButton(
+              icon: Icon(LineIcons.angle_left_solid),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
           ),
         ),
         body: ScrollConfiguration(
@@ -173,7 +176,8 @@ class _EditItemPageState extends State<EditItemPage> {
                           child: Text("Remove", style: TextStyles.buttonText),
                           onPressed: () {
                             remove(context);
-                          }),
+                          },
+                      ),
                     ),
                     SizedBox(width: 12.0),
                     Expanded(
@@ -183,7 +187,8 @@ class _EditItemPageState extends State<EditItemPage> {
                           child: Text("Save", style: TextStyles.buttonText),
                           onPressed: () {
                             save(context);
-                          }),
+                          },
+                      ),
                     ),
                   ],
                 ),
