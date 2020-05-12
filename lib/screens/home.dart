@@ -7,7 +7,6 @@ import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/blocs/totp/totp_state.dart';
 import 'package:twotp/components/cards.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
-import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
 import 'package:twotp/theme/values.dart';
 
@@ -20,11 +19,14 @@ class HomePage extends StatelessWidget {
       statusBarIconBrightness: (Theme.of(context).brightness == Brightness.dark)
           ? Brightness.light
           : Brightness.dark,
-      systemNavigationBarColor: Theme.of(context).scaffoldBackgroundColor
     ));
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Theme
+            .of(context)
+            .scaffoldBackgroundColor
+            .withOpacity(0.1),
         centerTitle: true,
         title: Text("twotp", style: TextStyles.appBarTitle),
       ),

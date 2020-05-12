@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/components/cards.dart';
@@ -10,7 +11,6 @@ import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/components/text_fields.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
-import 'package:twotp/theme/values.dart';
 import 'package:twotp/totp/totp.dart';
 import 'package:uuid/uuid.dart';
 
@@ -117,15 +117,16 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
           : Brightness.dark,
     ));
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        elevation: 1.0,
         centerTitle: true,
         backgroundColor: Theme
             .of(context)
-            .backgroundColor,
+            .scaffoldBackgroundColor
+            .withOpacity(0.3),
         title: Text("Manual Input", style: TextStyles.appBarTitle),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(LineIcons.angle_left),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -138,7 +139,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
           child: ListView(
             padding: EdgeInsets.symmetric(horizontal: 24.0),
             children: <Widget>[
-              SizedBox(height: 16),
+              SizedBox(height: 84),
               _card ?? FakeTwoTPCard(),
               SizedBox(height: 16),
               RaisedButton(

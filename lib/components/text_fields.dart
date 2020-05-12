@@ -11,11 +11,11 @@ class AdvancedFormTextField extends StatelessWidget {
 
   AdvancedFormTextField(
       {this.controller,
-      this.validator,
-      this.onChanged,
-      this.hintText = "",
-      this.labelText,
-      this.obscureText = false});
+        this.validator,
+        this.onChanged,
+        this.hintText = "",
+        this.labelText,
+        this.obscureText = false});
 
   @override
   Widget build(BuildContext context) {
@@ -28,15 +28,11 @@ class AdvancedFormTextField extends StatelessWidget {
         decoration: InputDecoration(
             hintText: hintText,
             labelText: labelText,
-            filled: false,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                width: 2
-              )
-            ),
-          border: OutlineInputBorder()
-        ),
+            filled: true,
+            border: UnderlineInputBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12.0),
+                    topRight: Radius.circular(12.0)))),
         onChanged: onChanged);
   }
 }

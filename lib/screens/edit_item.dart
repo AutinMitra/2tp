@@ -2,6 +2,7 @@ import 'package:base32/base32.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/components/cards.dart';
@@ -126,11 +127,20 @@ class _EditItemPageState extends State<EditItemPage> {
     ));
 
     return new Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        elevation: 1.0,
         centerTitle: true,
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme
+            .of(context)
+            .scaffoldBackgroundColor
+            .withOpacity(0.3),
         title: Text("Edit Item", style: TextStyles.appBarTitle),
+        leading: IconButton(
+          icon: Icon(LineIcons.angle_left),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: ScrollConfiguration(
         behavior: NoOverScrollBehavior(),
@@ -139,7 +149,7 @@ class _EditItemPageState extends State<EditItemPage> {
           child: ListView(
             padding: EdgeInsets.fromLTRB(24, 0, 24, 0),
             children: <Widget>[
-              SizedBox(height: 16),
+              SizedBox(height: 84),
               Hero(tag: widget.totpItem.toString(), child: _generateCard()),
               SizedBox(height: 16),
               Row(

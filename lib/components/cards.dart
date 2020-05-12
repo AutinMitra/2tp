@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -290,10 +288,13 @@ class _NumberSlot extends StatelessWidget {
     var bgColor = (darkMode)
         ? Theme.of(context).scaffoldBackgroundColor
         : (warning) ? Palette.lightRed : Palette.lightBlue;
+    double digitSize = (smallDigits) ? 16 : 24;
+    double horizontalPadding = (smallDigits) ? 8 : 10;
+    double horizontalSpacing = (smallDigits) ? 3 : 6;
 
     return AnimatedContainer(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-      margin: EdgeInsets.only(right: 6),
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: horizontalPadding),
+      margin: EdgeInsets.only(right: horizontalSpacing),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: bgColor,
@@ -303,7 +304,10 @@ class _NumberSlot extends StatelessWidget {
         child: Text(
           number,
           style: TextStyle(
-              color: textColor, fontWeight: FontWeight.bold, fontSize: 24, fontFamily: "JetBrainsMono"),
+              color: textColor,
+              fontWeight: FontWeight.bold,
+              fontSize: digitSize,
+              fontFamily: "JetBrainsMono"),
         ),
       ),
     );
