@@ -21,22 +21,25 @@ class AdvancedTOTPPage extends StatefulWidget {
 }
 
 class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
+  // Global formKey to control the form
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
+  // Controllers for all the text fields
   TextEditingController _secretController = TextEditingController();
   TextEditingController _accountNameController = TextEditingController();
   TextEditingController _issuerController = TextEditingController();
-  TextEditingController _digitsController = TextEditingController() ?? 6;
-  TextEditingController _periodController = TextEditingController() ?? 30;
-  TextEditingController _algorithmController =
-      TextEditingController() ?? "SHA1";
+  TextEditingController _digitsController = TextEditingController();
+  TextEditingController _periodController = TextEditingController();
+  TextEditingController _algorithmController = TextEditingController();
 
+  // [_card] A fake card that displays info based on TOTP characteristics
   FakeTwoTPCard _card;
 
   void addItem(BuildContext context) {
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
 
+    // Validate the form
     if (_formKey.currentState.validate()) {
       var secret = _validateString(_secretController.text);
       var accountName =
@@ -78,6 +81,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
   }
 
   Widget _generateCard() {
+    // Set defaults if not filled
     var accountName =
         _validateString(_accountNameController.text) ?? "Account Name";
     var issuer = _validateString(_issuerController.text);
@@ -85,6 +89,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
     var period = _validateInt(_periodController.text) ?? 30;
     var algorithm = _validateString(_algorithmController.text) ?? "SHA1";
 
+    // Update the card
     setState(() {
       _card = FakeTwoTPCard(
           digits: digits,
@@ -115,6 +120,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
 
   @override
   Widget build(BuildContext context) {
+    // status bar + navbar color
     var style = SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
         statusBarIconBrightness: (Theme
@@ -162,14 +168,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
                 SizedBox(height: 84),
                 _card ?? FakeTwoTPCard(),
                 SizedBox(height: 16),
-                RaisedButton(
-                    color: Palette.primary,
-                    textColor: Colors.white,
-                    child: Text("Add Item", style: TextStyles.buttonText),
-                    onPressed: () {
-                      addItem(context);
-                    },
-                ),
+                _addItemButton(),
                 SizedBox(height: 16),
                 _textFields()
               ],
@@ -180,6 +179,18 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
     );
   }
 
+  Widget _addItemButton() {
+    return RaisedButton(
+      color: Palette.primary,
+      textColor: Colors.white,
+      child: Text("Add Item", style: TextStyles.buttonText),
+      onPressed: () {
+        addItem(context);
+      },
+    );
+  }
+
+  // All those form text-fields
   Widget _textFields() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

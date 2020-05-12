@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This class has been edited for UI improvements specifically for TwoTP
+// I have added features for enabling and disabling the drag feature
+// Also removed the shadow since it looked nasty with some components
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';

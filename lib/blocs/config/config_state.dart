@@ -17,9 +17,19 @@ class UnitConfigState extends ConfigState { }
 
 // Initialized config
 class ChangedConfigState extends ConfigState {
-  final int value;
+  final int themeValue;
 
-  ChangedConfigState(this.value) : super([value]);
+  ChangedConfigState({
+    @required this.themeValue,
+  })
+      : assert(themeValue != null),
+        super([themeValue]);
+
+  ChangedConfigState copyWith({themeValue}) {
+    return ChangedConfigState(
+        themeValue: themeValue
+    );
+  }
 }
 
 // Error happened in config

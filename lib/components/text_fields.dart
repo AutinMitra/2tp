@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:twotp/theme/palette.dart';
 
+// Text Field to be used by multiple forms in TwoTP
 class AdvancedFormTextField extends StatelessWidget {
   final TextEditingController controller;
   final Function validator;

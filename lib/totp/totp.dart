@@ -57,12 +57,25 @@ class TOTP {
 
 // A basic model of TOTP to be used with widgets
 class TOTPItem extends Equatable {
+  // [secret] is a base32 encoded key, should be kept secret
   final String secret;
+
+  // [id] and ID describing the key
   final String id;
+
+  // [digits] the number of digits
   final int digits;
+
+  // [period] is the number of seconds each code is valid
   final int period;
+
+  // [algorithm] SHA1, SHA256, or SHA512
   final String algorithm;
+
+  // [accountName] the user of the code
   final String accountName;
+
+  // [issuer] the provider of the code
   final String issuer;
 
   TOTPItem(this.secret, this.id,
@@ -96,6 +109,7 @@ class TOTPItem extends Equatable {
     if (parsed.pathSegments.length < 1)
       throw new FormatException("Must have at least one path segment");
 
+    // Default values
     String secret = "";
     int digits = 6;
     int period = 30;
@@ -126,6 +140,8 @@ class TOTPItem extends Equatable {
       period = int.parse(queryParameters["period"]);
     if (queryParameters.containsKey("algorithm"))
       algorithm = queryParameters["algorithm"].toUpperCase();
+
+    // Validate, otherwise throw error
     try {
       return new TOTPItem(secret, Uuid().v4(),
           digits: digits,
@@ -138,6 +154,7 @@ class TOTPItem extends Equatable {
     }
   }
 
+  // Just a validator for a TOTPItem
   static bool isValid(TOTPItem item) {
     try {
       assert(item.digits == 6 || item.digits == 8);
@@ -147,10 +164,11 @@ class TOTPItem extends Equatable {
       assert(item.id != "" || item.id != null);
       assert(item.accountName != null);
       base32.decode(item.secret);
-      return true;
     } catch (e) {
       return false;
     }
+    // Yay! Everything passed
+    return true;
   }
 
   // Parses JSON alongside with additional key

@@ -6,9 +6,12 @@ import 'package:twotp/totp/totp.dart';
 import 'package:twotp/utils/file_utils.dart';
 
 class TwoTPUtils {
-  // SharedPreferences store configs, secureStorage stores secrets
 
+  // Some permanent storage variables
+  static String prefsJSON = "totp_items.json";
   static String darkModePrefs = "darkModeOn";
+
+  // SharedPreferences store configs, secureStorage stores secrets
   static SharedPreferences prefs;
   static FlutterSecureStorage _secureStorage = new FlutterSecureStorage();
 
@@ -42,6 +45,7 @@ class TwoTPUtils {
     return FileUtils.writeFile(filename, data).then((file) => {});
   }
 
+  // Removes an item from secure storage
   static void removeFromSecureStorage(TOTPItem item) {
     _secureStorage.delete(key: item.id);
   }

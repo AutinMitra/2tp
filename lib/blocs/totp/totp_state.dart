@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:twotp/totp/totp.dart';
 
+// The base TOTP state for the TOTPItems
 class TOTPState extends Equatable {
   final List _props;
   TOTPState([this._props]) : super();
@@ -10,7 +11,10 @@ class TOTPState extends Equatable {
   List get props => _props;
 }
 
+// When the application is loading or retrieving data
 class UnitTOTPState extends TOTPState {}
+
+// Everything is loaded, or there has been a change
 class ChangedTOTPState extends TOTPState {
   final List<TOTPItem> items;
 
@@ -31,6 +35,8 @@ class ChangedTOTPState extends TOTPState {
 
 
 }
+
+// Uh oh - there's been an error
 class ErrorTOTPState extends TOTPState {
   final String error;
 

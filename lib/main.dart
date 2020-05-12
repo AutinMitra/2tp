@@ -43,7 +43,7 @@ class _TwoTPState extends State<TwoTP> {
       var themeVal;
       if (state is UnitConfigState)
         themeVal = TwoTPUtils.prefs.getInt(TwoTPUtils.darkModePrefs) ?? 2;
-      else if (state is ChangedConfigState) themeVal = state.value;
+      else if (state is ChangedConfigState) themeVal = state.themeValue;
       ThemeData tLight = (themeVal == 1) ? Themes.darkMode : Themes.lightMode;
       ThemeData tDark = (themeVal == 0) ? Themes.lightMode : Themes.darkMode;
 

@@ -25,9 +25,7 @@ class _HomePageState extends State<HomePage> {
     var darkMode = Theme.of(context).brightness == Brightness.dark;
     var style = SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: (Theme
-            .of(context)
-            .brightness == Brightness.dark)
+        statusBarIconBrightness: darkMode
             ? Brightness.light
             : Brightness.dark,
         systemNavigationBarColor: Theme
@@ -140,7 +138,7 @@ class _TOTPListState extends State<_TOTPList> {
       } else if (state is ChangedTOTPState && state.items.length == 0) {
         // TODO: Replace with more fancy indicator, like an illustration
         var screenHeight = MediaQuery.of(context).size.height;
-        var spacer = (screenHeight - Values.navbarHeight) / 2 - 100;
+        var spacer = (screenHeight - ThemeValues.navbarHeight) / 2 - 100;
         return ListView(
           shrinkWrap: true,
           children: <Widget>[

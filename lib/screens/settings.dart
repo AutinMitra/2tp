@@ -57,7 +57,7 @@ class _SettingsPageState extends State<SettingsPage> {
               padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
               children: [
                 SizedBox(height: 84),
-                AppearancePanel()
+                _AppearancePanel()
               ]
           ),
         ),
@@ -66,7 +66,8 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 }
 
-class AppearancePanel extends StatelessWidget {
+// The appearance panel in settings - currently controls light/dark mode
+class _AppearancePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ConfigBloc, ConfigState>(builder: (context, state) {
@@ -74,12 +75,13 @@ class AppearancePanel extends StatelessWidget {
 
       List<int> dropList = [0, 1, 2];
       if(state is ChangedConfigState) {
-        if(state.value == 1) dropList = [1, 0, 2];
-        else if(state.value == 2) dropList = [2, 0, 1];
+        if (state.themeValue == 1)
+          dropList = [1, 0, 2];
+        else if (state.themeValue == 2) dropList = [2, 0, 1];
       }
       // ignore: close_sinks
       final ConfigBloc configBloc = BlocProvider.of<ConfigBloc>(context);
-      int configTheme = (state is ChangedConfigState) ? state.value : 2;
+      int configTheme = (state is ChangedConfigState) ? state.themeValue : 2;
       return Column(
         children: <Widget>[
           Row(
@@ -103,7 +105,7 @@ class AppearancePanel extends StatelessWidget {
                   child: DropdownButton(
                       hint: Text(mapThemeFromInt(configTheme)),
                       onChanged: (val) {
-                        configBloc.add(ChangeConfigEvent(val));
+                        configBloc.add(ChangeConfigThemeEvent(val));
                       },
                       items: dropList.map((value) {
                         return DropdownMenuItem(

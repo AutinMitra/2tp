@@ -1,25 +1,31 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:twotp/utils/twotp_utils.dart';
 
 import 'config_event.dart';
 import 'config_state.dart';
 
+// Bloc for holding all the config events
 class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
-
   @override
   Stream<ConfigState> mapEventToState(ConfigEvent event) async* {
-    if(event is ChangeConfigEvent) {
+    if (event is ChangeConfigThemeEvent) {
       yield* mapChangeConfigEventToState(event);
     } else if(event is FetchConfigEvent) {
       yield* mapFetchConfigEventToState(event);
     }
   }
-  
-  Stream<ConfigState> mapChangeConfigEventToState(ChangeConfigEvent event) async* {
+
+  Stream<ConfigState> mapChangeConfigEventToState(
+      ChangeConfigThemeEvent event) async* {
     try {
+      // Save settings in pref
       TwoTPUtils.prefs.setInt(TwoTPUtils.darkModePrefs, event.value);
-      yield ChangedConfigState(event.value);
+      if (state is ChangedConfigState)
+        yield (state as ChangedConfigState).copyWith(themeValue: event.value);
+      else
+        yield ChangedConfigState(themeValue: event.value);
     } catch(error, trace) {
       print('$error $trace');
       yield ErrorConfigState(error.message);
@@ -28,8 +34,9 @@ class ConfigBloc extends Bloc<ConfigEvent, ConfigState> {
 
   Stream<ConfigState> mapFetchConfigEventToState(FetchConfigEvent event) async* {
     try {
+      // Grab data from storage
       int darkMode = TwoTPUtils.prefs.getInt(TwoTPUtils.darkModePrefs);
-      yield ChangedConfigState(darkMode);
+      yield ChangedConfigState(themeValue: darkMode);
     } catch(error, trace) {
       print('$error $trace');
       yield ErrorConfigState(error.message);

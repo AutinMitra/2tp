@@ -5,6 +5,7 @@ import 'package:twotp/screens/edit_item.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/totp/totp.dart';
 
+// Some constants shared between the classes
 double _cardBorderRadius = 32;
 double _elevation = 16;
 Color _spinnerColor = Palette.medBlue;
@@ -12,8 +13,13 @@ Color _shadowColor = Color(0x1A000000);
 Color _splashColor = Color(0x2ACFCFCF);
 double _gapSize = 8;
 
+// An actual, working Card producing correct codes
 class TwoTPCard extends StatefulWidget {
+  // [totpItem] is a TOTPItem that is used by the card
   final TOTPItem totpItem;
+
+  // [enableLongPress] enables long pressing to open card-specific options
+  // Default is true
   final bool enableLongPress;
 
   TwoTPCard(this.totpItem, {this.enableLongPress = true});
@@ -54,6 +60,8 @@ class _TwoTPCardState extends State<TwoTPCard>
     super.initState();
     _warning = _timeLeft <= 10;
     _totpCode = _code;
+
+    // Handle progression animation
     _animationController = AnimationController(
         duration: Duration(seconds: widget.totpItem.period),
         animationBehavior: AnimationBehavior.preserve,
@@ -63,7 +71,7 @@ class _TwoTPCardState extends State<TwoTPCard>
     _animationController.forward(from: _percentComplete);
     _animation = Tween(begin: 0.0, end: 1.0).animate(_animationController)
       ..addListener(() {
-        if (_timeLeft <= 10 && !_warning)
+        if (!_warning && _timeLeft <= 10)
           setState(() {
             _warning = true;
           });
@@ -78,69 +86,6 @@ class _TwoTPCardState extends State<TwoTPCard>
           _animationController.forward(from: _percentComplete);
         }
       });
-  }
-
-  Widget _cardContent() {
-    var darkMode = (Theme
-        .of(context)
-        .brightness == Brightness.dark);
-
-    return Stack(
-      children: <Widget>[
-        SingleChildScrollView(
-          physics: NeverScrollableScrollPhysics(),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              widget.totpItem.accountName != ""
-                  ? Text(
-                widget.totpItem.accountName,
-                style: TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w500),
-              )
-                  : Container(),
-              SizedBox(
-                height: 2,
-              ),
-              (widget.totpItem.issuer != "" &&
-                  widget.totpItem.issuer != null)
-                  ? Text(
-                widget.totpItem.issuer,
-                style: TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.w700),
-              )
-                  : Container(),
-              SizedBox(
-                height: 12,
-              ),
-              _getCode(),
-            ],
-          ),
-        ),
-        Positioned(
-          right: 8,
-          top: 8,
-          child: AnimatedBuilder(
-            animation: _animation,
-            builder: (context, child) =>
-                Container(
-                  width: 24,
-                  height: 24,
-                  margin: EdgeInsets.only(right: 4.0),
-                  child: CircularProgressIndicator(
-                    value: _animation.value,
-                    strokeWidth: 5,
-                    backgroundColor: (darkMode) ? Color(0x3AFFFFFF) : Palette
-                        .scLight,
-                    valueColor: new AlwaysStoppedAnimation(
-                        (_warning) ? Palette.medRed : _spinnerColor),
-                  ),
-                ),
-          ),
-        )
-      ],
-    );
   }
 
   @override
@@ -186,18 +131,22 @@ class _TwoTPCardState extends State<TwoTPCard>
     );
   }
 
+  // Get the current code
   Widget _getCode() {
     int digits = widget.totpItem.digits;
     List<Widget> numbers = [];
     int validDig = (digits == 6 || digits == 8) ? digits : 6;
 
+    // Get the code
     String code = _totpCode ?? _code;
+    // Convert the code to Widgets
     for (int i = 0; i < validDig; i++) {
       numbers.add(_NumberSlot(
           number: code[i], smallDigits: (digits > 6), warning: _warning));
       if (i == validDig / 2 - 1) numbers.add(SizedBox(width: _gapSize));
     }
 
+    // Horizontal scroll view to prevent overflow on small devices
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -205,13 +154,88 @@ class _TwoTPCardState extends State<TwoTPCard>
       ),
     );
   }
+
+  // The inner content of the card
+  Widget _cardContent() {
+    var darkMode = (Theme
+        .of(context)
+        .brightness == Brightness.dark);
+
+    return Stack(
+      children: <Widget>[
+        SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              widget.totpItem.accountName != "" ? Text(
+                widget.totpItem.accountName,
+                style: TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.w500),
+              ) : Container(),
+              SizedBox(
+                height: 2,
+              ),
+              (widget.totpItem.issuer != "" &&
+                  widget.totpItem.issuer != null)
+                  ? Text(
+                widget.totpItem.issuer,
+                style: TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.w700),
+              )
+                  : Container(),
+              SizedBox(
+                height: 12,
+              ),
+              _getCode(),
+            ],
+          ),
+        ),
+        Positioned(
+          right: 8,
+          top: 8,
+          child: AnimatedBuilder(
+            animation: _animation,
+            builder: (context, child) =>
+                Container(
+                  width: 24,
+                  height: 24,
+                  margin: EdgeInsets.only(right: 4.0),
+                  child: CircularProgressIndicator(
+                    value: _animation.value,
+                    strokeWidth: 5,
+                    backgroundColor: (darkMode)
+                        ? Color(0x3AFFFFFF)
+                        : Palette.scLight,
+                    valueColor: new AlwaysStoppedAnimation(
+                        (_warning) ? Palette.medRed : _spinnerColor
+                    ),
+                  ),
+                ),
+          ),
+        )
+      ],
+    );
+  }
 }
 
+// A fake/dummy card that produces an output similar to that of TwoTPCard
+// Used for visualization
 class FakeTwoTPCard extends StatelessWidget {
+  // [digits] is the length of the code
   final int digits;
+
+  // [period] is how long each code will last
   final int period;
+
+  // [algorithm] is the algorithm being used
   final String algorithm;
+
+  // [accountName] is the label, or user of the code
   final String accountName;
+
+  // [issuer] is the provider of the code
   final String issuer;
 
   FakeTwoTPCard(
@@ -223,11 +247,16 @@ class FakeTwoTPCard extends StatelessWidget {
 
   Widget _getCode() {
     List<Widget> numbers = [];
+    // Check for the correct number of digits
     int validDig = (digits == 6 || digits == 8) ? digits : 6;
+
+    // Add all the numbers as UI components, plus a space in the middle
     for (int i = 1; i <= validDig; i++) {
       numbers.add(_NumberSlot(number: "$i", smallDigits: (digits >= 8)));
       if (i == validDig / 2) numbers.add(SizedBox(width: _gapSize));
     }
+
+    // Sideways scrolling view in case there is horizontal overflow on smaller screens
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -238,9 +267,9 @@ class FakeTwoTPCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var darkMode = (Theme
+    var darkMode = Theme
         .of(context)
-        .brightness == Brightness.dark);
+        .brightness == Brightness.dark;
 
     return Material(
       elevation: _elevation,
@@ -259,81 +288,99 @@ class FakeTwoTPCard extends StatelessWidget {
           onTap: () {},
           child: Container(
             padding: EdgeInsets.all(24),
-            child: Stack(
-              children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    accountName != "" && accountName != null
-                        ? Text(
-                      accountName,
-                      style: TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w500),
-                    )
-                        : Container(),
-                    SizedBox(
-                      height: 2,
-                    ),
-                    issuer != "" && issuer != null
-                        ? Text(
-                      issuer,
-                      style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.w700),
-                    )
-                        : Container(),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    _getCode(),
-                  ],
-                ),
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    margin: EdgeInsets.only(right: 4.0),
-                    child: CircularProgressIndicator(
-                      value: 0.3,
-                      strokeWidth: 5,
-                      backgroundColor: (darkMode) ? Color(0x3AFFFFFF) : Palette
-                          .scLight,
-                      valueColor: new AlwaysStoppedAnimation(_spinnerColor),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              child: _getCardContent(darkMode: darkMode)
           ),
         ),
       ),
     );
   }
+
+  Widget _getCardContent({@required darkMode}) {
+    return Stack(
+      children: <Widget>[
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            accountName != "" && accountName != null
+                ? Text(
+              accountName,
+              style: TextStyle(
+                  fontSize: 14, fontWeight: FontWeight.w500),
+            )
+                : Container(),
+            SizedBox(
+              height: 2,
+            ),
+            issuer != "" && issuer != null
+                ? Text(
+              issuer,
+              style: TextStyle(
+                  fontSize: 20, fontWeight: FontWeight.w700),
+            )
+                : Container(),
+            SizedBox(
+              height: 12,
+            ),
+            _getCode(),
+          ],
+        ),
+        Positioned(
+          right: 8,
+          top: 8,
+          child: Container(
+            width: 24,
+            height: 24,
+            margin: EdgeInsets.only(right: 4.0),
+            child: CircularProgressIndicator(
+              value: 0.3,
+              strokeWidth: 5,
+              backgroundColor: (darkMode)
+                  ? Color(0x3AFFFFFF)
+                  : Palette.scLight,
+              valueColor: new AlwaysStoppedAnimation(_spinnerColor),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
+// A number + background for a code
 class _NumberSlot extends StatelessWidget {
-  final bool warning, smallDigits;
+  // [warning] enables red "warning" colors for the numbers
+  final bool warning;
+
+  // [smallDigits] is so 8-digit codes fit inside a card
+  final bool smallDigits;
+
+  // [number] is a single one character
   final String number;
 
   _NumberSlot(
       {this.warning: false, this.smallDigits: false, @required this.number})
-      : assert(number != null);
+      : assert(number != null),
+        assert(number.length == 1);
 
   @override
   Widget build(BuildContext context) {
     var darkMode = Theme.of(context).brightness == Brightness.dark;
+    // Choose the current text color based on brightness and warning
     var textColor = (warning)
         ? Palette.medRed
         : (darkMode) ? Palette.textDark : Palette.medBlue;
+    // Choose the current background color based on brightness and warning
     var bgColor = (darkMode)
         ? Theme.of(context).scaffoldBackgroundColor
         : (warning) ? Palette.lightRed : Palette.lightBlue;
+
+    // Choose the digit size based on [smallDigits]
     double digitSize = (smallDigits) ? 16 : 24;
     double horizontalPadding = (smallDigits) ? 8 : 10;
     double horizontalSpacing = (smallDigits) ? 3 : 6;
 
+    // Container is animated for smoothness
     return AnimatedContainer(
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: horizontalPadding),
       margin: EdgeInsets.only(right: horizontalSpacing),
@@ -343,13 +390,15 @@ class _NumberSlot extends StatelessWidget {
       ),
       duration: Duration(milliseconds: 300),
       child: Center(
+        // Animated for color changes
         child: AnimatedDefaultTextStyle(
           duration: Duration(milliseconds: 300),
           style: TextStyle(
               color: textColor,
               fontWeight: FontWeight.bold,
               fontSize: digitSize,
-              fontFamily: "JetBrainsMono"),
+            fontFamily: "JetBrainsMono",
+          ),
           child: Text(
             number,
           ),

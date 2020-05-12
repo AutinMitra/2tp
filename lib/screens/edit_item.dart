@@ -22,19 +22,22 @@ class EditItemPage extends StatefulWidget {
 }
 
 class _EditItemPageState extends State<EditItemPage> {
+  // Global key for the form
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
+  // Look at all those controllers
   TextEditingController _secretController = TextEditingController();
   TextEditingController _accountNameController = TextEditingController();
   TextEditingController _issuerController = TextEditingController();
-  TextEditingController _digitsController = TextEditingController() ?? 6;
-  TextEditingController _periodController = TextEditingController() ?? 30;
-  TextEditingController _algorithmController =
-      TextEditingController() ?? "SHA1";
+  TextEditingController _digitsController = TextEditingController();
+  TextEditingController _periodController = TextEditingController();
+  TextEditingController _algorithmController = TextEditingController();
 
+  // [_card] A fake card that displays info based on TOTP characteristics
   FakeTwoTPCard _card;
 
-  int _validateInt(String val) {
+  // Is it a valid int
+  int _isNumeric(String val) {
     try {
       return int.parse(val);
     } catch (e) {
@@ -42,21 +45,23 @@ class _EditItemPageState extends State<EditItemPage> {
     }
   }
 
+  // Make sure the String is not empty
   String _validateString(String val) {
-    if (val == "" || val == null) return null;
-    return val;
+    return (val == null || val.isEmpty) ? null : val;
   }
 
   Widget _generateCard() {
+    // Get a proper result from text fields
     var accountName = _validateString(_accountNameController.text) ??
         widget.totpItem.accountName;
     var issuer =
         _validateString(_issuerController.text) ?? widget.totpItem.issuer;
-    var digits = _validateInt(_digitsController.text) ?? widget.totpItem.digits;
-    var period = _validateInt(_periodController.text) ?? widget.totpItem.period;
+    var digits = _isNumeric(_digitsController.text) ?? widget.totpItem.digits;
+    var period = _isNumeric(_periodController.text) ?? widget.totpItem.period;
     var algorithm =
         _validateString(_algorithmController.text) ?? widget.totpItem.algorithm;
 
+    // Update the card with new info
     setState(() {
       _card = FakeTwoTPCard(
           digits: digits,
@@ -72,42 +77,46 @@ class _EditItemPageState extends State<EditItemPage> {
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
 
-    // TODO: Are you sure? + toast
     totpBloc.add(RemoveItemEvent(widget.totpItem));
     Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
 
-    // TODO: Toast
+    // TODO: Are you sure box + toast
   }
 
   void save(BuildContext context) {
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
-
     TOTPItem item = widget.totpItem;
+
+    // Run the validator, check for errors
     if (_formKey.currentState.validate()) {
       var secret = _validateString(_secretController.text) ?? item.secret;
       var accountName =
           _validateString(_accountNameController.text) ?? item.accountName;
       var issuer = _validateString(_issuerController.text) ?? item.issuer;
-      var digits = _validateInt(_digitsController.text) ?? item.digits;
-      var period = _validateInt(_periodController.text) ?? item.period;
+      var digits = _isNumeric(_digitsController.text) ?? item.digits;
+      var period = _isNumeric(_periodController.text) ?? item.period;
       var algorithm =
           _validateString(_algorithmController.text) ?? item.algorithm;
+
+      // Generate the replacement card
       TOTPItem replacement = TOTPItem(secret, item.id,
           accountName: accountName,
           issuer: issuer,
           digits: digits,
           period: period,
           algorithm: algorithm);
+      // Add to BLOC
       totpBloc.add(ReplaceItemEvent(item, replacement));
+      // Go back to home
       Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
-
     }
   }
 
   @override
   void initState() {
     super.initState();
+    // Init all the controllers with the appropriate values
     TOTPItem item = widget.totpItem;
     _secretController.text = item.secret;
     _accountNameController.text = item.accountName;
@@ -115,11 +124,13 @@ class _EditItemPageState extends State<EditItemPage> {
     _digitsController.text = item.digits.toString();
     _periodController.text = item.period.toString();
     _algorithmController.text = item.algorithm.toString();
+    // Generate card for the first time
     _generateCard();
   }
 
   @override
   Widget build(BuildContext context) {
+    // status bar + navbar colors
     var style = SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: (Theme
@@ -166,32 +177,7 @@ class _EditItemPageState extends State<EditItemPage> {
                 SizedBox(height: 84),
                 Hero(tag: widget.totpItem.toString(), child: _generateCard()),
                 SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Expanded(
-                      child: RaisedButton(
-                          color: Palette.darkRed,
-                          textColor: Colors.white,
-                          child: Text("Remove", style: TextStyles.buttonText),
-                          onPressed: () {
-                            remove(context);
-                          },
-                      ),
-                    ),
-                    SizedBox(width: 12.0),
-                    Expanded(
-                      child: RaisedButton(
-                          color: Palette.primary,
-                          textColor: Colors.white,
-                          child: Text("Save", style: TextStyles.buttonText),
-                          onPressed: () {
-                            save(context);
-                          },
-                      ),
-                    ),
-                  ],
-                ),
+                _saveOptions(),
                 SizedBox(height: 18),
                 _textFields()
               ],
@@ -202,6 +188,37 @@ class _EditItemPageState extends State<EditItemPage> {
     );
   }
 
+  // Row of button for either selecting save or remove
+  Widget _saveOptions() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        Expanded(
+          child: RaisedButton(
+            color: Palette.darkRed,
+            textColor: Colors.white,
+            child: Text("Remove", style: TextStyles.buttonText),
+            onPressed: () {
+              remove(context);
+            },
+          ),
+        ),
+        SizedBox(width: 12.0),
+        Expanded(
+          child: RaisedButton(
+            color: Palette.primary,
+            textColor: Colors.white,
+            child: Text("Save", style: TextStyles.buttonText),
+            onPressed: () {
+              save(context);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  // All the text fields
   Widget _textFields() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

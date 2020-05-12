@@ -40,16 +40,27 @@ class _QRScanPageState extends State<QRScanPage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: (Theme.of(context).brightness == Brightness.dark)
-          ? Brightness.light
-          : Brightness.dark,
-    ));
-    return Scaffold(
-      body: Column(
-        children: <Widget>[
-          Expanded(
+    // Set statusBar + navbar color
+    var darkMode = Theme
+        .of(context)
+        .brightness == Brightness.dark;
+    var style = SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: darkMode
+            ? Brightness.light
+            : Brightness.dark,
+        systemNavigationBarColor: Theme
+            .of(context)
+            .scaffoldBackgroundColor
+    );
+    SystemChrome.setSystemUIOverlayStyle(style);
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: style,
+      child: Scaffold(
+        body: Column(
+          children: <Widget>[
+            Expanded(
               flex: 2,
               child: Stack(
                 children: <Widget>[
@@ -66,12 +77,15 @@ class _QRScanPageState extends State<QRScanPage> {
                   ),
                   _QRBottomBar()
                 ],
-              )),
-        ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
+  // Process QR data on arrival
   void _onQRViewCreated(BuildContext context, QRViewController controller) {
     this._controller = controller;
     // ignore: close_sinks
@@ -81,7 +95,10 @@ class _QRScanPageState extends State<QRScanPage> {
       setState(() {
         TOTPItem item;
         try {
+          // Parse the item
           item = TOTPItem.parseURI(data);
+
+          // There is already data in the state, and the scan is not a duplicate
           if (totpBloc.state is ChangedTOTPState
               && !(totpBloc.state as ChangedTOTPState).items.contains(item)
               && data != _lastQrScan) {
@@ -92,10 +109,10 @@ class _QRScanPageState extends State<QRScanPage> {
             Navigator.pushNamedAndRemoveUntil(
                 context, "/", (r) => false);
           } else {
-            // TOAST: Already Exists
+            // TODO: toast: already Exists
           }
         } on FormatException catch (e) {
-          // TODO: Add modal/notification of incorrect qr
+          // TODO: Add modal/notification of incorrect QR
         }
       });
       _lastQrScan = data;
@@ -104,42 +121,53 @@ class _QRScanPageState extends State<QRScanPage> {
 }
 
 class _QRBottomBar extends StatelessWidget {
+  // When the cancel button is clicked
+  void onCancelClick(context) {
+    Navigator.pop(context);
+  }
+
+  // When the input manually button is clicked
+  void onInputManualClick(context) {
+    Navigator.pushReplacementNamed(context, '/add/advanced');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: SizedBox(
-          width: double.infinity,
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12.0, vertical: 24.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Expanded(
-                  child: RaisedButton(
-                      color: Palette.darkRed,
-                      textColor: Colors.white,
-                      child: Text("Cancel", style: TextStyles.buttonText),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 24.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Expanded(
+                child: RaisedButton(
+                  color: Palette.darkRed,
+                  textColor: Colors.white,
+                  child: Text("Cancel", style: TextStyles.buttonText),
+                  onPressed: () {
+                    onCancelClick(context);
+                  },
                 ),
-                SizedBox(width: 12.0),
-                Expanded(
-                  child: RaisedButton(
-                      color: Colors.white,
-                      textColor: Colors.black,
-                      child:
-                          Text("Input Manually", style: TextStyles.buttonText),
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(
-                            context, '/add/advanced');
-                      }),
+              ),
+              SizedBox(width: 12.0),
+              Expanded(
+                child: RaisedButton(
+                  color: Colors.white,
+                  textColor: Colors.black,
+                  child:
+                  Text("Input Manually", style: TextStyles.buttonText),
+                  onPressed: () {
+                    onInputManualClick(context);
+                  },
                 ),
-              ],
-            ),
-          )),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
