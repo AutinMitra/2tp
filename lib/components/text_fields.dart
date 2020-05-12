@@ -28,11 +28,15 @@ class AdvancedFormTextField extends StatelessWidget {
         decoration: InputDecoration(
             hintText: hintText,
             labelText: labelText,
-            filled: true,
-            border: UnderlineInputBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(12.0),
-                    topRight: Radius.circular(12.0)))),
+            filled: false,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                width: 2
+              )
+            ),
+          border: OutlineInputBorder()
+        ),
         onChanged: onChanged);
   }
 }

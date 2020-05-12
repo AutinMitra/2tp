@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_code_scanner/qr_scanner_overlay_shape.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
-import 'package:twotp/components/toast.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
 import 'package:twotp/theme/values.dart';
@@ -88,17 +86,10 @@ class _QRScanPageState extends State<QRScanPage> {
             controller.pauseCamera();
             totpBloc.add(AddItemEvent(item));
             // TODO: Add notif/indicator of success
-            showToastWidget(ToastMessage(message: "Added!"),
-              position: ToastPosition.bottom,
-              duration: Values.toastDuration
-            );
             Navigator.pop(context);
             Navigator.pushNamed(context, "/");
           } else {
-            showToastWidget(
-              ToastMessage(message: "Already Exists!", error: true),
-              duration: Values.toastDuration
-            );
+            // TOAST: Already Exists
           }
         } on FormatException catch (e) {
           // TODO: Add modal/notification of incorrect qr

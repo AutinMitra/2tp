@@ -3,13 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/components/cards.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/components/text_fields.dart';
-import 'package:twotp/components/toast.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
 import 'package:twotp/theme/values.dart';
@@ -57,15 +55,9 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
         totpBloc.add(AddItemEvent(item));
         Navigator.pushNamedAndRemoveUntil(
             context, "/", (r) => false);
-        showToastWidget(ToastMessage(message: "Added!"),
-          position: ToastPosition.bottom,
-          duration: Values.toastDuration
-        );
+        // TOAST Already Exists
       } else {
-        showToastWidget(ToastMessage(message: "Already Exists!"),
-          position: ToastPosition.bottom,
-          duration: Values.toastDuration
-        );
+        // TODO: Toast Already Exists
       }
     }
   }

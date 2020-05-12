@@ -20,79 +20,27 @@ class HomePage extends StatelessWidget {
       statusBarIconBrightness: (Theme.of(context).brightness == Brightness.dark)
           ? Brightness.light
           : Brightness.dark,
+      systemNavigationBarColor: Theme.of(context).scaffoldBackgroundColor
     ));
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(0.0),
-        child: AppBar(
-          backgroundColor: Colors.transparent,
-        ),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        title: Text("twotp", style: TextStyles.appBarTitle),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Palette.accent,
+        backgroundColor: Colors.white,
         elevation: 1.0,
-        icon: Icon(Icons.add, color: Palette.primary),
+        icon: Icon(Icons.add, color: Colors.black),
         label: Text("Add Item", style: TextStyles.addItemButtonText),
         onPressed: () {
           Navigator.pushNamed(context, "/add/qr");
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: Material(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        clipBehavior: Clip.hardEdge,
-        elevation: 8.0,
-        child: Container(
-          height: 52,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                IconButton(
-                  icon: new Icon(Icons.settings),
-                  onPressed: () {
-                    Navigator.pushNamed(context, "/settings");
-                  },
-                ),
-                IconButton(
-                  icon: new Icon(Icons.search),
-                  onPressed: () {
-//                Navigator.pushNamed(context, '/add/qr');
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: ScrollConfiguration(
           behavior: NoOverScrollBehavior(), child: _TOTPList()),
     );
-  }
-}
-
-class _TwoTPAppBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Text("TwoTP", style: TextStyles.largeAppBarTitle),
-            ),
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {},
-            )
-          ],
-        ),
-    ));
   }
 }
 
@@ -117,7 +65,6 @@ class _TOTPListState extends State<_TOTPList> {
         return ListView(
           shrinkWrap: true,
           children: <Widget>[
-            _TwoTPAppBar(),
             Center(
               child: Column(
                 children: <Widget>[
@@ -141,7 +88,6 @@ class _TOTPListState extends State<_TOTPList> {
         return ListView(
           shrinkWrap: true,
           children: <Widget>[
-            _TwoTPAppBar(),
             for (var item in state.items)
               Padding(
                 padding: EdgeInsets.fromLTRB(24, 0, 24, 18),
@@ -151,7 +97,7 @@ class _TOTPListState extends State<_TOTPList> {
         );
       } else {
         return Column(
-            children: <Widget>[_TwoTPAppBar(), Text("An error occured")]);
+            children: <Widget>[Text("An error occured")]);
       }
     });
   }

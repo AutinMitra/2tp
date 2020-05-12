@@ -1,17 +1,23 @@
+import 'dart:math';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:oktoast/oktoast.dart';
-import 'package:twotp/components/toast.dart';
 import 'package:twotp/screens/edit_item.dart';
 import 'package:twotp/theme/palette.dart';
-import 'package:twotp/theme/values.dart';
 import 'package:twotp/totp/totp.dart';
+
+double _cardBorderRadius = 32;
+int elevation = 2;
+Color _spinnerColor = Palette.medBlue;
+Color _spinnerBackgroundColor = Palette.scLight;
+Color _shadowColor = Color(0x1A000000);
+double _gapSize = 8;
 
 class TwoTPCard extends StatefulWidget {
   final TOTPItem totpItem;
-  final Color color;
 
-  TwoTPCard(this.totpItem, {this.color = Palette.defaultCardColor});
+  TwoTPCard(this.totpItem);
 
   @override
   _TwoTPCardState createState() => _TwoTPCardState();
@@ -23,15 +29,17 @@ class _TwoTPCardState extends State<TwoTPCard>
   Animation<double> _animation;
 
   int get _secondsSinceEpoch =>
-      (DateTime
-          .now()
-          .millisecondsSinceEpoch / 1000).round();
+      (DateTime.now().millisecondsSinceEpoch / 1000).round();
+
+  int get _timeLeft => widget.totpItem.period - _secondsSinceEpoch % widget.totpItem.period;
 
   double get _percentComplete =>
       (_secondsSinceEpoch % widget.totpItem.period) / widget.totpItem.period;
 
   String get _code =>
-      widget.totpItem.generateCode(_secondsSinceEpoch, pretty: true);
+      widget.totpItem.generateCode(_secondsSinceEpoch, pretty: false);
+
+  bool _warning = false;
 
   String _totpCode;
 
@@ -44,8 +52,7 @@ class _TwoTPCardState extends State<TwoTPCard>
   @override
   void initState() {
     super.initState();
-    _totpCode = _code;
-    _animationController = AnimationController(
+    _totpCode = _code;    _animationController = AnimationController(
         duration: Duration(seconds: widget.totpItem.period),
         animationBehavior: AnimationBehavior.preserve,
         lowerBound: 0.0,
@@ -53,10 +60,17 @@ class _TwoTPCardState extends State<TwoTPCard>
         vsync: this);
     _animationController.forward(from: _percentComplete);
     _animation = Tween(begin: 0.0, end: 1.0).animate(_animationController)
+      ..addListener(() {
+        if(_timeLeft <= 10)
+          setState(() {
+            _warning = true;
+          });
+      })
       ..addStatusListener((AnimationStatus status) {
         if (status == AnimationStatus.completed) {
           setState(() {
             _totpCode = _code;
+            _warning = false;
           });
           _animationController.repeat();
           _animationController.forward(from: _percentComplete);
@@ -66,32 +80,39 @@ class _TwoTPCardState extends State<TwoTPCard>
 
   @override
   Widget build(BuildContext context) {
+    int digits = widget.totpItem.digits;
+    List<Widget> numbers = [];
+    int validDig = (digits == 6 || digits == 8) ? digits : 6;
+
+    String code = _totpCode ?? _code;
+    for (int i = 0; i < validDig; i++) {
+      numbers.add(_NumberSlot(number: code[i], smallDigits: (digits > 6), warning: _warning));
+      if (i == validDig / 2 - 1) numbers.add(SizedBox(width: _gapSize));
+    }
+
     return Material(
-      elevation: 2.0,
-      shadowColor: widget.color,
-      borderRadius: BorderRadius.circular(24.0),
+      borderRadius: BorderRadius.circular(_cardBorderRadius),
       clipBehavior: Clip.hardEdge,
+      elevation: 16,
+      shadowColor: _shadowColor,
       child: Ink(
         decoration: BoxDecoration(
-          color: widget.color,
+          color: Theme.of(context).backgroundColor,
         ),
         child: InkWell(
           onLongPress: () {
-            Navigator.push(context, MaterialPageRoute<void>(
-                builder: (context) => EditItemPage(widget.totpItem)
-            ));
+            Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                    builder: (context) => EditItemPage(widget.totpItem)));
           },
-          splashColor: Color(0x2AFFFFFF),
+          splashColor: Color(0x2ACFCFCF),
           highlightColor: Colors.transparent,
-          customBorder:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+          customBorder: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(_cardBorderRadius)),
           onTap: () {
             Clipboard.setData(ClipboardData(text: _code));
-            showToastWidget(
-              ToastMessage(message: "Copied!"),
-              position: ToastPosition.bottom,
-              duration: Values.toastDuration
-            );
+            // TODO: Toast copy
           },
           child: Container(
             padding: EdgeInsets.all(24),
@@ -103,55 +124,49 @@ class _TwoTPCardState extends State<TwoTPCard>
                     children: <Widget>[
                       widget.totpItem.accountName != ""
                           ? Text(
-                        widget.totpItem.accountName,
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: Palette.textDark,
-                            fontWeight: FontWeight.w500),
-                      )
+                              widget.totpItem.accountName,
+                              style: TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w500),
+                            )
                           : Container(),
                       SizedBox(
                         height: 2,
                       ),
                       (widget.totpItem.issuer != "" &&
-                          widget.totpItem.issuer != null)
+                              widget.totpItem.issuer != null)
                           ? Text(
-                        widget.totpItem.issuer,
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Palette.textDark,
-                            fontWeight: FontWeight.w700),
-                      )
+                              widget.totpItem.issuer,
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w700),
+                            )
                           : Container(),
                       SizedBox(
-                        height: 4,
+                        height: 12,
                       ),
-                      Text(
-                        _totpCode ?? _code,
-                        style: TextStyle(
-                            fontSize: 42,
-                            color: Palette.textDark,
-                            fontWeight: FontWeight.w900),
-                      ),
+                      Row(
+                        children: numbers
+                      )
                     ]),
                 Positioned(
                   right: 8,
                   top: 8,
                   child: AnimatedBuilder(
                     animation: _animation,
-                    builder: (context, child) =>
-                        Container(
-                          width: 24,
-                          height: 24,
-                          margin: EdgeInsets.only(right: 4.0),
-                          child: CircularProgressIndicator(
-                            value: _animation.value,
-                            strokeWidth: 5,
-                            backgroundColor: Color(0x3AFFFFFF),
-                            valueColor: new AlwaysStoppedAnimation(
-                                Palette.textDark),
-                          ),
+                    builder: (context, child) => Container(
+                      width: 24,
+                      height: 24,
+                      margin: EdgeInsets.only(right: 4.0),
+                      child: CircularProgressIndicator(
+                        value: _animation.value,
+                        strokeWidth: 5,
+                        backgroundColor: _spinnerBackgroundColor,
+                        valueColor: new AlwaysStoppedAnimation(
+                            (_warning)
+                                ? Palette.medRed
+                                : _spinnerColor
                         ),
+                      ),
+                    ),
                   ),
                 )
               ],
@@ -169,40 +184,40 @@ class FakeTwoTPCard extends StatelessWidget {
   final String algorithm;
   final String accountName;
   final String issuer;
-  final Color color;
 
-  FakeTwoTPCard({this.digits = 6,
-    this.period = 30,
-    this.algorithm = "SHA1",
-    this.accountName = "",
-    this.issuer = "",
-    this.color = Palette.defaultCardColor});
+  FakeTwoTPCard(
+      {this.digits = 6,
+      this.period = 30,
+      this.algorithm = "SHA1",
+      this.accountName = "",
+      this.issuer = ""});
 
-  String _generateCode() {
-    String s = "";
+  List<Widget> _generateCode() {
+    List<Widget> numbers = [];
     int validDig = (digits == 6 || digits == 8) ? digits : 6;
     for (int i = 1; i <= validDig; i++) {
-      s += i.toString();
+      numbers.add(_NumberSlot(number: "$i", smallDigits: (digits > 6)));
+      if (i == validDig / 2) numbers.add(SizedBox(width: _gapSize));
     }
-    s = TOTP.formatOTP(s);
-    return s;
+    return numbers;
   }
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 2.0,
-      borderRadius: BorderRadius.circular(24.0),
+      elevation: 16,
+      shadowColor: _shadowColor,
+      borderRadius: BorderRadius.circular(_cardBorderRadius),
       clipBehavior: Clip.hardEdge,
       child: Ink(
         decoration: BoxDecoration(
-          color: color,
+          color: Theme.of(context).backgroundColor,
         ),
         child: InkWell(
           splashColor: Color(0x2AFFFFFF),
           highlightColor: Colors.transparent,
-          customBorder:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+          customBorder: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(_cardBorderRadius)),
           onTap: () {},
           child: Container(
             padding: EdgeInsets.all(24),
@@ -214,35 +229,25 @@ class FakeTwoTPCard extends StatelessWidget {
                     children: <Widget>[
                       accountName != "" && accountName != null
                           ? Text(
-                        accountName,
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: Palette.textDark,
-                            fontWeight: FontWeight.w500),
-                      )
+                              accountName,
+                              style: TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w500),
+                            )
                           : Container(),
                       SizedBox(
                         height: 2,
                       ),
                       issuer != "" && issuer != null
                           ? Text(
-                        issuer,
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Palette.textDark,
-                            fontWeight: FontWeight.w700),
-                      )
+                              issuer,
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w700),
+                            )
                           : Container(),
                       SizedBox(
-                        height: 4,
+                        height: 12,
                       ),
-                      Text(
-                        _generateCode(),
-                        style: TextStyle(
-                            fontSize: 42,
-                            color: Palette.textDark,
-                            fontWeight: FontWeight.w900),
-                      ),
+                      Row(children: _generateCode())
                     ]),
                 Positioned(
                   right: 8,
@@ -254,14 +259,51 @@ class FakeTwoTPCard extends StatelessWidget {
                     child: CircularProgressIndicator(
                       value: 0.3,
                       strokeWidth: 5,
-                      backgroundColor: Color(0x3AFFFFFF),
-                      valueColor: new AlwaysStoppedAnimation(Palette.textDark),
+                      backgroundColor: _spinnerBackgroundColor,
+                      valueColor: new AlwaysStoppedAnimation(_spinnerColor),
                     ),
                   ),
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NumberSlot extends StatelessWidget {
+  final bool warning, smallDigits;
+  final String number;
+
+  _NumberSlot(
+      {this.warning: false, this.smallDigits: false, @required this.number})
+      : assert(number != null);
+
+  @override
+  Widget build(BuildContext context) {
+    var darkMode = Theme.of(context).brightness == Brightness.dark;
+    var textColor = (warning)
+        ? Palette.medRed
+        : (darkMode) ? Palette.textDark : Palette.medBlue;
+    var bgColor = (darkMode)
+        ? Theme.of(context).scaffoldBackgroundColor
+        : (warning) ? Palette.lightRed : Palette.lightBlue;
+
+    return AnimatedContainer(
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+      margin: EdgeInsets.only(right: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: bgColor,
+      ),
+      duration: Duration(milliseconds: 300),
+      child: Center(
+        child: Text(
+          number,
+          style: TextStyle(
+              color: textColor, fontWeight: FontWeight.bold, fontSize: 24, fontFamily: "JetBrainsMono"),
         ),
       ),
     );

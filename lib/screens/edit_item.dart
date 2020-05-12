@@ -2,16 +2,13 @@ import 'package:base32/base32.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/components/cards.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/components/text_fields.dart';
-import 'package:twotp/components/toast.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
-import 'package:twotp/theme/values.dart';
 import 'package:twotp/totp/totp.dart';
 
 class EditItemPage extends StatefulWidget {
@@ -78,9 +75,7 @@ class _EditItemPageState extends State<EditItemPage> {
     totpBloc.add(RemoveItemEvent(widget.totpItem));
     Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
 
-    // Toast
-    showToastWidget(ToastMessage(message: "Removed!"),
-        position: ToastPosition.bottom);
+    // TODO: Toast
   }
 
   void save(BuildContext context) {
@@ -106,12 +101,6 @@ class _EditItemPageState extends State<EditItemPage> {
       totpBloc.add(ReplaceItemEvent(item, replacement));
       Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
 
-      // TODO: Toast/Confirmation
-      showToastWidget(
-        ToastMessage(message: "Saved!"),
-        position: ToastPosition.bottom,
-        duration: Values.toastDuration
-      );
     }
   }
 
@@ -148,7 +137,7 @@ class _EditItemPageState extends State<EditItemPage> {
         child: Form(
           key: _formKey,
           child: ListView(
-            padding: EdgeInsets.fromLTRB(24, 0, 24, 18),
+            padding: EdgeInsets.fromLTRB(24, 0, 24, 0),
             children: <Widget>[
               SizedBox(height: 16),
               Hero(tag: widget.totpItem.toString(), child: _generateCard()),
@@ -177,98 +166,107 @@ class _EditItemPageState extends State<EditItemPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 16),
-              AdvancedFormTextField(
-                obscureText: true,
-                validator: (value) {
-                  if (value.isEmpty) return 'Required';
-                  try {
-                    base32.decode(value);
-                  } catch (e) {
-                    return "Invalid Secret";
-                  }
-                  return null;
-                },
-                controller: _secretController,
-                labelText: "Secret*",
-                onChanged: (_) {
-                  _generateCard();
-                },
-              ),
-              SizedBox(height: 16),
-              AdvancedFormTextField(
-                validator: (value) {
-                  if (value.isEmpty) return "Required";
-                  return null;
-                },
-                controller: _accountNameController,
-                labelText: "Account Name*",
-                onChanged: (_) {
-                  _generateCard();
-                },
-              ),
-              SizedBox(height: 16),
-              AdvancedFormTextField(
-                controller: _issuerController,
-                labelText: "Issuer",
-                onChanged: (_) {
-                  _generateCard();
-                },
-              ),
-              SizedBox(height: 16),
-              AdvancedFormTextField(
-                validator: (value) {
-                  if (value.isNotEmpty) if (value.toString() != "6" &&
-                      value != "8")
-                    return "Invalid digits, only 6 or 8 allowed";
-                  return null;
-                },
-                controller: _digitsController,
-                labelText: "Digits",
-                onChanged: (_) {
-                  _generateCard();
-                },
-              ),
-              SizedBox(height: 16),
-              AdvancedFormTextField(
-                validator: (value) {
-                  if (value.isNotEmpty) {
-                    try {
-                      if (int.parse(value) <= 0)
-                        return "Period must be greater than 0";
-                    } catch (e) {
-                      return "Only integer values allowed";
-                    }
-                  }
-                  return null;
-                },
-                controller: _periodController,
-                labelText: "Period",
-                onChanged: (_) {
-                  _generateCard();
-                },
-              ),
-              SizedBox(height: 16),
-              AdvancedFormTextField(
-                validator: (value) {
-                  if (value.isNotEmpty &&
-                      (value != "SHA1" &&
-                          value != "SHA256" &&
-                          value != "SHA512"))
-                    return "Only SHA1, SHA256, or SHA512 is available";
-                  return null;
-                },
-                controller: _algorithmController,
-                labelText: "Algorithm",
-                onChanged: (_) {
-                  _generateCard();
-                },
-              ),
-              SizedBox(height: 16),
+              SizedBox(height: 18),
+              _textFields()
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _textFields() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        AdvancedFormTextField(
+          obscureText: true,
+          validator: (value) {
+            if (value.isEmpty) return 'Required';
+            try {
+              base32.decode(value);
+            } catch (e) {
+              return "Invalid Secret";
+            }
+            return null;
+          },
+          controller: _secretController,
+          labelText: "Secret*",
+          onChanged: (_) {
+            _generateCard();
+          },
+        ),
+        SizedBox(height: 16),
+        AdvancedFormTextField(
+          validator: (value) {
+            if (value.isEmpty) return "Required";
+            return null;
+          },
+          controller: _accountNameController,
+          labelText: "Account Name*",
+          onChanged: (_) {
+            _generateCard();
+          },
+        ),
+        SizedBox(height: 16),
+        AdvancedFormTextField(
+          controller: _issuerController,
+          labelText: "Issuer",
+          onChanged: (_) {
+            _generateCard();
+          },
+        ),
+        SizedBox(height: 16),
+        AdvancedFormTextField(
+          validator: (value) {
+            if (value.isNotEmpty) if (value.toString() != "6" &&
+                value != "8")
+              return "Invalid digits, only 6 or 8 allowed";
+            return null;
+          },
+          controller: _digitsController,
+          labelText: "Digits",
+          onChanged: (_) {
+            _generateCard();
+          },
+        ),
+        SizedBox(height: 16),
+        AdvancedFormTextField(
+          validator: (value) {
+            if (value.isNotEmpty) {
+              try {
+                if (int.parse(value) <= 0)
+                  return "Period must be greater than 0";
+              } catch (e) {
+                return "Only integer values allowed";
+              }
+            }
+            return null;
+          },
+          controller: _periodController,
+          labelText: "Period",
+          onChanged: (_) {
+            _generateCard();
+          },
+        ),
+        SizedBox(height: 16),
+        AdvancedFormTextField(
+          validator: (value) {
+            if (value.isNotEmpty &&
+                (value != "SHA1" &&
+                    value != "SHA256" &&
+                    value != "SHA512"))
+              return "Only SHA1, SHA256, or SHA512 is available";
+            return null;
+          },
+          controller: _algorithmController,
+          labelText: "Algorithm",
+          onChanged: (_) {
+            _generateCard();
+          },
+        ),
+        SizedBox(height: 16),
+      ],
     );
   }
 }

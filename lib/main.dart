@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twotp/blocs/config/config_bloc.dart';
 import 'package:twotp/blocs/config/config_event.dart';
@@ -49,19 +48,17 @@ class _TwoTPState extends State<TwoTP> {
       ThemeData tDark = (themeVal == 0) ? Themes.lightMode : Themes.darkMode;
 
       // The final material app
-      return OKToast(
-        child: MaterialApp(
-          title: 'TwoTP',
-          debugShowCheckedModeBanner: false,
-          theme: tLight,
-          darkTheme: tDark,
-          home: HomePage(),
-          routes: {
-            '/add/qr': (context) => QRScanPage(),
-            '/add/advanced': (context) => AdvancedTOTPPage(),
-            '/settings': (context) => SettingsPage(),
-          },
-        ),
+      return MaterialApp(
+        title: 'TwoTP',
+        debugShowCheckedModeBanner: false,
+        theme: tLight,
+        darkTheme: tDark,
+        home: HomePage(),
+        routes: {
+          '/add/qr': (context) => QRScanPage(),
+          '/add/advanced': (context) => AdvancedTOTPPage(),
+          '/settings': (context) => SettingsPage(),
+        },
       );
     });
   }
