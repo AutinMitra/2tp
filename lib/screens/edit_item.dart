@@ -115,70 +115,82 @@ class _EditItemPageState extends State<EditItemPage> {
     _digitsController.text = item.digits.toString();
     _periodController.text = item.period.toString();
     _algorithmController.text = item.algorithm.toString();
+    _generateCard();
   }
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: (Theme.of(context).brightness == Brightness.dark)
-          ? Brightness.light
-          : Brightness.dark,
-    ));
-
-    return new Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Theme
+    var style = SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: (Theme
+            .of(context)
+            .brightness == Brightness.dark)
+            ? Brightness.light
+            : Brightness.dark,
+        systemNavigationBarColor: Theme
             .of(context)
             .scaffoldBackgroundColor
-            .withOpacity(0.3),
-        title: Text("Edit Item", style: TextStyles.appBarTitle),
-        leading: IconButton(
-          icon: Icon(LineIcons.angle_left),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+    );
+    SystemChrome.setSystemUIOverlayStyle(style);
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: style,
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Theme
+              .of(context)
+              .scaffoldBackgroundColor
+              .withOpacity(0.5),
+          title: Text("Edit Item", style: TextStyles.appBarTitle),
+          leading: IconButton(
+            icon: Icon(LineIcons.angle_left),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
-      ),
-      body: ScrollConfiguration(
-        behavior: NoOverScrollBehavior(),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            padding: EdgeInsets.fromLTRB(24, 0, 24, 0),
-            children: <Widget>[
-              SizedBox(height: 84),
-              Hero(tag: widget.totpItem.toString(), child: _generateCard()),
-              SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Expanded(
-                    child: RaisedButton(
-                        color: Palette.darkRed,
-                        textColor: Colors.white,
-                        child: Text("Remove", style: TextStyles.buttonText),
-                        onPressed: () {
-                          remove(context);
-                        }),
-                  ),
-                  SizedBox(width: 12.0),
-                  Expanded(
-                    child: RaisedButton(
-                        color: Palette.primary,
-                        textColor: Colors.white,
-                        child: Text("Save", style: TextStyles.buttonText),
-                        onPressed: () {
-                          save(context);
-                        }),
-                  ),
-                ],
-              ),
-              SizedBox(height: 18),
-              _textFields()
-            ],
+        body: ScrollConfiguration(
+          behavior: NoOverScrollBehavior(),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              physics: ClampingScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(24, 0, 24, 0),
+              shrinkWrap: true,
+              children: <Widget>[
+                SizedBox(height: 84),
+                Hero(tag: widget.totpItem.toString(), child: _generateCard()),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Expanded(
+                      child: RaisedButton(
+                          color: Palette.darkRed,
+                          textColor: Colors.white,
+                          child: Text("Remove", style: TextStyles.buttonText),
+                          onPressed: () {
+                            remove(context);
+                          }),
+                    ),
+                    SizedBox(width: 12.0),
+                    Expanded(
+                      child: RaisedButton(
+                          color: Palette.primary,
+                          textColor: Colors.white,
+                          child: Text("Save", style: TextStyles.buttonText),
+                          onPressed: () {
+                            save(context);
+                          }),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 18),
+                _textFields()
+              ],
+            ),
           ),
         ),
       ),

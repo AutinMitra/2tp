@@ -95,6 +95,12 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _generateCard();
+  }
+
+  @override
   void dispose() {
     super.dispose();
     _secretController.dispose();
@@ -107,140 +113,159 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
 
   @override
   Widget build(BuildContext context) {
-    _generateCard();
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    var style = SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: (Theme
-          .of(context)
-          .brightness == Brightness.dark)
+        statusBarIconBrightness: (Theme
+            .of(context)
+            .brightness == Brightness.dark)
           ? Brightness.light
           : Brightness.dark,
-    ));
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Theme
+        systemNavigationBarColor: Theme
             .of(context)
-            .scaffoldBackgroundColor
-            .withOpacity(0.3),
-        title: Text("Manual Input", style: TextStyles.appBarTitle),
-        leading: IconButton(
-          icon: Icon(LineIcons.angle_left),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+            .scaffoldBackgroundColor,
+        systemNavigationBarIconBrightness: Theme
+            .of(context)
+            .brightness
+    );
+    SystemChrome.setSystemUIOverlayStyle(style);
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: style,
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Theme
+              .of(context)
+              .scaffoldBackgroundColor
+              .withOpacity(0.8),
+          title: Text("Manual Input", style: TextStyles.appBarTitle),
+          leading: IconButton(
+            icon: Icon(LineIcons.angle_left),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
-      ),
-      body: ScrollConfiguration(
-        behavior: NoOverScrollBehavior(),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 24.0),
-            children: <Widget>[
-              SizedBox(height: 84),
-              _card ?? FakeTwoTPCard(),
-              SizedBox(height: 16),
-              RaisedButton(
-                  color: Palette.primary,
-                  textColor: Colors.white,
-                  child: Text("Add Item", style: TextStyles.buttonText),
-                  onPressed: () {
-                    addItem(context);
-                  }),
-              SizedBox(height: 16),
-              AdvancedFormTextField(
-                obscureText: true,
-                validator: (value) {
-                  if (value.isEmpty) return 'Required';
-                  try {
-                    base32.decode(value);
-                  } catch (e) {
-                    return "Invalid Secret";
-                  }
-                  return null;
-                },
-                controller: _secretController,
-                labelText: "Secret*",
-                onChanged: (_) {
-                  _generateCard();
-                },
-              ),
-              SizedBox(height: 16),
-              AdvancedFormTextField(
-                validator: (value) {
-                  if (value.isEmpty) return "Required";
-                  return null;
-                },
-                controller: _accountNameController,
-                labelText: "Account Name*",
-                onChanged: (_) {
-                  _generateCard();
-                },
-              ),
-              SizedBox(height: 16),
-              AdvancedFormTextField(
-                controller: _issuerController,
-                labelText: "Issuer",
-                onChanged: (_) {
-                  _generateCard();
-                },
-              ),
-              SizedBox(height: 16),
-              AdvancedFormTextField(
-                validator: (value) {
-                  if (value.isNotEmpty) if (value.toString() != "6" &&
-                      value != "8")
-                    return "Invalid digits, only 6 or 8 allowed";
-                  return null;
-                },
-                controller: _digitsController,
-                labelText: "Digits (default: 6)",
-                onChanged: (_) {
-                  _generateCard();
-                },
-              ),
-              SizedBox(height: 16),
-              AdvancedFormTextField(
-                validator: (value) {
-                  if (value.isNotEmpty) {
-                    try {
-                      if (int.parse(value) <= 0)
-                        return "Period must be greater than 0";
-                    } catch (e) {
-                      return "Only integer values allowed";
-                    }
-                  }
-                  return null;
-                },
-                controller: _periodController,
-                labelText: "Period (default: 30)",
-                onChanged: (_) {
-                  _generateCard();
-                },
-              ),
-              SizedBox(height: 16),
-              AdvancedFormTextField(
-                validator: (value) {
-                  if (value.isNotEmpty &&
-                      (value != "SHA1" &&
-                          value != "SHA256" &&
-                          value != "SHA512"))
-                    return "Only SHA1, SHA256, or SHA512 is available";
-                  return null;
-                },
-                controller: _algorithmController,
-                labelText: "Algorithm (default: SHA1)",
-                onChanged: (_) {
-                  _generateCard();
-                },
-              ),
-              SizedBox(height: 16),
-            ],
+        body: ScrollConfiguration(
+          behavior: NoOverScrollBehavior(),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
+              children: <Widget>[
+                SizedBox(height: 84),
+                _card ?? FakeTwoTPCard(),
+                SizedBox(height: 16),
+                RaisedButton(
+                    color: Palette.primary,
+                    textColor: Colors.white,
+                    child: Text("Add Item", style: TextStyles.buttonText),
+                    onPressed: () {
+                      addItem(context);
+                    }),
+                SizedBox(height: 16),
+                _textFields()
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _textFields() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        AdvancedFormTextField(
+          obscureText: true,
+          validator: (value) {
+            if (value.isEmpty) return 'Required';
+            try {
+              base32.decode(value);
+            } catch (e) {
+              return "Invalid Secret";
+            }
+            return null;
+          },
+          controller: _secretController,
+          labelText: "Secret*",
+          onChanged: (_) {
+            _generateCard();
+          },
+        ),
+        SizedBox(height: 16),
+        AdvancedFormTextField(
+          validator: (value) {
+            if (value.isEmpty) return "Required";
+            return null;
+          },
+          controller: _accountNameController,
+          labelText: "Account Name*",
+          onChanged: (_) {
+            _generateCard();
+          },
+        ),
+        SizedBox(height: 16),
+        AdvancedFormTextField(
+          controller: _issuerController,
+          labelText: "Issuer",
+          onChanged: (_) {
+            _generateCard();
+          },
+        ),
+        SizedBox(height: 16),
+        AdvancedFormTextField(
+          validator: (value) {
+            if (value.isNotEmpty) if (value.toString() != "6" &&
+                value != "8")
+              return "Invalid digits, only 6 or 8 allowed";
+            return null;
+          },
+          controller: _digitsController,
+          labelText: "Digits (default: 6)",
+          onChanged: (_) {
+            _generateCard();
+          },
+        ),
+        SizedBox(height: 16),
+        AdvancedFormTextField(
+          validator: (value) {
+            if (value.isNotEmpty) {
+              try {
+                if (int.parse(value) <= 0)
+                  return "Period must be greater than 0";
+              } catch (e) {
+                return "Only integer values allowed";
+              }
+            }
+            return null;
+          },
+          controller: _periodController,
+          labelText: "Period (default: 30)",
+          onChanged: (_) {
+            _generateCard();
+          },
+        ),
+        SizedBox(height: 16),
+        AdvancedFormTextField(
+          validator: (value) {
+            if (value.isNotEmpty &&
+                (value != "SHA1" &&
+                    value != "SHA256" &&
+                    value != "SHA512"))
+              return "Only SHA1, SHA256, or SHA512 is available";
+            return null;
+          },
+          controller: _algorithmController,
+          labelText: "Algorithm (default: SHA1)",
+          onChanged: (_) {
+            _generateCard();
+          },
+        ),
+        SizedBox(height: 16),
+      ],
     );
   }
 }

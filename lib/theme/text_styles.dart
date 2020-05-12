@@ -7,8 +7,9 @@ class TextStyles {
   static var bodyInfoH2 = TextStyle(fontSize: 18, fontWeight: FontWeight.w500);
   static var buttonText = TextStyle(fontSize: 14, fontWeight: FontWeight.w700);
   static var toastText = TextStyle(fontSize: 14, fontWeight: FontWeight.w600);
-  static var addItemButtonText = TextStyle(
-      color: Colors.black, fontWeight: FontWeight.w700);
+  static var addItemButtonText = TextStyle(fontWeight: FontWeight.w700);
   static var settingsHeader = TextStyle(fontSize: 18, fontWeight: FontWeight.w700);
   static var settingsItemHeader = TextStyle(fontSize: 16);
+  static var codeNumbers = TextStyle(
+      fontWeight: FontWeight.bold, fontFamily: "JetBrainsMono");
 }

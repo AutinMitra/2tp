@@ -29,7 +29,8 @@ class _TwoTPCardState extends State<TwoTPCard>
   int get _secondsSinceEpoch =>
       (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
-  int get _timeLeft => widget.totpItem.period - _secondsSinceEpoch % widget.totpItem.period;
+  int get _timeLeft =>
+      widget.totpItem.period - _secondsSinceEpoch % widget.totpItem.period;
 
   double get _percentComplete =>
       (_secondsSinceEpoch % widget.totpItem.period) / widget.totpItem.period;
@@ -50,7 +51,8 @@ class _TwoTPCardState extends State<TwoTPCard>
   @override
   void initState() {
     super.initState();
-    _totpCode = _code;    _animationController = AnimationController(
+    _totpCode = _code;
+    _animationController = AnimationController(
         duration: Duration(seconds: widget.totpItem.period),
         animationBehavior: AnimationBehavior.preserve,
         lowerBound: 0.0,
@@ -59,7 +61,7 @@ class _TwoTPCardState extends State<TwoTPCard>
     _animationController.forward(from: _percentComplete);
     _animation = Tween(begin: 0.0, end: 1.0).animate(_animationController)
       ..addListener(() {
-        if(_timeLeft <= 10)
+        if (_timeLeft <= 10 && !_warning)
           setState(() {
             _warning = true;
           });
@@ -78,16 +80,6 @@ class _TwoTPCardState extends State<TwoTPCard>
 
   @override
   Widget build(BuildContext context) {
-    int digits = widget.totpItem.digits;
-    List<Widget> numbers = [];
-    int validDig = (digits == 6 || digits == 8) ? digits : 6;
-
-    String code = _totpCode ?? _code;
-    for (int i = 0; i < validDig; i++) {
-      numbers.add(_NumberSlot(number: code[i], smallDigits: (digits > 6), warning: _warning));
-      if (i == validDig / 2 - 1) numbers.add(SizedBox(width: _gapSize));
-    }
-
     return Material(
       borderRadius: BorderRadius.circular(_cardBorderRadius),
       clipBehavior: Clip.hardEdge,
@@ -141,9 +133,7 @@ class _TwoTPCardState extends State<TwoTPCard>
                       SizedBox(
                         height: 12,
                       ),
-                      Row(
-                        children: numbers
-                      )
+                      _getCode(),
                     ]),
                 Positioned(
                   right: 8,
@@ -159,10 +149,7 @@ class _TwoTPCardState extends State<TwoTPCard>
                         strokeWidth: 5,
                         backgroundColor: _spinnerBackgroundColor,
                         valueColor: new AlwaysStoppedAnimation(
-                            (_warning)
-                                ? Palette.medRed
-                                : _spinnerColor
-                        ),
+                            (_warning) ? Palette.medRed : _spinnerColor),
                       ),
                     ),
                   ),
@@ -171,6 +158,26 @@ class _TwoTPCardState extends State<TwoTPCard>
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _getCode() {
+    int digits = widget.totpItem.digits;
+    List<Widget> numbers = [];
+    int validDig = (digits == 6 || digits == 8) ? digits : 6;
+
+    String code = _totpCode ?? _code;
+    for (int i = 0; i < validDig; i++) {
+      numbers.add(_NumberSlot(
+          number: code[i], smallDigits: (digits > 6), warning: _warning));
+      if (i == validDig / 2 - 1) numbers.add(SizedBox(width: _gapSize));
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: numbers,
       ),
     );
   }
@@ -190,14 +197,19 @@ class FakeTwoTPCard extends StatelessWidget {
       this.accountName = "",
       this.issuer = ""});
 
-  List<Widget> _generateCode() {
+  Widget _getCode() {
     List<Widget> numbers = [];
     int validDig = (digits == 6 || digits == 8) ? digits : 6;
     for (int i = 1; i <= validDig; i++) {
-      numbers.add(_NumberSlot(number: "$i", smallDigits: (digits > 6)));
+      numbers.add(_NumberSlot(number: "$i", smallDigits: (digits >= 8)));
       if (i == validDig / 2) numbers.add(SizedBox(width: _gapSize));
     }
-    return numbers;
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: numbers,
+      ),
+    );
   }
 
   @override
@@ -222,31 +234,32 @@ class FakeTwoTPCard extends StatelessWidget {
             child: Stack(
               children: <Widget>[
                 Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      accountName != "" && accountName != null
-                          ? Text(
-                              accountName,
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.w500),
-                            )
-                          : Container(),
-                      SizedBox(
-                        height: 2,
-                      ),
-                      issuer != "" && issuer != null
-                          ? Text(
-                              issuer,
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w700),
-                            )
-                          : Container(),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      Row(children: _generateCode())
-                    ]),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    accountName != "" && accountName != null
+                        ? Text(
+                      accountName,
+                      style: TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w500),
+                    )
+                        : Container(),
+                    SizedBox(
+                      height: 2,
+                    ),
+                    issuer != "" && issuer != null
+                        ? Text(
+                      issuer,
+                      style: TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w700),
+                    )
+                        : Container(),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    _getCode(),
+                  ],
+                ),
                 Positioned(
                   right: 8,
                   top: 8,
@@ -301,13 +314,16 @@ class _NumberSlot extends StatelessWidget {
       ),
       duration: Duration(milliseconds: 300),
       child: Center(
-        child: Text(
-          number,
+        child: AnimatedDefaultTextStyle(
+          duration: Duration(milliseconds: 300),
           style: TextStyle(
               color: textColor,
               fontWeight: FontWeight.bold,
               fontSize: digitSize,
               fontFamily: "JetBrainsMono"),
+          child: Text(
+            number,
+          ),
         ),
       ),
     );

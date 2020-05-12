@@ -14,34 +14,51 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var darkMode = Theme.of(context).brightness == Brightness.dark;
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: (Theme.of(context).brightness == Brightness.dark)
-          ? Brightness.light
-          : Brightness.dark,
-    ));
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Theme
+    var style = SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: (Theme
+            .of(context)
+            .brightness == Brightness.dark)
+            ? Brightness.light
+            : Brightness.dark,
+        systemNavigationBarColor: Theme
             .of(context)
             .scaffoldBackgroundColor
-            .withOpacity(0.1),
-        centerTitle: true,
-        title: Text("twotp", style: TextStyles.appBarTitle),
+    );
+    SystemChrome.setSystemUIOverlayStyle(style);
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: style,
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor:
+          Theme
+              .of(context)
+              .scaffoldBackgroundColor
+              .withOpacity(0.5),
+          centerTitle: true,
+          title: Text("twotp", style: TextStyles.appBarTitle),
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          backgroundColor: (darkMode) ? Colors.white : Colors.black,
+          elevation: 1.0,
+          highlightElevation: 4.0,
+          icon: Icon(
+              Icons.add, color: (darkMode) ? Colors.black : Colors.white),
+          label: Text("Add Item", style: TextStyles.addItemButtonText.copyWith(
+              color: (darkMode) ? Colors.black : Colors.white
+          )),
+          onPressed: () {
+            Navigator.pushNamed(context, "/add/qr");
+          },
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        body: ScrollConfiguration(
+          behavior: NoOverScrollBehavior(),
+          child: _TOTPList(),
+        ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.white,
-        elevation: 1.0,
-        icon: Icon(Icons.add, color: Colors.black),
-        label: Text("Add Item", style: TextStyles.addItemButtonText),
-        onPressed: () {
-          Navigator.pushNamed(context, "/add/qr");
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: ScrollConfiguration(
-          behavior: NoOverScrollBehavior(), child: _TOTPList()),
     );
   }
 }
@@ -75,10 +92,8 @@ class _TOTPListState extends State<_TOTPList> {
                       child:
                           Text("Nothing added", style: TextStyles.bodyInfoH1)),
                   Center(
-                    child: Text("Click the + to add a token",
-                      style: TextStyles.bodyInfoH2
-                    )
-                  ),
+                      child: Text("Click the + to add a token",
+                          style: TextStyles.bodyInfoH2)),
                   SizedBox(height: spacer)
                 ],
               ),
@@ -97,10 +112,12 @@ class _TOTPListState extends State<_TOTPList> {
               )
           ],
         );
-      } else {
-        return Column(
-            children: <Widget>[Text("An error occured")]);
       }
+      return Column(
+        children: <Widget>[
+          Text("An error occured"),
+        ],
+      );
     });
   }
 }
