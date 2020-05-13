@@ -33,17 +33,17 @@ class _TwoTPCardState extends State<TwoTPCard>
   AnimationController _animationController;
   Animation<double> _animation;
 
-  int get _secondsSinceEpoch =>
-      (DateTime.now().millisecondsSinceEpoch / 1000).round();
+  double get _secondsSinceEpoch =>
+      DateTime.now().millisecondsSinceEpoch / 1000;
 
   int get _timeLeft =>
-      widget.totpItem.period - _secondsSinceEpoch % widget.totpItem.period;
+      widget.totpItem.period - _secondsSinceEpoch ~/ 1 % widget.totpItem.period;
 
   double get _percentComplete =>
       (_secondsSinceEpoch % widget.totpItem.period) / widget.totpItem.period;
 
   String get _code =>
-      widget.totpItem.generateCode(_secondsSinceEpoch, pretty: false);
+      widget.totpItem.generateCode(_secondsSinceEpoch ~/ 1, pretty: false);
 
   bool _warning = false;
 
@@ -58,7 +58,7 @@ class _TwoTPCardState extends State<TwoTPCard>
   @override
   void initState() {
     super.initState();
-    _warning = _timeLeft <= 10;
+    _warning = _timeLeft <= 5;
     _totpCode = _code;
 
     // Handle progression animation
@@ -71,7 +71,7 @@ class _TwoTPCardState extends State<TwoTPCard>
     _animationController.forward(from: _percentComplete);
     _animation = Tween(begin: 0.0, end: 1.0).animate(_animationController)
       ..addListener(() {
-        if (!_warning && _timeLeft <= 10)
+        if (!_warning && _timeLeft <= 5)
           setState(() {
             _warning = true;
           });
@@ -183,8 +183,7 @@ class _TwoTPCardState extends State<TwoTPCard>
                 widget.totpItem.issuer,
                 style: TextStyle(
                     fontSize: 20, fontWeight: FontWeight.w700),
-              )
-                  : Container(),
+              ) : Container(),
               SizedBox(
                 height: 12,
               ),

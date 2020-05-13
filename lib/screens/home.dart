@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
               .withOpacity(0.5),
           centerTitle: true,
             title: (_reordering)
-                ? Text("Reorder Cards", style: TextStyles.appBarTitle)
+                ? Text("Re-order Cards", style: TextStyles.appBarTitle)
                 : Text("twotp", style: TextStyles.appBarTitle),
             actions: _getActions(_reordering)
         ),
