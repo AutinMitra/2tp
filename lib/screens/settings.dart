@@ -7,6 +7,7 @@ import 'package:twotp/blocs/config/config_event.dart';
 import 'package:twotp/blocs/config/config_state.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/theme/text_styles.dart';
+import 'package:twotp/utils/biometric_utils.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -57,7 +58,9 @@ class _SettingsPageState extends State<SettingsPage> {
               padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
               children: [
                 SizedBox(height: 84),
-                _AppearancePanel()
+                _AppearancePanel(),
+                SizedBox(height: 12),
+                _SecurityPanel(),
               ]
           ),
         ),
@@ -91,7 +94,7 @@ class _AppearancePanel extends StatelessWidget {
               Text("Appearance", style: TextStyles.settingsHeader),
             ],
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -116,6 +119,65 @@ class _AppearancePanel extends StatelessWidget {
                   ),
                 ),
               )
+            ],
+          )
+        ],
+      );
+    });
+  }
+}
+
+// The security panel in settings - currently controls fingerprint unlock
+class _SecurityPanel extends StatelessWidget {
+
+  void _onBiometricsChange(ConfigBloc configBloc, bool value) async {
+    var authenticated = await BiometricUtils.authenticate(
+        reason: "Please authenticate to continue");
+    if (authenticated)
+      configBloc.add(ChangeConfigFingerprintEvent(value));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var darkMode = Theme
+        .of(context)
+        .brightness == Brightness.dark;
+
+    return BlocBuilder<ConfigBloc, ConfigState>(builder: (context, state) {
+      // ignore: close_sinks
+      final ConfigBloc configBloc = BlocProvider.of<ConfigBloc>(context);
+
+      bool biometricsEnabled = (state is ChangedConfigState) ? state
+          .biometricsEnabled : false;
+
+      return Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Icon(LineIcons.user_lock_solid),
+              SizedBox(width: 8.0),
+              Text("Security", style: TextStyles.settingsHeader),
+            ],
+          ),
+          SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Text("Biometrics", style: TextStyles.settingsItemHeader),
+              Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Checkbox(
+                    value: biometricsEnabled,
+                    activeColor: (darkMode) ? Colors.white : Colors.black,
+                    checkColor: (darkMode) ? Colors.black : Colors.white,
+                    onChanged: (value) {
+                      _onBiometricsChange(configBloc, value);
+                    },
+                  )
+              ),
             ],
           )
         ],

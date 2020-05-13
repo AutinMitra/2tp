@@ -13,5 +13,11 @@ class ChangeConfigThemeEvent extends ConfigEvent {
   ChangeConfigThemeEvent(this.value) : assert(value >= 0 && value <= 2);
 }
 
+class ChangeConfigFingerprintEvent extends ConfigEvent {
+  final bool enabled;
+
+  ChangeConfigFingerprintEvent(this.enabled) : assert(enabled != null);
+}
+
 // Loading the settings
 class FetchConfigEvent extends ConfigEvent { }

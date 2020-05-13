@@ -18,16 +18,18 @@ class UnitConfigState extends ConfigState { }
 // Initialized config
 class ChangedConfigState extends ConfigState {
   final int themeValue;
+  final bool biometricsEnabled;
 
   ChangedConfigState({
-    @required this.themeValue,
+    this.themeValue = 2,
+    this.biometricsEnabled = false,
   })
-      : assert(themeValue != null),
-        super([themeValue]);
+      : super([themeValue, biometricsEnabled]);
 
-  ChangedConfigState copyWith({themeValue}) {
+  ChangedConfigState copyWith({themeValue, biometricsEnabled}) {
     return ChangedConfigState(
-        themeValue: themeValue
+        themeValue: themeValue ?? this.themeValue,
+        biometricsEnabled: biometricsEnabled ?? this.biometricsEnabled
     );
   }
 }

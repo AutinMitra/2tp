@@ -10,6 +10,7 @@ class TwoTPUtils {
   // Some permanent storage variables
   static String prefsJSON = "totp_items.json";
   static String darkModePrefs = "darkModeOn";
+  static String biometricsEnabled = "biometricsEnabled";
 
   // SharedPreferences store configs, secureStorage stores secrets
   static SharedPreferences prefs;

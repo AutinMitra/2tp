@@ -7,6 +7,7 @@ import 'package:twotp/blocs/config/config_state.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/screens/advanced_totp.dart';
+import 'package:twotp/screens/biometric_login.dart';
 import 'package:twotp/screens/home.dart';
 import 'package:twotp/screens/qr_scan.dart';
 import 'package:twotp/screens/settings.dart';
@@ -32,18 +33,26 @@ class _TwoTPState extends State<TwoTP> {
   Widget build(BuildContext context) {
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
+    // ignore: close_sinks
     final ConfigBloc configBloc = BlocProvider.of<ConfigBloc>(context);
-    // Load all of the data from storage before going to home
-    totpBloc.add(FetchItemsEvent());
-    configBloc.add(FetchConfigEvent());
 
+    bool biometricsEnabled = TwoTPUtils.prefs.getBool(
+        TwoTPUtils.biometricsEnabled) ?? false;
+
+    // Load all of the data from storage before going to home
+    if (!biometricsEnabled) {
+      totpBloc.add(FetchItemsEvent());
+      configBloc.add(FetchConfigEvent());
+    }
 
     // Configure theme settings
     return BlocBuilder<ConfigBloc, ConfigState>(builder: (context, state) {
       var themeVal;
       if (state is UnitConfigState)
         themeVal = TwoTPUtils.prefs.getInt(TwoTPUtils.darkModePrefs) ?? 2;
-      else if (state is ChangedConfigState) themeVal = state.themeValue;
+      else if (state is ChangedConfigState)
+        themeVal = state.themeValue;
+
       ThemeData tLight = (themeVal == 1) ? Themes.darkMode : Themes.lightMode;
       ThemeData tDark = (themeVal == 0) ? Themes.lightMode : Themes.darkMode;
 
@@ -53,8 +62,10 @@ class _TwoTPState extends State<TwoTP> {
         debugShowCheckedModeBanner: false,
         theme: tLight,
         darkTheme: tDark,
+        initialRoute: biometricsEnabled ? '/auth' : '/',
         home: HomePage(),
         routes: {
+          '/auth': (context) => BiometricLoginPage(),
           '/add/qr': (context) => QRScanPage(),
           '/add/advanced': (context) => AdvancedTOTPPage(),
           '/settings': (context) => SettingsPage(),

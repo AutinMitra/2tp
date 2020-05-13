@@ -375,7 +375,7 @@ class _NumberSlot extends StatelessWidget {
         : (warning) ? Palette.lightRed : Palette.lightBlue;
 
     // Choose the digit size based on [smallDigits]
-    double digitSize = (smallDigits) ? 16 : 24;
+    double digitSize = (smallDigits) ? 20 : 24;
     double horizontalPadding = (smallDigits) ? 8 : 10;
     double horizontalSpacing = (smallDigits) ? 3 : 6;
 
