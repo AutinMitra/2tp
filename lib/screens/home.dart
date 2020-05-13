@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
@@ -34,6 +35,12 @@ class _HomePageState extends State<HomePage> {
     );
     SystemChrome.setSystemUIOverlayStyle(style);
 
+    String logoSVGPath = "assets/twotp-logo.svg";
+    final Widget logoSVG = SvgPicture.asset(
+      logoSVGPath,
+      color: (darkMode) ? Colors.white : Colors.black,
+    );
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: style,
       child: Scaffold(
@@ -47,7 +54,7 @@ class _HomePageState extends State<HomePage> {
           centerTitle: true,
             title: (_reordering)
                 ? Text("Re-order Cards", style: TextStyles.appBarTitle)
-                : Text("twotp", style: TextStyles.appBarTitle),
+                : SizedBox(child: logoSVG, height: 32, width: 32),
             actions: _getActions(_reordering)
         ),
         floatingActionButton: FloatingActionButton.extended(

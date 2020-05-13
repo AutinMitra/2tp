@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="319px" height="229px" viewBox="0 0 319 229" version="1.1"
+    xmlns="http://www.w3.org/2000/svg">
+    <title>twotp-logo</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-102.000000, -185.000000)">
+            <g id="twotp-logo" transform="translate(103.000000, 185.000000)">
+                <g id="p" transform="translate(198.000000, 44.000000)" fill="#000000">
+                    <path
+                        d="M60,0 C93.137085,0 120,26.862915 120,60 C120,93.137085 93.137085,120 60,120 C26.862915,120 0,93.137085 0,60 C0,26.862915 26.862915,0 60,0 Z M60,28 C42.326888,28 28,42.326888 28,60 C28,77.673112 42.326888,92 60,92 C77.673112,92 92,77.673112 92,60 C92,42.326888 77.673112,28 60,28 Z"
+                        id="Shape"></path>
+                    <rect id="Rectangle" x="0" y="0" width="28" height="185" rx="14"></rect>
+                </g>
+                <g id="t" transform="translate(119.000000, 7.000000)" fill="#000000">
+                    <rect id="Rectangle" x="13" y="0" width="28" height="162" rx="14"></rect>
+                    <rect id="Rectangle" x="0" y="33" width="72" height="28" rx="14"></rect>
+                </g>
+                <g id="2">
+                    <path
+                        d="M60,0 L60.312645,0.00342204548 C67.9002476,0.169673114 74,6.37249981 74,14 C74,21.7319865 67.7319865,28 60,28 L60,28 C46.3309524,28 35.224119,38.9701429 35.0033493,52.5865793 L35,53 C35,60.7319865 28.7319865,67 21,67 C13.2680135,67 7,60.7319865 7,53 L7,53 C7,23.7289083 30.7289083,0 60,0 Z"
+                        id="Combined-Shape" fill="#000000"></path>
+                    <g id="Lower-2" transform="translate(0.000000, 91.000000)">
+                        <path
+                            d="M14,50 L98,50 C105.731986,50 112,56.2680135 112,64 C112,71.7319865 105.731986,78 98,78 L14,78 C6.2680135,78 0,71.7319865 0,64 C0,56.2680135 6.2680135,50 14,50 Z"
+                            id="Rectangle" fill="#000000"></path>
+                        <path
+                            d="M13.4871628,64 C10.6791624,47.5812181 28.2490961,26.2478848 66.1969641,0"
+                            id="Path" stroke="#000000" stroke-width="28"
+                            stroke-linecap="round"></path>
+                    </g>
+                    <circle id="Oval" fill="#000000" cx="95" cy="53" r="14"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

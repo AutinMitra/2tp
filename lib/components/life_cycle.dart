@@ -14,6 +14,9 @@ class HandleAppLifecycle extends StatefulWidget {
 
 class _HandleAppLifecycleState extends State<HandleAppLifecycle>
     with WidgetsBindingObserver {
+
+  AppLifecycleState _lastState;
+
   @override
   void initState() {
     super.initState();
@@ -31,11 +34,13 @@ class _HandleAppLifecycleState extends State<HandleAppLifecycle>
     // ignore: close_sinks
     final ConfigBloc configBloc = BlocProvider.of<ConfigBloc>(context);
     if (state == AppLifecycleState.resumed &&
+        _lastState == AppLifecycleState.paused &&
         configBloc.state is ChangedConfigState) {
       if ((configBloc.state as ChangedConfigState).biometricsEnabled) {
         Navigator.pushNamedAndRemoveUntil(context, '/auth', (route) => false);
       }
     }
+    _lastState = state;
   }
 
   @override

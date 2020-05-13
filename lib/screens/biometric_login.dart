@@ -53,7 +53,7 @@ class _BiometricLoginPageState extends State<BiometricLoginPage> {
                   Icon(LineIcons.user_lock_solid, size: 98),
                   SizedBox(height: 32),
                   Text(
-                    "Please authenticate using Biometrics",
+                    "Please authenticate using biometrics",
                     style: TextStyles.appBarTitle,
                     textAlign: TextAlign.center,
                   ),
