@@ -38,41 +38,45 @@ class _BiometricLoginPageState extends State<BiometricLoginPage> {
     var darkMode = Theme.of(context).brightness == Brightness.dark;
     var buttonTextColor = (darkMode) ? Colors.black : Colors.white;
 
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(LineIcons.user_lock_solid, size: 98),
-                SizedBox(height: 32),
-                Text(
-                  "Please authenticate using Biometrics",
-                  style: TextStyles.appBarTitle,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 24),
-                RaisedButton(
-                  onPressed: () {
-                    _authenticateUser(context);
-                  },
-                  color: (darkMode) ? Colors.white : Colors.black,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(LineIcons.fingerprint_solid, color: buttonTextColor),
-                      SizedBox(width: 8),
-                      Text("Authenticate",
-                          style: TextStyles.buttonText
-                              .copyWith(color: buttonTextColor)),
-                    ],
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(LineIcons.user_lock_solid, size: 98),
+                  SizedBox(height: 32),
+                  Text(
+                    "Please authenticate using Biometrics",
+                    style: TextStyles.appBarTitle,
+                    textAlign: TextAlign.center,
                   ),
-                )
-              ],
+                  SizedBox(height: 24),
+                  RaisedButton(
+                    onPressed: () {
+                      _authenticateUser(context);
+                    },
+                    color: (darkMode) ? Colors.white : Colors.black,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(LineIcons.fingerprint_solid,
+                            color: buttonTextColor),
+                        SizedBox(width: 8),
+                        Text("Authenticate",
+                            style: TextStyles.buttonText
+                                .copyWith(color: buttonTextColor)),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),
