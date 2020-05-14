@@ -1,7 +1,5 @@
 import 'package:base32/base32.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
@@ -120,59 +118,39 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
 
   @override
   Widget build(BuildContext context) {
-    // status bar + navbar color
-    var style = SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-        statusBarIconBrightness: (Theme
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Theme
             .of(context)
-            .brightness == Brightness.dark)
-          ? Brightness.light
-          : Brightness.dark,
-        systemNavigationBarColor: Theme
-            .of(context)
-            .scaffoldBackgroundColor,
-        systemNavigationBarIconBrightness: Theme
-            .of(context)
-            .brightness
-    );
-    SystemChrome.setSystemUIOverlayStyle(style);
-
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: style,
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Theme
-              .of(context)
-              .scaffoldBackgroundColor
-              .withOpacity(0.8),
-          title: Text("Manual Input", style: TextStyles.appBarTitle),
-          leading: Padding(
-            padding: EdgeInsets.only(left: 14),
-            child: IconButton(
-              icon: Icon(LineIcons.angle_left_solid),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
+            .scaffoldBackgroundColor
+            .withOpacity(0.8),
+        title: Text("Manual Input", style: TextStyles.appBarTitle),
+        leading: Padding(
+          padding: EdgeInsets.only(left: 14),
+          child: IconButton(
+            icon: Icon(LineIcons.angle_left_solid),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
         ),
-        body: ScrollConfiguration(
-          behavior: NoOverScrollBehavior(),
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 24.0),
-              children: <Widget>[
-                SizedBox(height: 84),
-                _card ?? FakeTwoTPCard(),
-                SizedBox(height: 16),
-                _addItemButton(),
-                SizedBox(height: 16),
-                _textFields()
-              ],
-            ),
+      ),
+      body: ScrollConfiguration(
+        behavior: NoOverScrollBehavior(),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            children: <Widget>[
+              SizedBox(height: 84),
+              _card ?? FakeTwoTPCard(),
+              SizedBox(height: 16),
+              _addItemButton(),
+              SizedBox(height: 16),
+              _textFields()
+            ],
           ),
         ),
       ),

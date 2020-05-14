@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:twotp/blocs/config/config_bloc.dart';
@@ -63,7 +64,11 @@ class _BiometricLoginPageState extends State<BiometricLoginPage> {
                       onPressed: () {
                         _authenticateUser(context);
                       },
+                      elevation: 0,
+                      highlightElevation: 0,
                       color: (darkMode) ? Colors.white : Colors.black,
+                      highlightColor:
+                      (darkMode) ? Colors.grey[300] : Colors.grey[700],
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[

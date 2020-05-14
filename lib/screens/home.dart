@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,16 +23,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     var darkMode = Theme.of(context).brightness == Brightness.dark;
-    var style = SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: darkMode
-            ? Brightness.light
-            : Brightness.dark,
-        systemNavigationBarColor: Theme
-            .of(context)
-            .scaffoldBackgroundColor
-    );
-    SystemChrome.setSystemUIOverlayStyle(style);
 
     String logoSVGPath = "assets/twotp-logo.svg";
     final Widget logoSVG = SvgPicture.asset(
@@ -41,40 +30,37 @@ class _HomePageState extends State<HomePage> {
       color: (darkMode) ? Colors.white : Colors.black,
     );
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: style,
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
           backgroundColor:
           Theme
               .of(context)
               .scaffoldBackgroundColor
               .withOpacity(0.5),
           centerTitle: true,
-            title: (_reordering)
-                ? Text("Re-order Cards", style: TextStyles.appBarTitle)
-                : SizedBox(child: logoSVG, height: 32, width: 32),
-            actions: _getActions(_reordering)
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: (darkMode) ? Colors.white : Colors.black,
-          elevation: 1.0,
-          highlightElevation: 4.0,
-          icon: Icon(
-              Icons.add, color: (darkMode) ? Colors.black : Colors.white),
-          label: Text("Add Item", style: TextStyles.addItemButtonText.copyWith(
-              color: (darkMode) ? Colors.black : Colors.white
-          )),
-          onPressed: () {
-            Navigator.pushNamed(context, "/add");
-          },
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        body: ScrollConfiguration(
-          behavior: NoOverScrollBehavior(),
-          child: _TOTPList(reordering: _reordering),
-        ),
+          title: (_reordering)
+              ? Text("Reorder Cards", style: TextStyles.appBarTitle)
+              : SizedBox(child: logoSVG, height: 32, width: 32),
+          actions: _getActions(_reordering)
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: (darkMode) ? Colors.white : Colors.black,
+        elevation: 1.0,
+        highlightElevation: 4.0,
+        icon: Icon(
+            Icons.add, color: (darkMode) ? Colors.black : Colors.white),
+        label: Text("Add Code", style: TextStyles.addItemButtonText.copyWith(
+            color: (darkMode) ? Colors.black : Colors.white
+        )),
+        onPressed: () {
+          Navigator.pushNamed(context, "/add");
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      body: ScrollConfiguration(
+        behavior: NoOverScrollBehavior(),
+        child: _TOTPList(reordering: _reordering),
       ),
     );
   }

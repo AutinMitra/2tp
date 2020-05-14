@@ -18,51 +18,35 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    var style = SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: (Theme
-            .of(context)
-            .brightness == Brightness.dark)
-            ? Brightness.light
-            : Brightness.dark,
-        systemNavigationBarColor: Theme
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Theme
             .of(context)
             .scaffoldBackgroundColor
-    );
-    SystemChrome.setSystemUIOverlayStyle(style);
-
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: style,
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Theme
-              .of(context)
-              .scaffoldBackgroundColor
-              .withOpacity(0.5),
-          title: Text("Settings", style: TextStyles.appBarTitle),
-          leading: Padding(
-            padding: EdgeInsets.only(left: 14),
-            child: IconButton(
-              icon: Icon(LineIcons.angle_left_solid),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
+            .withOpacity(0.5),
+        title: Text("Settings", style: TextStyles.appBarTitle),
+        leading: Padding(
+          padding: EdgeInsets.only(left: 14),
+          child: IconButton(
+            icon: Icon(LineIcons.angle_left_solid),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
         ),
-        body: ScrollConfiguration(
-          behavior: NoOverScrollBehavior(),
-          child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-              children: [
-                SizedBox(height: 84),
-                _AppearancePanel(),
-                SizedBox(height: 12),
-                _SecurityPanel(),
-              ]
-          ),
+      ),
+      body: ScrollConfiguration(
+        behavior: NoOverScrollBehavior(),
+        child: ListView(
+            padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+            children: [
+              SizedBox(height: 84),
+              _AppearancePanel(),
+              SizedBox(height: 12),
+              _SecurityPanel(),
+            ]
         ),
       ),
     );

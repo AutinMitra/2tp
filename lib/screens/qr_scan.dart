@@ -40,47 +40,33 @@ class _QRScanPageState extends State<QRScanPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Set statusBar + navbar color
     var darkMode = Theme
         .of(context)
         .brightness == Brightness.dark;
-    var style = SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: darkMode
-            ? Brightness.light
-            : Brightness.dark,
-        systemNavigationBarColor: Theme
-            .of(context)
-            .scaffoldBackgroundColor
-    );
-    SystemChrome.setSystemUIOverlayStyle(style);
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: style,
-      child: Scaffold(
-        body: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 2,
-              child: Stack(
-                children: <Widget>[
-                  QRView(
-                    key: qrKey,
-                    onQRViewCreated: (controller) {
-                      _onQRViewCreated(context, controller);
-                    },
-                    overlay: QrScannerOverlayShape(
-                        borderRadius: 10,
-                        borderColor: Palette.accent,
-                        borderWidth: 16.0,
-                        overlayColor: Color(0x9A000000)),
-                  ),
-                  _QRBottomBar()
-                ],
-              ),
+    return Scaffold(
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 2,
+            child: Stack(
+              children: <Widget>[
+                QRView(
+                  key: qrKey,
+                  onQRViewCreated: (controller) {
+                    _onQRViewCreated(context, controller);
+                  },
+                  overlay: QrScannerOverlayShape(
+                      borderRadius: 10,
+                      borderColor: Palette.accent,
+                      borderWidth: 16.0,
+                      overlayColor: Color(0x9A000000)),
+                ),
+                _QRBottomBar()
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

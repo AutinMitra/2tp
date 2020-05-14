@@ -6,7 +6,7 @@ import 'package:twotp/blocs/config/config_event.dart';
 import 'package:twotp/blocs/config/config_state.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
-import 'package:twotp/components/life_cycle.dart';
+import 'package:twotp/components/page_wrapper.dart';
 import 'package:twotp/screens/add_item_options.dart';
 import 'package:twotp/screens/advanced_totp.dart';
 import 'package:twotp/screens/biometric_login.dart';
@@ -65,14 +65,14 @@ class _TwoTPState extends State<TwoTP> {
         theme: tLight,
         darkTheme: tDark,
         initialRoute: biometricsEnabled ? '/auth' : '/',
-        home: HandleAppLifecycle(child: HomePage()),
+        home: PageWrapper(child: HomePage()),
         routes: {
-          '/auth': (context) => BiometricLoginPage(),
-          '/add': (context) => HandleAppLifecycle(child: AddItemsOptionPage()),
-          '/add/qr': (context) => HandleAppLifecycle(child: QRScanPage()),
+          '/auth': (context) => PageWrapper(child: BiometricLoginPage()),
+          '/add': (context) => PageWrapper(child: AddItemsOptionPage()),
+          '/add/qr': (context) => PageWrapper(child: QRScanPage()),
           '/add/advanced': (context) =>
-              HandleAppLifecycle(child: AdvancedTOTPPage()),
-          '/settings': (context) => HandleAppLifecycle(child: SettingsPage()),
+              PageWrapper(child: AdvancedTOTPPage()),
+          '/settings': (context) => PageWrapper(child: SettingsPage()),
         },
       );
     });

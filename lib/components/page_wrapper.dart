@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:twotp/blocs/config/config_bloc.dart';
 import 'package:twotp/blocs/config/config_state.dart';
 
-class HandleAppLifecycle extends StatefulWidget {
+class PageWrapper extends StatefulWidget {
   final Widget child;
 
-  HandleAppLifecycle({@required this.child}) : assert(child != null);
+  PageWrapper({@required this.child}) : assert(child != null);
 
   @override
-  _HandleAppLifecycleState createState() => _HandleAppLifecycleState();
+  _PageWrapperState createState() => _PageWrapperState();
 }
 
-class _HandleAppLifecycleState extends State<HandleAppLifecycle>
+class _PageWrapperState extends State<PageWrapper>
     with WidgetsBindingObserver {
 
   AppLifecycleState _lastState;
@@ -45,6 +46,20 @@ class _HandleAppLifecycleState extends State<HandleAppLifecycle>
 
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    var darkMode = Theme
+        .of(context)
+        .brightness == Brightness.dark;
+    var style = SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: darkMode ? Brightness.light : Brightness.dark,
+        systemNavigationBarColor: Theme
+            .of(context)
+            .scaffoldBackgroundColor);
+    SystemChrome.setSystemUIOverlayStyle(style);
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: style,
+        child: widget.child
+    );
   }
 }

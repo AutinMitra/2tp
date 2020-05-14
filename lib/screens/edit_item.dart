@@ -1,6 +1,5 @@
 import 'package:base32/base32.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
@@ -130,58 +129,41 @@ class _EditItemPageState extends State<EditItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    // status bar + navbar colors
-    var style = SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: (Theme
-            .of(context)
-            .brightness == Brightness.dark)
-            ? Brightness.light
-            : Brightness.dark,
-        systemNavigationBarColor: Theme
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Theme
             .of(context)
             .scaffoldBackgroundColor
-    );
-    SystemChrome.setSystemUIOverlayStyle(style);
-
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: style,
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Theme
-              .of(context)
-              .scaffoldBackgroundColor
-              .withOpacity(0.5),
-          title: Text("Edit Item", style: TextStyles.appBarTitle),
-          leading: Padding(
-            padding: EdgeInsets.only(left: 14),
-            child: IconButton(
-              icon: Icon(LineIcons.angle_left_solid),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
+            .withOpacity(0.5),
+        title: Text("Edit Item", style: TextStyles.appBarTitle),
+        leading: Padding(
+          padding: EdgeInsets.only(left: 14),
+          child: IconButton(
+            icon: Icon(LineIcons.angle_left_solid),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
         ),
-        body: ScrollConfiguration(
-          behavior: NoOverScrollBehavior(),
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              physics: ClampingScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(24, 0, 24, 0),
-              shrinkWrap: true,
-              children: <Widget>[
-                SizedBox(height: 84),
-                Hero(tag: widget.totpItem.toString(), child: _generateCard()),
-                SizedBox(height: 16),
-                _saveOptions(),
-                SizedBox(height: 18),
-                _textFields()
-              ],
-            ),
+      ),
+      body: ScrollConfiguration(
+        behavior: NoOverScrollBehavior(),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            physics: ClampingScrollPhysics(),
+            padding: EdgeInsets.fromLTRB(24, 0, 24, 0),
+            shrinkWrap: true,
+            children: <Widget>[
+              SizedBox(height: 84),
+              Hero(tag: widget.totpItem.toString(), child: _generateCard()),
+              SizedBox(height: 16),
+              _saveOptions(),
+              SizedBox(height: 18),
+              _textFields()
+            ],
           ),
         ),
       ),
