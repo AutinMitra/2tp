@@ -45,37 +45,39 @@ class _BiometricLoginPageState extends State<BiometricLoginPage> {
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(LineIcons.user_lock_solid, size: 98),
-                  SizedBox(height: 32),
-                  Text(
-                    "Please authenticate using biometrics",
-                    style: TextStyles.appBarTitle,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 24),
-                  RaisedButton(
-                    onPressed: () {
-                      _authenticateUser(context);
-                    },
-                    color: (darkMode) ? Colors.white : Colors.black,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Icon(LineIcons.fingerprint_solid,
-                            color: buttonTextColor),
-                        SizedBox(width: 8),
-                        Text("Authenticate",
-                            style: TextStyles.buttonText
-                                .copyWith(color: buttonTextColor)),
-                      ],
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(LineIcons.user_lock_solid, size: 98),
+                    SizedBox(height: 32),
+                    Text(
+                      "Please authenticate using biometrics",
+                      style: TextStyles.appBarTitle,
+                      textAlign: TextAlign.center,
                     ),
-                  )
-                ],
+                    SizedBox(height: 18),
+                    RaisedButton(
+                      onPressed: () {
+                        _authenticateUser(context);
+                      },
+                      color: (darkMode) ? Colors.white : Colors.black,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Icon(LineIcons.fingerprint_solid,
+                              color: buttonTextColor),
+                          SizedBox(width: 8),
+                          Text("Authenticate",
+                              style: TextStyles.buttonText
+                                  .copyWith(color: buttonTextColor)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

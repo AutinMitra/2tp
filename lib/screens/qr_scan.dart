@@ -126,11 +126,6 @@ class _QRBottomBar extends StatelessWidget {
     Navigator.pop(context);
   }
 
-  // When the input manually button is clicked
-  void onInputManualClick(context) {
-    Navigator.pushReplacementNamed(context, '/add/advanced');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -139,32 +134,15 @@ class _QRBottomBar extends StatelessWidget {
         width: double.infinity,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 24.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Expanded(
-                child: RaisedButton(
-                  color: Palette.darkRed,
-                  textColor: Colors.white,
-                  child: Text("Cancel", style: TextStyles.buttonText),
-                  onPressed: () {
-                    onCancelClick(context);
-                  },
-                ),
-              ),
-              SizedBox(width: 12.0),
-              Expanded(
-                child: RaisedButton(
-                  color: Colors.white,
-                  textColor: Colors.black,
-                  child:
-                  Text("Input Manually", style: TextStyles.buttonText),
-                  onPressed: () {
-                    onInputManualClick(context);
-                  },
-                ),
-              ),
-            ],
+          child: Expanded(
+            child: RaisedButton(
+              color: Palette.darkRed,
+              textColor: Colors.white,
+              child: Text("Cancel", style: TextStyles.buttonText),
+              onPressed: () {
+                onCancelClick(context);
+              },
+            ),
           ),
         ),
       ),

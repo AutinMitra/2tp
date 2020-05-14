@@ -7,6 +7,7 @@ import 'package:twotp/blocs/config/config_state.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/components/life_cycle.dart';
+import 'package:twotp/screens/add_item_options.dart';
 import 'package:twotp/screens/advanced_totp.dart';
 import 'package:twotp/screens/biometric_login.dart';
 import 'package:twotp/screens/home.dart';
@@ -67,6 +68,7 @@ class _TwoTPState extends State<TwoTP> {
         home: HandleAppLifecycle(child: HomePage()),
         routes: {
           '/auth': (context) => BiometricLoginPage(),
+          '/add': (context) => HandleAppLifecycle(child: AddItemsOptionPage()),
           '/add/qr': (context) => HandleAppLifecycle(child: QRScanPage()),
           '/add/advanced': (context) =>
               HandleAppLifecycle(child: AdvancedTOTPPage()),

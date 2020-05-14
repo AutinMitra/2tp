@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
               color: (darkMode) ? Colors.black : Colors.white
           )),
           onPressed: () {
-            Navigator.pushNamed(context, "/add/qr");
+            Navigator.pushNamed(context, "/add");
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
