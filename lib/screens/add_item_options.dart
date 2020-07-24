@@ -45,8 +45,6 @@ class _AddItemsOptionPageState extends State<AddItemsOptionPage> {
   @override
   Widget build(BuildContext context) {
     var darkMode = Theme.of(context).brightness == Brightness.dark;
-    var buttonTextColor = (darkMode) ? Colors.black : Colors.white;
-    var buttonColor = (darkMode) ? Colors.white : Colors.black;
 
     var qrSVGPath = (Platform.isIOS)
         ? "assets/graphics/qr-ios.svg"
@@ -89,63 +87,78 @@ class _AddItemsOptionPageState extends State<AddItemsOptionPage> {
                   child: logoSVG,
                 ),
                 SizedBox(height: 32),
-                RaisedButton(
-                  elevation: 0,
-                  highlightElevation: 0,
-                  highlightColor:
-                  (darkMode) ? Colors.grey[300] : Colors.grey[700],
-                  onPressed: () {
-                    onScanQRClick(context);
-                  },
-                  color: buttonColor,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(LineIcons.qrcode_solid, color: buttonTextColor),
-                      SizedBox(width: 8),
-                      Text("Scan QR",
-                          style: TextStyles.buttonText
-                              .copyWith(color: buttonTextColor)),
-                    ],
-                  ),
-                ),
+                _scanQRButton(),
                 SizedBox(height: 8),
-                (_cameraPermissionsError.isNotEmpty)
-                    ? Center(
-                    child: Text(
-                      _cameraPermissionsError,
-                      style: TextStyles.buttonText
-                          .copyWith(color: Palette.medRed),
-                      textAlign: TextAlign.center,
-                    ))
-                    : Container(),
+                if(_cameraPermissionsError.isNotEmpty)
+                    _cameraUnavailableInfo(),
                 SizedBox(height: 12),
-                OutlineButton(
-                  onPressed: () {
-                    onInputManualClick(context);
-                  },
-                  borderSide: BorderSide(
-                    color: buttonColor,
-                    width: 4,
-                  ),
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  highlightedBorderColor: Colors.grey,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(LineIcons.pencil_alt_solid, color: buttonColor),
-                      SizedBox(width: 8),
-                      Text("Input manually",
-                          style: TextStyles.buttonText
-                              .copyWith(color: buttonColor)),
-                    ],
-                  ),
-                )
+                _inputManuallyButton(),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _cameraUnavailableInfo() {
+    return Text(
+      _cameraPermissionsError,
+      style: TextStyles.buttonText
+          .copyWith(color: Palette.medRed),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _scanQRButton() {
+    var darkMode = Theme.of(context).brightness == Brightness.dark;
+    var buttonTextColor = (darkMode) ? Colors.black : Colors.white;
+    var buttonColor = (darkMode) ? Colors.white : Colors.black;
+
+    return RaisedButton(
+      elevation: 0,
+      highlightElevation: 0,
+      highlightColor:
+      (darkMode) ? Colors.grey[300] : Colors.grey[700],
+      onPressed: () {
+        onScanQRClick(context);
+      },
+      color: buttonColor,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(LineIcons.qrcode_solid, color: buttonTextColor),
+          SizedBox(width: 8),
+          Text("Scan QR",
+              style: TextStyles.buttonText.copyWith(color: buttonTextColor)),
+        ],
+      ),
+    );
+  }
+
+  Widget _inputManuallyButton() {
+    var darkMode = Theme.of(context).brightness == Brightness.dark;
+    var buttonColor = (darkMode) ? Colors.white : Colors.black;
+
+    return OutlineButton(
+      onPressed: () {
+        onInputManualClick(context);
+      },
+      borderSide: BorderSide(
+        color: buttonColor,
+        width: 4,
+      ),
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      highlightedBorderColor: Colors.grey,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(LineIcons.pencil_alt_solid, color: buttonColor),
+          SizedBox(width: 8),
+          Text("Input manually",
+              style: TextStyles.buttonText.copyWith(color: buttonColor)),
+        ],
       ),
     );
   }

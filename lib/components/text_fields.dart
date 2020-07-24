@@ -27,13 +27,41 @@ class AdvancedFormTextField extends StatelessWidget {
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
-            hintText: hintText,
-            labelText: labelText,
-            filled: true,
-            border: UnderlineInputBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(12.0),
-                    topRight: Radius.circular(12.0)))),
+          hintText: hintText,
+          labelText: labelText,
+          filled: true,
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.transparent
+            ),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                  color: Colors.transparent
+              ),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          disabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+                color: Colors.transparent
+            ),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          errorBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+                color: Colors.transparent
+            ),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          border: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.transparent
+            ),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+
+      ),
         onChanged: onChanged);
   }
 }

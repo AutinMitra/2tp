@@ -118,33 +118,20 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
 
   @override
   Widget build(BuildContext context) {
+    AppBar appBar = _appBar();
+    var topPadding = MediaQuery.of(context).padding.top
+        + appBar.preferredSize.height;
+
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Theme
-            .of(context)
-            .scaffoldBackgroundColor
-            .withOpacity(0.8),
-        title: Text("Manual Input", style: TextStyles.appBarTitle),
-        leading: Padding(
-          padding: EdgeInsets.only(left: 14),
-          child: IconButton(
-            icon: Icon(LineIcons.angle_left_solid),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
-      ),
+      appBar: appBar,
       body: ScrollConfiguration(
         behavior: NoOverScrollBehavior(),
         child: Form(
           key: _formKey,
           child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            padding: EdgeInsets.fromLTRB(24, topPadding, 24, 0),
             children: <Widget>[
-              SizedBox(height: 84),
               _card ?? FakeTwoTPCard(),
               SizedBox(height: 16),
               _addItemButton(),
@@ -152,6 +139,26 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
               _textFields()
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  AppBar _appBar() {
+    return AppBar(
+      centerTitle: true,
+      backgroundColor: Theme
+          .of(context)
+          .scaffoldBackgroundColor
+          .withOpacity(0.8),
+      title: Text("Manual Input", style: TextStyles.appBarTitle),
+      leading: Padding(
+        padding: EdgeInsets.only(left: 14),
+        child: IconButton(
+          icon: Icon(LineIcons.angle_left_solid),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       ),
     );

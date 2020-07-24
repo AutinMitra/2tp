@@ -40,10 +40,6 @@ class _QRScanPageState extends State<QRScanPage> {
 
   @override
   Widget build(BuildContext context) {
-    var darkMode = Theme
-        .of(context)
-        .brightness == Brightness.dark;
-
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -71,7 +67,9 @@ class _QRScanPageState extends State<QRScanPage> {
     );
   }
 
-  // Process QR data on arrival
+  /// Process QR data on arrival.
+  /// [context] is the widget BuildContext
+  /// [controller] is the QRViewController for the QRView
   void _onQRViewCreated(BuildContext context, QRViewController controller) {
     this._controller = controller;
     // ignore: close_sinks
@@ -81,7 +79,7 @@ class _QRScanPageState extends State<QRScanPage> {
       setState(() {
         TOTPItem item;
         try {
-          // Parse the item
+          // Try Parsing the item
           item = TOTPItem.parseURI(data);
 
           // There is already data in the state, and the scan is not a duplicate
@@ -106,8 +104,9 @@ class _QRScanPageState extends State<QRScanPage> {
   }
 }
 
+/// The bottom bar of the QR page for holding buttons.
 class _QRBottomBar extends StatelessWidget {
-  // When the cancel button is clicked
+  // When the cancel button is clicked.
   void onCancelClick(context) {
     Navigator.pop(context);
   }
@@ -120,15 +119,13 @@ class _QRBottomBar extends StatelessWidget {
         width: double.infinity,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 24.0),
-          child: Expanded(
-            child: RaisedButton(
-              color: Palette.darkRed,
-              textColor: Colors.white,
-              child: Text("Cancel", style: TextStyles.buttonText),
-              onPressed: () {
-                onCancelClick(context);
-              },
-            ),
+          child: RaisedButton(
+            color: Palette.darkRed,
+            textColor: Colors.white,
+            child: Text("Cancel", style: TextStyles.buttonText),
+            onPressed: () {
+              onCancelClick(context);
+            },
           ),
         ),
       ),

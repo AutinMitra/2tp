@@ -11,7 +11,14 @@ import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
 import 'package:twotp/totp/totp.dart';
 
+class EditItemArguments {
+  final TOTPItem totpItem;
+
+  EditItemArguments(this.totpItem);
+}
+
 class EditItemPage extends StatefulWidget {
+  /// The TOTPItem that is being viewed
   final TOTPItem totpItem;
 
   EditItemPage(this.totpItem);
@@ -21,10 +28,10 @@ class EditItemPage extends StatefulWidget {
 }
 
 class _EditItemPageState extends State<EditItemPage> {
-  // Global key for the form
+  // Global key for the form.
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
-  // Look at all those controllers
+  // Controllers for text fields
   TextEditingController _secretController = TextEditingController();
   TextEditingController _accountNameController = TextEditingController();
   TextEditingController _issuerController = TextEditingController();
@@ -49,6 +56,7 @@ class _EditItemPageState extends State<EditItemPage> {
     return (val == null || val.isEmpty) ? null : val;
   }
 
+  /// Generates a dummy FakeTOTPCard from input data.
   Widget _generateCard() {
     // Get a proper result from text fields
     var accountName = _validateString(_accountNameController.text) ??
@@ -72,6 +80,7 @@ class _EditItemPageState extends State<EditItemPage> {
     return _card;
   }
 
+  // Removes the TOTP info
   void remove(BuildContext context) {
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
@@ -82,6 +91,7 @@ class _EditItemPageState extends State<EditItemPage> {
     // TODO: Are you sure box + toast
   }
 
+  /// Saves the TOTP info if valid
   void save(BuildContext context) {
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
@@ -129,35 +139,21 @@ class _EditItemPageState extends State<EditItemPage> {
 
   @override
   Widget build(BuildContext context) {
+    AppBar appBar = _appBar();
+    var topPadding = MediaQuery.of(context).padding.top
+        + appBar.preferredSize.height;
+
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Theme
-            .of(context)
-            .scaffoldBackgroundColor
-            .withOpacity(0.5),
-        title: Text("Edit Item", style: TextStyles.appBarTitle),
-        leading: Padding(
-          padding: EdgeInsets.only(left: 14),
-          child: IconButton(
-            icon: Icon(LineIcons.angle_left_solid),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
-      ),
+      appBar: _appBar(),
       body: ScrollConfiguration(
         behavior: NoOverScrollBehavior(),
         child: Form(
           key: _formKey,
           child: ListView(
-            physics: ClampingScrollPhysics(),
-            padding: EdgeInsets.fromLTRB(24, 0, 24, 0),
+            padding: EdgeInsets.fromLTRB(24, topPadding, 24, 0),
             shrinkWrap: true,
             children: <Widget>[
-              SizedBox(height: 84),
               Hero(tag: widget.totpItem.toString(), child: _generateCard()),
               SizedBox(height: 16),
               _saveOptions(),
@@ -170,7 +166,28 @@ class _EditItemPageState extends State<EditItemPage> {
     );
   }
 
-  // Row of button for either selecting save or remove
+  /// App bar for editing items page
+  AppBar _appBar() {
+    return AppBar(
+      centerTitle: true,
+      backgroundColor: Theme
+          .of(context)
+          .scaffoldBackgroundColor
+          .withOpacity(0.5),
+      title: Text("Edit Item", style: TextStyles.appBarTitle),
+      leading: Padding(
+        padding: EdgeInsets.only(left: 14),
+        child: IconButton(
+          icon: Icon(LineIcons.angle_left_solid),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
+  }
+
+  /// Row of buttons for either selecting save or remove.
   Widget _saveOptions() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -200,7 +217,7 @@ class _EditItemPageState extends State<EditItemPage> {
     );
   }
 
-  // All the text fields
+  /// All the text fields in the edit form.
   Widget _textFields() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

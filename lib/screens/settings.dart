@@ -40,13 +40,13 @@ class _SettingsPageState extends State<SettingsPage> {
       body: ScrollConfiguration(
         behavior: NoOverScrollBehavior(),
         child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-            children: [
-              SizedBox(height: 84),
-              _AppearancePanel(),
-              SizedBox(height: 12),
-              _SecurityPanel(),
-            ]
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+          children: [
+            SizedBox(height: 84),
+            _AppearancePanel(),
+            SizedBox(height: 12),
+            _SecurityPanel(),
+          ],
         ),
       ),
     );
@@ -58,17 +58,6 @@ class _AppearancePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ConfigBloc, ConfigState>(builder: (context, state) {
-      String mapThemeFromInt(int n) => n == 2 ? "System" : n == 1 ? "Dark" : "Light";
-
-      List<int> dropList = [0, 1, 2];
-      if(state is ChangedConfigState) {
-        if (state.themeValue == 1)
-          dropList = [1, 0, 2];
-        else if (state.themeValue == 2) dropList = [2, 0, 1];
-      }
-      // ignore: close_sinks
-      final ConfigBloc configBloc = BlocProvider.of<ConfigBloc>(context);
-      int configTheme = (state is ChangedConfigState) ? state.themeValue : 2;
       return Column(
         children: <Widget>[
           Row(
@@ -88,20 +77,7 @@ class _AppearancePanel extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton(
-                      hint: Text(mapThemeFromInt(configTheme)),
-                      onChanged: (val) {
-                        configBloc.add(ChangeConfigThemeEvent(val));
-                      },
-                      items: dropList.map((value) {
-                        return DropdownMenuItem(
-                          value: value,
-                          child: Text(mapThemeFromInt(value)),
-                        );
-                      }).toList()
-                  ),
-                ),
+                child: _dropDownMenu(context, state)
               )
             ],
           )
@@ -109,11 +85,56 @@ class _AppearancePanel extends StatelessWidget {
       );
     });
   }
+
+  /// [context] is the context of the Widget
+  /// [state] is the Bloc State
+  Widget _dropDownMenu(BuildContext context, ConfigState state) {
+    var light = ChangeConfigThemeEvent.LIGHT_MODE;
+    var dark = ChangeConfigThemeEvent.DARK_MODE;
+    var system = ChangeConfigThemeEvent.SYSTEM;
+
+    // Map the them value (int) to an actual name (String)
+    Map<int, String> int2theme = {
+      light: "Light",
+      dark: "Dark",
+      system: "System",
+    };
+
+    // Determine the order the list will show in the menu.
+    List<int> dropList = [light, dark, system];
+    if(state is ChangedConfigState) {
+      if (state.themeValue == dark)
+        dropList = [dark, light, system];
+      else if (state.themeValue == system) dropList = [system, light, dark];
+    }
+    // ignore: close_sinks
+    final ConfigBloc configBloc = BlocProvider.of<ConfigBloc>(context);
+    int configTheme = (state is ChangedConfigState) ? state.themeValue : system;
+
+    return  DropdownButtonHideUnderline(
+      child: DropdownButton(
+        elevation: 1,
+        hint: Text(int2theme[configTheme]),
+        onChanged: (val) {
+          configBloc.add(ChangeConfigThemeEvent(val));
+        },
+        items: dropList.map((value) {
+          return DropdownMenuItem(
+            value: value,
+            child: Text(int2theme[value]),
+          );
+        }).toList(),
+      ),
+    );
+  }
 }
 
-// The security panel in settings - currently controls fingerprint unlock
+// The security panel in settings - currently controls fingerprint unlock.
 class _SecurityPanel extends StatelessWidget {
 
+  /// Shows the authentication dialog.
+  /// [configBloc] is the Bloc containing configuration info
+  /// [value] is whether biometrics are on or off
   void _onBiometricsChange(ConfigBloc configBloc, bool value) async {
     var authenticated = await BiometricUtils.authenticate(
         reason: "Please authenticate to continue");
@@ -131,6 +152,7 @@ class _SecurityPanel extends StatelessWidget {
       // ignore: close_sinks
       final ConfigBloc configBloc = BlocProvider.of<ConfigBloc>(context);
 
+      // Check the biometrics status.
       bool biometricsEnabled = (state is ChangedConfigState) ? state
           .biometricsEnabled : false;
 
@@ -150,17 +172,17 @@ class _SecurityPanel extends StatelessWidget {
             children: <Widget>[
               Text("Biometrics", style: TextStyles.settingsItemHeader),
               Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Checkbox(
-                    value: biometricsEnabled,
-                    activeColor: (darkMode) ? Colors.white : Colors.black,
-                    checkColor: (darkMode) ? Colors.black : Colors.white,
-                    onChanged: (value) {
-                      _onBiometricsChange(configBloc, value);
-                    },
-                  )
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Checkbox(
+                  value: biometricsEnabled,
+                  activeColor: (darkMode) ? Colors.white : Colors.black,
+                  checkColor: (darkMode) ? Colors.black : Colors.white,
+                  onChanged: (value) {
+                    _onBiometricsChange(configBloc, value);
+                  },
+                ),
               ),
             ],
           )

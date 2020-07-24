@@ -15,11 +15,8 @@ class BiometricLoginPage extends StatefulWidget {
 }
 
 class _BiometricLoginPageState extends State<BiometricLoginPage> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
+  /// Authenticate the user on button click.
   Future<void> _authenticateUser(context) async {
     if (await BiometricUtils.authenticate(
         reason: "Please authenticate to continue")) {

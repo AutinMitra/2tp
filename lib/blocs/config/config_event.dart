@@ -10,6 +10,10 @@ abstract class ConfigEvent {}
 class ChangeConfigThemeEvent extends ConfigEvent {
   final int value;
 
+  static int LIGHT_MODE = 0;
+  static int DARK_MODE = 1;
+  static int SYSTEM = 2;
+
   ChangeConfigThemeEvent(this.value) : assert(value >= 0 && value <= 2);
 }
 

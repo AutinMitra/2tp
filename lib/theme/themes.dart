@@ -18,7 +18,7 @@ class Themes {
     appBarTheme: AppBarTheme(
       elevation: 0
     ),
-    fontFamily: 'Manrope'
+    fontFamily: 'Inter'
   );
 
   static final ThemeData darkMode = ThemeData(

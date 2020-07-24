@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:twotp/components/page_wrapper.dart';
 import 'package:twotp/screens/edit_item.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/totp/totp.dart';
@@ -106,11 +107,10 @@ class _TwoTPCardState extends State<TwoTPCard>
         ),
         child: InkWell(
           onLongPress: (widget.enableLongPress) ? () {
-            Navigator.push(
+            Navigator.pushNamed(
               context,
-              MaterialPageRoute<void>(
-                builder: (context) => EditItemPage(widget.totpItem),
-              ),
+              '/edit',
+              arguments: EditItemArguments(widget.totpItem)
             );
           } : null,
           splashColor: _splashColor,

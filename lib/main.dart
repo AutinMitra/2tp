@@ -10,6 +10,7 @@ import 'package:twotp/components/page_wrapper.dart';
 import 'package:twotp/screens/add_item_options.dart';
 import 'package:twotp/screens/advanced_totp.dart';
 import 'package:twotp/screens/biometric_login.dart';
+import 'package:twotp/screens/edit_item.dart';
 import 'package:twotp/screens/home.dart';
 import 'package:twotp/screens/qr_scan.dart';
 import 'package:twotp/screens/settings.dart';
@@ -73,8 +74,13 @@ class _TwoTPState extends State<TwoTP> {
           '/add/advanced': (context) =>
               PageWrapper(child: AdvancedTOTPPage()),
           '/settings': (context) => PageWrapper(child: SettingsPage()),
+          '/edit': (context) {
+            EditItemArguments args = ModalRoute.of(context).settings.arguments;
+            return PageWrapper(child: EditItemPage(args.totpItem));
+          }
         },
       );
     });
   }
 }
+

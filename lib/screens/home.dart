@@ -10,7 +10,6 @@ import 'package:twotp/components/cards.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/components/scroll_views.dart';
 import 'package:twotp/theme/text_styles.dart';
-import 'package:twotp/theme/values.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -24,26 +23,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     var darkMode = Theme.of(context).brightness == Brightness.dark;
 
-    String logoSVGPath = "assets/twotp-logo.svg";
-    final Widget logoSVG = SvgPicture.asset(
-      logoSVGPath,
-      color: (darkMode) ? Colors.white : Colors.black,
-    );
+    AppBar appBar = _appBar();
 
     return Scaffold(
+      appBar: appBar,
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-          backgroundColor:
-          Theme
-              .of(context)
-              .scaffoldBackgroundColor
-              .withOpacity(0.5),
-          centerTitle: true,
-          title: (_reordering)
-              ? Text("Reorder Cards", style: TextStyles.appBarTitle)
-              : SizedBox(child: logoSVG, height: 32, width: 32),
-          actions: _getActions(_reordering)
-      ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: (darkMode) ? Colors.white : Colors.black,
         elevation: 1.0,
@@ -62,6 +46,31 @@ class _HomePageState extends State<HomePage> {
         behavior: NoOverScrollBehavior(),
         child: _TOTPList(reordering: _reordering),
       ),
+    );
+  }
+
+  /// The Home AppBar
+  AppBar _appBar() {
+    var darkMode = Theme.of(context).brightness == Brightness.dark;
+
+    // Load the logo
+    String logoSVGPath = "assets/twotp-logo.svg";
+    final Widget logoSVG = SvgPicture.asset(
+      logoSVGPath,
+      color: (darkMode) ? Colors.white : Colors.black,
+    );
+
+    return AppBar(
+        backgroundColor:
+      Theme
+          .of(context)
+          .scaffoldBackgroundColor
+          .withOpacity(0.5),
+      centerTitle: true,
+      title: (_reordering)
+          ? Text("Reorder Cards", style: TextStyles.appBarTitle)
+          : SizedBox(child: logoSVG, height: 32, width: 32),
+      actions: _getActions(_reordering)
     );
   }
 
@@ -104,6 +113,7 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _TOTPList extends StatefulWidget {
+  /// Weather or not reordering is enabled
   final bool reordering;
 
   _TOTPList({@required this.reordering}) : assert(reordering != null);
@@ -114,6 +124,9 @@ class _TOTPList extends StatefulWidget {
 
 class _TOTPListState extends State<_TOTPList> {
 
+  /// Callback for a reordering even in ImprovedReorderableListView.
+  /// [from] is the index of item's original position.
+  /// [to] is the index of item's final position.
   void onReorder(int from, int to) {
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
@@ -124,52 +137,15 @@ class _TOTPListState extends State<_TOTPList> {
   Widget build(BuildContext context) {
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
+
     return BlocBuilder<TOTPBloc, TOTPState>(builder: (context, state) {
       if (state is UnitTOTPState) {
         totpBloc.add(FetchItemsEvent());
-        return Container();
+        return _unitContent();
       } else if (state is ChangedTOTPState && state.items.length == 0) {
-        // TODO: Replace with more fancy indicator, like an illustration
-        var screenHeight = MediaQuery.of(context).size.height;
-        var spacer = (screenHeight - ThemeValues.navbarHeight) / 2 - 100;
-        return ListView(
-          shrinkWrap: true,
-          children: <Widget>[
-            Center(
-              child: Column(
-                children: <Widget>[
-                  SizedBox(height: spacer),
-                  Center(
-                      child:
-                      Text("Nothing added", style: TextStyles.bodyInfoH1)),
-                  Center(
-                      child: Text("Click the + to add a token",
-                          style: TextStyles.bodyInfoH2)),
-                  SizedBox(height: spacer)
-                ],
-              ),
-            ),
-          ],
-        );
+        return _noItemsContent();
       } else if (state is ChangedTOTPState) {
-        // TODO: Add fancy intro animation
-        return ImprovedReorderableListView(
-          header: SizedBox(height: 84),
-          scrollController: ScrollController(),
-          enabled: widget.reordering,
-          onReorder: onReorder,
-          children: <Widget>[
-            for (var item in state.items)
-              ListTile(
-                contentPadding: EdgeInsets.fromLTRB(24, 0, 24, 12),
-                key: Key(item.toString()),
-                title: Hero(
-                  tag: item.toString(),
-                  child: TwoTPCard(item, enableLongPress: !widget.reordering),
-                ),
-              )
-          ],
-        );
+        return _hasCardsContent(state);
       }
       return Column(
         children: <Widget>[
@@ -177,5 +153,54 @@ class _TOTPListState extends State<_TOTPList> {
         ],
       );
     });
+  }
+
+  /// Content for home page when the cards have been uninitialized.
+  Widget _unitContent() {
+    return Container();
+  }
+
+  // Content for home page if there are no cards.
+  Widget _noItemsContent() {
+    // TODO: Replace with more fancy indicator, like an illustration
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Center(
+              child:
+              Text("Nothing added", style: TextStyles.bodyInfoH1)),
+          Center(
+              child: Text("Click the + to add a token",
+                  style: TextStyles.bodyInfoH2)),
+        ],
+      ),
+    );
+  }
+
+  /// Home page content if the cards are loaded and exist
+  /// [state] is the current TOTPState
+  Widget _hasCardsContent(ChangedTOTPState state) {
+    // TODO: Add fancy intro animation
+
+    var topPadding = MediaQuery.of(context).padding.top;
+
+    return ImprovedReorderableListView(
+      padding: EdgeInsets.only(top: topPadding),
+      scrollController: ScrollController(),
+      enabled: widget.reordering,
+      onReorder: onReorder,
+      children: <Widget>[
+        for (var item in state.items)
+          ListTile(
+            contentPadding: EdgeInsets.fromLTRB(24, 0, 24, 12),
+            key: Key(item.toString()),
+            title: Hero(
+              tag: item.toString(),
+              child: TwoTPCard(item, enableLongPress: !widget.reordering),
+            ),
+          ),
+      ],
+    );
   }
 }

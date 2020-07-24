@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:twotp/blocs/config/config_bloc.dart';
 import 'package:twotp/blocs/config/config_state.dart';
+import 'package:twotp/theme/palette.dart';
 
 class PageWrapper extends StatefulWidget {
   final Widget child;
@@ -50,11 +51,12 @@ class _PageWrapperState extends State<PageWrapper>
         .of(context)
         .brightness == Brightness.dark;
     var style = SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: darkMode ? Brightness.light : Brightness.dark,
-        systemNavigationBarColor: Theme
-            .of(context)
-            .scaffoldBackgroundColor);
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: darkMode ? Brightness.light : Brightness.dark,
+      systemNavigationBarColor: darkMode ? Palette.scDark : Palette.scLight,
+      systemNavigationBarIconBrightness: darkMode ? Brightness.light : Brightness.dark,
+    );
+
     SystemChrome.setSystemUIOverlayStyle(style);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
