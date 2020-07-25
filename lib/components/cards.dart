@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:twotp/components/page_wrapper.dart';
 import 'package:twotp/screens/edit_item.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/totp/totp.dart';
@@ -13,13 +12,13 @@ Color _shadowColor = Color(0x1A000000);
 Color _splashColor = Color(0x2ACFCFCF);
 double _gapSize = 8;
 
-// An actual, working Card producing correct codes
+/// An actual, working Card producing correct codes
 class TwoTPCard extends StatefulWidget {
-  // [totpItem] is a TOTPItem that is used by the card
+  /// [totpItem] is a TOTPItem that is used by the card to display codes
   final TOTPItem totpItem;
 
-  // [enableLongPress] enables long pressing to open card-specific options
-  // Default is true
+  /// [enableLongPress] enables long pressing to open card-specific options,
+  /// and is by default true
   final bool enableLongPress;
 
   TwoTPCard(this.totpItem, {this.enableLongPress = true});
@@ -71,12 +70,15 @@ class _TwoTPCardState extends State<TwoTPCard>
     _animationController.forward(from: _percentComplete);
     _animation = Tween(begin: 0.0, end: 1.0).animate(_animationController)
       ..addListener(() {
+        // Indicate a warning when there is 5 seconds let
         if (!_warning && _timeLeft <= 5)
           setState(() {
             _warning = true;
           });
       })
       ..addStatusListener((AnimationStatus status) {
+        // When the code duration is over, regenerate the card and update state
+        // This forces the card to redraw for a new code
         if (status == AnimationStatus.completed) {
           setState(() {
             _totpCode = _code;
@@ -90,10 +92,6 @@ class _TwoTPCardState extends State<TwoTPCard>
 
   @override
   Widget build(BuildContext context) {
-    var darkMode = (Theme
-        .of(context)
-        .brightness == Brightness.dark);
-
     return Material(
       borderRadius: BorderRadius.circular(_cardBorderRadius),
       clipBehavior: Clip.hardEdge,
@@ -156,10 +154,6 @@ class _TwoTPCardState extends State<TwoTPCard>
 
   // The inner content of the card
   Widget _cardContent() {
-    var darkMode = (Theme
-        .of(context)
-        .brightness == Brightness.dark);
-
     return Stack(
       children: <Widget>[
         SingleChildScrollView(
@@ -168,21 +162,20 @@ class _TwoTPCardState extends State<TwoTPCard>
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              widget.totpItem.accountName != "" ? Text(
-                widget.totpItem.accountName,
-                style: TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w500),
-              ) : Container(),
+              if(widget.totpItem.accountName != "")
+                Text(
+                  widget.totpItem.accountName,
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
               SizedBox(
                 height: 2,
               ),
-              (widget.totpItem.issuer != "" &&
+              if (widget.totpItem.issuer != "" &&
                   widget.totpItem.issuer != null)
-                  ? Text(
-                widget.totpItem.issuer,
-                style: TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.w700),
-              ) : Container(),
+                Text(
+                  widget.totpItem.issuer,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                ),
               SizedBox(
                 height: 12,
               ),
@@ -190,30 +183,39 @@ class _TwoTPCardState extends State<TwoTPCard>
             ],
           ),
         ),
-        Positioned(
-          right: 8,
-          top: 8,
-          child: AnimatedBuilder(
-            animation: _animation,
-            builder: (context, child) =>
-                Container(
-                  width: 24,
-                  height: 24,
-                  margin: EdgeInsets.only(right: 4.0),
-                  child: CircularProgressIndicator(
-                    value: _animation.value,
-                    strokeWidth: 5,
-                    backgroundColor: (darkMode)
-                        ? Color(0x3AFFFFFF)
-                        : Palette.scLight,
-                    valueColor: new AlwaysStoppedAnimation(
-                        (_warning) ? Palette.medRed : _spinnerColor
-                    ),
-                  ),
-                ),
-          ),
-        )
+        _animatedCircle(),
       ],
+    );
+  }
+
+  /// Creates an animated circle showing the duration left
+  Widget _animatedCircle() {
+    var darkMode = (Theme
+        .of(context)
+        .brightness == Brightness.dark);
+
+    return Positioned(
+      right: 8,
+      top: 8,
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) =>
+          Container(
+            width: 24,
+            height: 24,
+            margin: EdgeInsets.only(right: 4.0),
+            child: CircularProgressIndicator(
+              value: _animation.value,
+              strokeWidth: 5,
+              backgroundColor: (darkMode)
+                  ? Color(0x3AFFFFFF)
+                  : Palette.scLight,
+              valueColor: new AlwaysStoppedAnimation(
+                  (_warning) ? Palette.medRed : _spinnerColor
+              ),
+            ),
+          ),
+      ),
     );
   }
 }
@@ -221,19 +223,19 @@ class _TwoTPCardState extends State<TwoTPCard>
 // A fake/dummy card that produces an output similar to that of TwoTPCard
 // Used for visualization
 class FakeTwoTPCard extends StatelessWidget {
-  // [digits] is the length of the code
+  /// [digits] is the length of the code
   final int digits;
 
-  // [period] is how long each code will last
+  /// [period] is how long each code will last
   final int period;
 
-  // [algorithm] is the algorithm being used
+  /// [algorithm] is the algorithm being used
   final String algorithm;
 
-  // [accountName] is the label, or user of the code
+  /// [accountName] is the label, or user of the code
   final String accountName;
 
-  // [issuer] is the provider of the code
+  /// [issuer] is the provider of the code
   final String issuer;
 
   FakeTwoTPCard(
@@ -243,6 +245,7 @@ class FakeTwoTPCard extends StatelessWidget {
       this.accountName = "",
       this.issuer = ""});
 
+  /// Gets the current TOTPItem and returns a Widget displaying the TOTP numbers
   Widget _getCode() {
     List<Widget> numbers = [];
     // Check for the correct number of digits
@@ -300,47 +303,47 @@ class FakeTwoTPCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            accountName != "" && accountName != null
-                ? Text(
-              accountName,
-              style: TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w500),
-            )
-                : Container(),
+            if(accountName != "" && accountName != null)
+              Text(
+                accountName,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
             SizedBox(
               height: 2,
             ),
-            issuer != "" && issuer != null
-                ? Text(
-              issuer,
-              style: TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.w700),
-            )
-                : Container(),
+            if(issuer != "" && issuer != null)
+              Text(
+                issuer,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+              ),
             SizedBox(
               height: 12,
             ),
             _getCode(),
           ],
         ),
-        Positioned(
-          right: 8,
-          top: 8,
-          child: Container(
-            width: 24,
-            height: 24,
-            margin: EdgeInsets.only(right: 4.0),
-            child: CircularProgressIndicator(
-              value: 0.3,
-              strokeWidth: 5,
-              backgroundColor: (darkMode)
-                  ? Color(0x3AFFFFFF)
-                  : Palette.scLight,
-              valueColor: new AlwaysStoppedAnimation(_spinnerColor),
-            ),
-          ),
-        ),
+        _animatedCircle(darkMode: darkMode),
       ],
+    );
+  }
+
+  Widget _animatedCircle({@required darkMode}) {
+   return Positioned(
+      right: 8,
+      top: 8,
+      child: Container(
+        width: 24,
+        height: 24,
+        margin: EdgeInsets.only(right: 4.0),
+        child: CircularProgressIndicator(
+          value: 0.3,
+          strokeWidth: 5,
+          backgroundColor: (darkMode)
+              ? Color(0x3AFFFFFF)
+              : Palette.scLight,
+          valueColor: new AlwaysStoppedAnimation(_spinnerColor),
+        ),
+      ),
     );
   }
 }

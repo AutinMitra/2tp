@@ -17,6 +17,7 @@ class BiometricLoginPage extends StatefulWidget {
 class _BiometricLoginPageState extends State<BiometricLoginPage> {
 
   /// Authenticate the user on button click.
+  // TODO: Migrate to its own service class
   Future<void> _authenticateUser(context) async {
     if (await BiometricUtils.authenticate(
         reason: "Please authenticate to continue")) {
@@ -33,9 +34,6 @@ class _BiometricLoginPageState extends State<BiometricLoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    var darkMode = Theme.of(context).brightness == Brightness.dark;
-    var buttonTextColor = (darkMode) ? Colors.black : Colors.white;
-
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -57,33 +55,41 @@ class _BiometricLoginPageState extends State<BiometricLoginPage> {
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 18),
-                    RaisedButton(
-                      onPressed: () {
-                        _authenticateUser(context);
-                      },
-                      elevation: 0,
-                      highlightElevation: 0,
-                      color: (darkMode) ? Colors.white : Colors.black,
-                      highlightColor:
-                      (darkMode) ? Colors.grey[300] : Colors.grey[700],
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Icon(LineIcons.fingerprint_solid,
-                              color: buttonTextColor),
-                          SizedBox(width: 8),
-                          Text("Authenticate",
-                              style: TextStyles.buttonText
-                                  .copyWith(color: buttonTextColor)),
-                        ],
-                      ),
-                    ),
+                    _authenticationButton()
                   ],
                 ),
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  /// Button to activate authentication procedures
+  Widget _authenticationButton() {
+    var darkMode = Theme.of(context).brightness == Brightness.dark;
+    var buttonTextColor = (darkMode) ? Colors.black : Colors.white;
+
+    return RaisedButton(
+      onPressed: () {
+        _authenticateUser(context);
+      },
+      elevation: 0,
+      highlightElevation: 0,
+      color: (darkMode) ? Colors.white : Colors.black,
+      highlightColor:
+      (darkMode) ? Colors.grey[300] : Colors.grey[700],
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(LineIcons.fingerprint_solid,
+              color: buttonTextColor),
+          SizedBox(width: 8),
+          Text("Authenticate",
+              style: TextStyles.buttonText
+                  .copyWith(color: buttonTextColor)),
+        ],
       ),
     );
   }

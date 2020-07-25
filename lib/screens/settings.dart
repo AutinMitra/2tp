@@ -89,8 +89,8 @@ class _AppearancePanel extends StatelessWidget {
   /// [context] is the context of the Widget
   /// [state] is the Bloc State
   Widget _dropDownMenu(BuildContext context, ConfigState state) {
-    var light = ChangeConfigThemeEvent.LIGHT_MODE;
-    var dark = ChangeConfigThemeEvent.DARK_MODE;
+    var light = ChangeConfigThemeEvent.LIGHT;
+    var dark = ChangeConfigThemeEvent.DARK;
     var system = ChangeConfigThemeEvent.SYSTEM;
 
     // Map the them value (int) to an actual name (String)

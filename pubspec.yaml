@@ -26,13 +26,14 @@ dependencies:
   path_provider: ^1.6.0
   uuid: ^2.0.4
   flutter_secure_storage: ^3.3.1+1
-  qr_code_scanner: ^0.0.12
-  flutter_svg: ^0.17.4
+  qr_code_scanner: ^0.0.13
+  flutter_svg: 0.17.4
   line_icons:
     git:
       url: "https://github.com/galonsos/line_icons.git"
   local_auth: ^0.6.2+2
   permission_handler: ^5.0.0+hotfix.5
+  styled_widget: ^0.2.1+2
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
