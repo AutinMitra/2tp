@@ -89,7 +89,7 @@ class TOTPItem extends Equatable {
       this.algorithm = "SHA1",
       this.accountName = "",
       this.issuer = "",
-      this.colorConfig = CardColors.defaultConfig})
+      this.colorConfig})
       : assert(digits == 6 || digits == 8),
         assert(period > 0),
         assert(algorithm == "SHA1" ||
@@ -102,10 +102,11 @@ class TOTPItem extends Equatable {
     algorithm = "SHA1",
     accountName = "",
     issuer = "",
-    colorConfig = CardColors.defaultConfig
+    colorConfig
   }) {
-    if(CardColors.colors.containsKey(issuer.toLowerCase()))
-      colorConfig = CardColors.colors[issuer.toLowerCase()];
+    colorConfig = colorConfig ?? CardColors.defaultConfig;
+    if(CardColors.colors.containsKey(issuer?.toLowerCase()))
+      colorConfig = CardColors.colors[issuer?.toLowerCase()];
     return TOTPItem._internal(secret, id,
       digits: digits,
       period: period,
@@ -168,8 +169,8 @@ class TOTPItem extends Equatable {
       algorithm = queryParameters["algorithm"].toUpperCase();
 
     var colorConfig = CardColors.defaultConfig;
-    if(CardColors.colors.containsKey(issuer.toLowerCase()))
-      colorConfig = CardColors.colors[issuer.toLowerCase()];
+    if(CardColors.colors.containsKey(issuer?.toLowerCase()))
+      colorConfig = CardColors.colors[issuer?.toLowerCase()];
 
     // Validate, otherwise throw error
     try {
@@ -234,8 +235,7 @@ class TOTPItem extends Equatable {
       "accountName": accountName,
       "issuer": issuer,
       "id": id,
-      "cardColor": colorConfig.color.value,
-      "cardDark": colorConfig.dark
+      ...colorConfig.toJson(),
     };
   }
 

@@ -25,9 +25,10 @@ class TwoTPCard extends StatefulWidget {
   /// and is by default true
   final bool enableLongPress;
 
-  TwoTPCard(this.totpItem, {
-      this.enableLongPress = true,
-    });
+  TwoTPCard(
+    this.totpItem, {
+    this.enableLongPress = true,
+  });
 
   @override
   _TwoTPCardState createState() => _TwoTPCardState();
@@ -38,8 +39,7 @@ class _TwoTPCardState extends State<TwoTPCard>
   AnimationController _animationController;
   Animation<double> _animation;
 
-  double get _secondsSinceEpoch =>
-      DateTime.now().millisecondsSinceEpoch / 1000;
+  double get _secondsSinceEpoch => DateTime.now().millisecondsSinceEpoch / 1000;
 
   int get _timeLeft =>
       widget.totpItem.period - _secondsSinceEpoch ~/ 1 % widget.totpItem.period;
@@ -107,45 +107,36 @@ class _TwoTPCardState extends State<TwoTPCard>
   @override
   Widget build(BuildContext context) {
     final cardItem = ({Widget child}) => Styled.widget(child: child)
-      .borderRadius(all: _cardBorderRadius)
-      .ripple(
-        highlightColor: Colors.transparent,
-        splashColor: _splashColor
-      )
-      .backgroundColor(widget.totpItem.colorConfig.color, animate: true)
-      .clipRRect(all: _cardBorderRadius)
-      .borderRadius(all: _cardBorderRadius, animate: true)
-      .elevation(
-        pressed ? 0 : 20,
-        borderRadius: BorderRadius.circular(_cardBorderRadius),
-        shadowColor: widget.totpItem.colorConfig.color.withOpacity(0.3)
-      )
-      .gestures(
-        onTapChange: (tapStatus) => setState(() => pressed = tapStatus),
-        onTap: () => _copyToClipboard(),
-        onLongPress: (widget.enableLongPress) ? () {
-          HapticFeedback.heavyImpact();
-          Navigator.pushNamed(
-              context,
-              '/edit',
-              arguments: EditItemArguments(widget.totpItem)
-          );
-        } : null,
-      )
-      .scale(pressed ? 0.95 : 1.0, animate: true)
-      .animate(Duration(milliseconds: 150), Curves.easeOut);
+        .borderRadius(all: _cardBorderRadius)
+        .ripple(highlightColor: Colors.transparent, splashColor: _splashColor)
+        .backgroundColor(widget.totpItem.colorConfig.color, animate: true)
+        .clipRRect(all: _cardBorderRadius)
+        .borderRadius(all: _cardBorderRadius, animate: true)
+        .elevation(pressed ? 0 : 20,
+            borderRadius: BorderRadius.circular(_cardBorderRadius),
+            shadowColor: widget.totpItem.colorConfig.color.withOpacity(0.3))
+        .gestures(
+          onTapChange: (tapStatus) => setState(() => pressed = tapStatus),
+          onTap: () => _copyToClipboard(),
+          onLongPress: (widget.enableLongPress)
+              ? () {
+                  HapticFeedback.heavyImpact();
+                  Navigator.pushNamed(context, '/edit',
+                      arguments: EditItemArguments(widget.totpItem));
+                }
+              : null,
+        )
+        .scale(pressed ? 0.95 : 1.0, animate: true)
+        .animate(Duration(milliseconds: 150), Curves.easeOut);
 
-    var textColor = widget.totpItem.colorConfig.dark
-      ? Colors.white
-      : Colors.black;
+    var textColor =
+        widget.totpItem.colorConfig.dark ? Colors.white : Colors.black;
 
     return cardItem(
       child: Padding(
         padding: EdgeInsets.all(24),
         child: DefaultTextStyle(
-          style: TextStyle(color: textColor),
-          child: _cardContent()
-        ),
+            style: TextStyle(color: textColor), child: _cardContent()),
       ),
     );
   }
@@ -165,6 +156,7 @@ class _TwoTPCardState extends State<TwoTPCard>
         smallDigits: (digits > 6),
         warning: _warning,
         dark: widget.totpItem.colorConfig.dark,
+        bgColor: widget.totpItem.colorConfig.numberBgColor,
       ));
       if (i == validDig / 2 - 1) numbers.add(SizedBox(width: _gapSize));
     }
@@ -188,7 +180,7 @@ class _TwoTPCardState extends State<TwoTPCard>
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              if(widget.totpItem.accountName != "")
+              if (widget.totpItem.accountName != "")
                 Text(
                   widget.totpItem.accountName,
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
@@ -223,23 +215,19 @@ class _TwoTPCardState extends State<TwoTPCard>
       top: 8,
       child: AnimatedBuilder(
         animation: _animation,
-        builder: (context, child) =>
-          Container(
-            width: 24,
-            height: 24,
-            margin: EdgeInsets.only(right: 4.0),
-            child: CircularProgressIndicator(
-              value: _animation.value,
-              strokeWidth: 5,
-              backgroundColor: (dark)
-                  ? _spinnerBgDark
-                  : _spinnerBg,
-              valueColor: new AlwaysStoppedAnimation(
-                  (_warning) ? Palette.medRed :
-                    dark ? _spinnerColorDark : _spinnerColor
-              ),
-            ),
+        builder: (context, child) => Container(
+          width: 24,
+          height: 24,
+          margin: EdgeInsets.only(right: 4.0),
+          child: CircularProgressIndicator(
+            value: _animation.value,
+            strokeWidth: 5,
+            backgroundColor: (dark) ? _spinnerBgDark : _spinnerBg,
+            valueColor: new AlwaysStoppedAnimation((_warning)
+                ? Palette.medRed
+                : dark ? _spinnerColorDark : _spinnerColor),
           ),
+        ),
       ),
     );
   }
@@ -264,20 +252,38 @@ class FakeTwoTPCard extends StatefulWidget {
   /// [colorConfig] is the background color of the card
   final CardColorConfig colorConfig;
 
+  FakeTwoTPCard._internal({
+    this.digits = 6,
+    this.period = 30,
+    this.algorithm = "SHA1",
+    this.accountName = "",
+    this.issuer = "",
+    @required this.colorConfig,
+  }) : assert(colorConfig != null);
 
-  FakeTwoTPCard(
-      {
-        this.digits = 6,
-        this.period = 30,
-        this.algorithm = "SHA1",
-        this.accountName = "",
-        this.issuer = "",
-        this.colorConfig = CardColors.defaultConfig,
-      });
+  factory FakeTwoTPCard({
+    digits = 6,
+    period = 30,
+    algorithm = "SHA1",
+    accountName = "",
+    issuer = "",
+  }) {
+    var colorConfig = CardColors.defaultConfig;
+    if(CardColors.colors.containsKey(issuer?.toLowerCase()))
+      colorConfig = CardColors.colors[issuer?.toLowerCase()];
+
+    return FakeTwoTPCard._internal(
+      digits: digits,
+      period: period,
+      algorithm: algorithm,
+      accountName: accountName,
+      issuer: issuer,
+      colorConfig: colorConfig,
+    );
+  }
 
   @override
   _FakeTwoTPCardState createState() => _FakeTwoTPCardState();
-
 }
 
 // A fake/dummy card that produces an output similar to that of TwoTPCard
@@ -298,6 +304,7 @@ class _FakeTwoTPCardState extends State<FakeTwoTPCard> {
         number: "$i",
         smallDigits: (digits >= 8),
         dark: widget.colorConfig.dark,
+        bgColor: widget.colorConfig.numberBgColor,
       ));
       if (i == validDig / 2) numbers.add(SizedBox(width: _gapSize));
     }
@@ -315,35 +322,26 @@ class _FakeTwoTPCardState extends State<FakeTwoTPCard> {
   Widget build(BuildContext context) {
     final cardItem = ({Widget child}) => Styled.widget(child: child)
         .borderRadius(all: _cardBorderRadius)
-        .ripple(
-          highlightColor: Colors.transparent,
-          splashColor: _splashColor
-        )
+        .ripple(highlightColor: Colors.transparent, splashColor: _splashColor)
         .backgroundColor(widget.colorConfig.color, animate: true)
         .clipRRect(all: _cardBorderRadius)
         .borderRadius(all: _cardBorderRadius, animate: true)
-        .elevation(
-          pressed ? 0 : 20,
-          borderRadius: BorderRadius.circular(_cardBorderRadius),
-        shadowColor: widget.colorConfig.color.withOpacity(0.3)
-        )
+        .elevation(pressed ? 0 : 20,
+            borderRadius: BorderRadius.circular(_cardBorderRadius),
+            shadowColor: widget.colorConfig.color.withOpacity(0.3))
         .gestures(
           onTapChange: (tapStatus) => setState(() => pressed = tapStatus),
         )
         .scale(pressed ? 0.95 : 1.0, animate: true)
         .animate(Duration(milliseconds: 150), Curves.easeOut);
 
-    var textColor = widget.colorConfig.dark
-        ? Colors.white
-        : Colors.black;
+    var textColor = widget.colorConfig.dark ? Colors.white : Colors.black;
 
     return cardItem(
       child: Padding(
         padding: EdgeInsets.all(24),
         child: DefaultTextStyle(
-          style: TextStyle(color: textColor),
-          child: _cardContent()
-        ),
+            style: TextStyle(color: textColor), child: _cardContent()),
       ),
     );
   }
@@ -358,7 +356,7 @@ class _FakeTwoTPCardState extends State<FakeTwoTPCard> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            if(accountName != "" && accountName != null)
+            if (accountName != "" && accountName != null)
               Text(
                 accountName,
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
@@ -366,7 +364,7 @@ class _FakeTwoTPCardState extends State<FakeTwoTPCard> {
             SizedBox(
               height: 2,
             ),
-            if(issuer != "" && issuer != null)
+            if (issuer != "" && issuer != null)
               Text(
                 issuer,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
@@ -395,10 +393,9 @@ class _FakeTwoTPCardState extends State<FakeTwoTPCard> {
         child: CircularProgressIndicator(
           value: 0.3,
           strokeWidth: 5,
-          backgroundColor: (dark)
-              ? _spinnerBgDark
-              : _spinnerBg,
-          valueColor: new AlwaysStoppedAnimation(dark ? _spinnerColorDark : _spinnerColor),
+          backgroundColor: (dark) ? _spinnerBgDark : _spinnerBg,
+          valueColor: new AlwaysStoppedAnimation(
+              dark ? _spinnerColorDark : _spinnerColor),
         ),
       ),
     );
@@ -418,21 +415,29 @@ class _NumberSlot extends StatelessWidget {
 
   final bool dark;
 
+  final Color bgColor;
+
   _NumberSlot(
-      {this.warning: false, this.smallDigits: false, @required this.dark, @required this.number})
+      {this.warning: false,
+      this.smallDigits: false,
+      @required this.dark,
+      @required this.number,
+      @required this.bgColor})
       : assert(number != null),
         assert(dark != null),
+        assert(bgColor != null),
         assert(number.length == 1);
 
   @override
   Widget build(BuildContext context) {
     var appModeIsDark = Theme.of(context).brightness == Brightness.dark;
-    var textColor = warning ? Palette.medRed : dark ? Colors.white : Colors.black;
+    var textColor =
+        warning ? Palette.medRed : dark ? Colors.white : Colors.black;
     // Choose the current background color based on brightness
-    var bgColor = (dark) ? Color(0x40000000) : Color(0x40FFFFFF);
-    if(warning) {
-      bgColor = (appModeIsDark) ? Palette.scDark : Palette.lightRed;
-    }
+    var normalBgColor = bgColor;
+//    if (warning) {
+//      normalBgColor = (appModeIsDark) ? Palette.scDark : Palette.lightRed;
+//    }
 
     // Choose the digit size based on [smallDigits]
     double digitSize = (smallDigits) ? 20 : 24;
@@ -445,7 +450,7 @@ class _NumberSlot extends StatelessWidget {
       margin: EdgeInsets.only(right: horizontalSpacing),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: bgColor,
+        color: normalBgColor,
       ),
       duration: Duration(milliseconds: 300),
       child: Center(
@@ -453,9 +458,9 @@ class _NumberSlot extends StatelessWidget {
         child: AnimatedDefaultTextStyle(
           duration: Duration(milliseconds: 300),
           style: TextStyle(
-              color: textColor,
-              fontWeight: FontWeight.bold,
-              fontSize: digitSize,
+            color: textColor,
+            fontWeight: FontWeight.bold,
+            fontSize: digitSize,
             fontFamily: "JetBrainsMono",
           ),
           child: Text(

@@ -85,10 +85,6 @@ class _EditItemPageState extends State<EditItemPage> {
     var algorithm =
         _validateString(_algorithmController.text) ?? widget.totpItem.algorithm;
 
-    var colorConfig = CardColors.defaultConfig;
-    if(CardColors.colors.containsKey(issuer.toLowerCase()))
-      colorConfig = CardColors.colors[issuer.toLowerCase()];
-
     // Update the card with new info
     setState(() {
       _card = FakeTwoTPCard(
@@ -97,7 +93,6 @@ class _EditItemPageState extends State<EditItemPage> {
         algorithm: algorithm,
         accountName: accountName,
         issuer: issuer,
-        colorConfig: colorConfig,
       );
     });
     return _card;

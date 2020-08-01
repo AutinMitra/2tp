@@ -89,9 +89,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
     var digits = _validateInt(_digitsController.text) ?? 6;
     var period = _validateInt(_periodController.text) ?? 30;
     var algorithm = _validateString(_algorithmController.text) ?? "SHA1";
-    var colorConfig = CardColors.defaultConfig;
-    if(CardColors.colors.containsKey(issuer?.toLowerCase()))
-      colorConfig = CardColors.colors[issuer.toLowerCase()];
+
     // Update the card
     setState(() {
       _card = FakeTwoTPCard(
@@ -100,7 +98,6 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
         algorithm: algorithm,
         accountName: accountName,
         issuer: issuer,
-        colorConfig: colorConfig,
       );
     });
     return _card;

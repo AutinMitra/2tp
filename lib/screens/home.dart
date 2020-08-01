@@ -30,15 +30,18 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: appBar,
       extendBodyBehindAppBar: true,
-      floatingActionButton: CustomIconButton(
-        color: Palette.primary,
-        iconColor: Colors.white,
-        icon: LineIcons.plus_solid,
-        onTap: () {
-          Navigator.pushNamed(context, "/add");
-        },
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(right: 8.0),
+        child: CustomIconButton(
+          color: darkMode ? Colors.white : Colors.black,
+          iconColor: darkMode ? Colors.black : Colors.white,
+          icon: LineIcons.plus_solid,
+          onTap: () {
+            Navigator.pushNamed(context, "/add");
+          },
+        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: ScrollConfiguration(
         behavior: NoOverScrollBehavior(),
         child: _TOTPList(reordering: _reordering),
