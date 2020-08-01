@@ -9,7 +9,8 @@ import 'package:twotp/totp/totp.dart';
 
 // Some constants shared between the classes
 double _cardBorderRadius = 32;
-Color _spinnerColor = Palette.medBlue;
+Color _spinnerColor = Colors.black;
+Color _spinnerColorDark = Colors.white;
 Color _splashColor = Color(0x2ACFCFCF);
 Color _spinnerBg = Color(0x30000000);
 Color _spinnerBgDark = Color(0x30FFFFFF);
@@ -160,7 +161,11 @@ class _TwoTPCardState extends State<TwoTPCard>
     // Convert the code to Widgets
     for (int i = 0; i < validDig; i++) {
       numbers.add(_NumberSlot(
-          number: code[i], smallDigits: (digits > 6), warning: _warning));
+        number: code[i],
+        smallDigits: (digits > 6),
+        warning: _warning,
+        dark: widget.totpItem.colorConfig.dark,
+      ));
       if (i == validDig / 2 - 1) numbers.add(SizedBox(width: _gapSize));
     }
 
@@ -230,7 +235,8 @@ class _TwoTPCardState extends State<TwoTPCard>
                   ? _spinnerBgDark
                   : _spinnerBg,
               valueColor: new AlwaysStoppedAnimation(
-                  (_warning) ? Palette.medRed : _spinnerColor
+                  (_warning) ? Palette.medRed :
+                    dark ? _spinnerColorDark : _spinnerColor
               ),
             ),
           ),
@@ -288,7 +294,11 @@ class _FakeTwoTPCardState extends State<FakeTwoTPCard> {
 
     // Add all the numbers as UI components, plus a space in the middle
     for (int i = 1; i <= validDig; i++) {
-      numbers.add(_NumberSlot(number: "$i", smallDigits: (digits >= 8)));
+      numbers.add(_NumberSlot(
+        number: "$i",
+        smallDigits: (digits >= 8),
+        dark: widget.colorConfig.dark,
+      ));
       if (i == validDig / 2) numbers.add(SizedBox(width: _gapSize));
     }
 
@@ -388,7 +398,7 @@ class _FakeTwoTPCardState extends State<FakeTwoTPCard> {
           backgroundColor: (dark)
               ? _spinnerBgDark
               : _spinnerBg,
-          valueColor: new AlwaysStoppedAnimation(_spinnerColor),
+          valueColor: new AlwaysStoppedAnimation(dark ? _spinnerColorDark : _spinnerColor),
         ),
       ),
     );
@@ -406,22 +416,23 @@ class _NumberSlot extends StatelessWidget {
   // [number] is a single one character
   final String number;
 
+  final bool dark;
+
   _NumberSlot(
-      {this.warning: false, this.smallDigits: false, @required this.number})
+      {this.warning: false, this.smallDigits: false, @required this.dark, @required this.number})
       : assert(number != null),
+        assert(dark != null),
         assert(number.length == 1);
 
   @override
   Widget build(BuildContext context) {
-    var darkMode = Theme.of(context).brightness == Brightness.dark;
-    // Choose the current text color based on brightness and warning
-    var textColor = (warning)
-        ? Palette.medRed
-        : (darkMode) ? Palette.textDark : Palette.medBlue;
-    // Choose the current background color based on brightness and warning
-    var bgColor = (darkMode)
-        ? Color(0xFF252525)
-        : (warning) ? Palette.lightRed : Palette.lightBlue;
+    var appModeIsDark = Theme.of(context).brightness == Brightness.dark;
+    var textColor = warning ? Palette.medRed : dark ? Colors.white : Colors.black;
+    // Choose the current background color based on brightness
+    var bgColor = (dark) ? Color(0x40000000) : Color(0x40FFFFFF);
+    if(warning) {
+      bgColor = (appModeIsDark) ? Palette.scDark : Palette.lightRed;
+    }
 
     // Choose the digit size based on [smallDigits]
     double digitSize = (smallDigits) ? 20 : 24;
