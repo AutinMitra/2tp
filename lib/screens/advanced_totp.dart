@@ -5,6 +5,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/blocs/totp/totp_state.dart';
+import 'package:twotp/components/buttons.dart';
 import 'package:twotp/components/cards.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/components/text_fields.dart';
@@ -33,7 +34,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
   // [_card] A fake card that displays info based on TOTP characteristics
   FakeTwoTPCard _card;
 
-  void addItem(BuildContext context) {
+  void addItem() {
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
 
@@ -165,13 +166,11 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
   }
 
   Widget _addItemButton() {
-    return RaisedButton(
+    return CustomRaisedButton(
       color: Palette.primary,
       textColor: Colors.white,
-      child: Text("Add Item", style: TextStyles.buttonText),
-      onPressed: () {
-        addItem(context);
-      },
+      child: Text("Add Item",  style: TextStyles.buttonText),
+      onTap: addItem,
     );
   }
 

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:qr_code_scanner/qr_scanner_overlay_shape.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/blocs/totp/totp_state.dart';
+import 'package:twotp/components/buttons.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
 import 'package:twotp/totp/totp.dart';
@@ -36,35 +35,6 @@ class _QRScanPageState extends State<QRScanPage> {
   void dispose() {
     super.dispose();
     _controller?.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 2,
-            child: Stack(
-              children: <Widget>[
-                QRView(
-                  key: qrKey,
-                  onQRViewCreated: (controller) {
-                    _onQRViewCreated(context, controller);
-                  },
-                  overlay: QrScannerOverlayShape(
-                      borderRadius: 10,
-                      borderColor: Palette.accent,
-                      borderWidth: 16.0,
-                      overlayColor: Color(0x9A000000)),
-                ),
-                _QRBottomBar()
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   /// Process QR data on arrival.
@@ -102,30 +72,48 @@ class _QRScanPageState extends State<QRScanPage> {
       _lastQrScan = data;
     });
   }
-}
-
-/// The bottom bar of the QR page for holding buttons.
-class _QRBottomBar extends StatelessWidget {
-  // When the cancel button is clicked.
-  void onCancelClick(context) {
-    Navigator.pop(context);
-  }
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 2,
+            child: Stack(
+              children: <Widget>[
+                QRView(
+                  key: qrKey,
+                  onQRViewCreated: (controller) {
+                    _onQRViewCreated(context, controller);
+                  },
+                  overlay: QrScannerOverlayShape(
+                      borderRadius: 10,
+                      borderColor: Palette.accent,
+                      borderWidth: 16.0,
+                      overlayColor: Color(0x9A000000)),
+                ),
+                _bottomBar()
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _bottomBar() {
     return Align(
       alignment: Alignment.bottomCenter,
       child: SizedBox(
         width: double.infinity,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 24.0),
-          child: RaisedButton(
+          child: CustomRaisedButton(
             color: Palette.darkRed,
             textColor: Colors.white,
-            child: Text("Cancel", style: TextStyles.buttonText),
-            onPressed: () {
-              onCancelClick(context);
-            },
+            child: Text("Cancel",  style: TextStyles.buttonText),
+            onTap: () { Navigator.pop(context); },
           ),
         ),
       ),

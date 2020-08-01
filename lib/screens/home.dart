@@ -6,9 +6,11 @@ import 'package:line_icons/line_icons.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
 import 'package:twotp/blocs/totp/totp_state.dart';
+import 'package:twotp/components/buttons.dart';
 import 'package:twotp/components/cards.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/components/scroll_views.dart';
+import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
 
 class HomePage extends StatefulWidget {
@@ -28,16 +30,11 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: appBar,
       extendBodyBehindAppBar: true,
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: (darkMode) ? Colors.white : Colors.black,
-        elevation: 1.0,
-        highlightElevation: 4.0,
-        icon: Icon(
-            Icons.add, color: (darkMode) ? Colors.black : Colors.white),
-        label: Text("Add Code", style: TextStyles.addItemButtonText.copyWith(
-            color: (darkMode) ? Colors.black : Colors.white
-        )),
-        onPressed: () {
+      floatingActionButton: CustomIconButton(
+        color: Palette.primary,
+        iconColor: Colors.white,
+        icon: LineIcons.plus_solid,
+        onTap: () {
           Navigator.pushNamed(context, "/add");
         },
       ),

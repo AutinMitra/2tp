@@ -14,9 +14,9 @@ class Palette {
   static const defaultCardColor = Color(0xFF474A53);
 
   // Mode-specific
-  static const bgDark = Color(0xFF303135);
+  static const bgDark = Color(0xFF000000);
   static const bgLight = Color(0xFFFFFFFF);
-  static const scDark = Color(0xFF000000);
+  static const scDark = Color(0xFF1f1f1f);
   static const scLight = Color(0xFFf5f5f5);
   static const textDark = Color(0xFFFFFFFF);
   static const textLight = Color(0xFF000000);

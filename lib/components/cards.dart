@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:styled_widget/styled_widget.dart';
 import 'package:twotp/screens/edit_item.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/totp/totp.dart';
 
 // Some constants shared between the classes
 double _cardBorderRadius = 32;
-double _elevation = 16;
 Color _spinnerColor = Palette.medBlue;
-Color _shadowColor = Color(0x1A000000);
+Color _shadowColor = Color(0x30000000);
+Color _shadowColorDark = Color(0x10FFFFFF);
 Color _splashColor = Color(0x2ACFCFCF);
 double _gapSize = 8;
 
@@ -47,6 +49,10 @@ class _TwoTPCardState extends State<TwoTPCard>
   bool _warning = false;
 
   String _totpCode;
+
+  // UI specific vars
+  /// Whether the user is pressing the card
+  bool pressed = false;
 
   @override
   void dispose() {
@@ -90,40 +96,47 @@ class _TwoTPCardState extends State<TwoTPCard>
       });
   }
 
+  void _copyToClipboard() {
+    Clipboard.setData(ClipboardData(text: _code));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Material(
-      borderRadius: BorderRadius.circular(_cardBorderRadius),
-      clipBehavior: Clip.hardEdge,
-      elevation: _elevation,
-      shadowColor: _shadowColor,
-      child: Ink(
-        decoration: BoxDecoration(
-          color: Theme
-              .of(context)
-              .backgroundColor,
-        ),
-        child: InkWell(
-          onLongPress: (widget.enableLongPress) ? () {
-            Navigator.pushNamed(
+    var darkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final cardItem = ({Widget child}) => Styled.widget(child: child)
+      .borderRadius(all: _cardBorderRadius)
+      .ripple(
+        highlightColor: Colors.transparent,
+        splashColor: _splashColor
+      )
+      .backgroundColor(Theme.of(context).backgroundColor, animate: true)
+      .clipRRect(all: _cardBorderRadius)
+      .borderRadius(all: _cardBorderRadius, animate: true)
+      .elevation(
+        pressed ? 0 : 20,
+        borderRadius: BorderRadius.circular(_cardBorderRadius),
+        shadowColor: darkMode ? _shadowColorDark : _shadowColor
+      )
+      .gestures(
+        onTapChange: (tapStatus) => setState(() => pressed = tapStatus),
+        onTap: () => _copyToClipboard(),
+        onLongPress: (widget.enableLongPress) ? () {
+          HapticFeedback.heavyImpact();
+          Navigator.pushNamed(
               context,
               '/edit',
               arguments: EditItemArguments(widget.totpItem)
-            );
-          } : null,
-          splashColor: _splashColor,
-          highlightColor: Colors.transparent,
-          customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(_cardBorderRadius)),
-          onTap: () {
-            Clipboard.setData(ClipboardData(text: _code));
-            // TODO: Toast copy
-          },
-          child: Container(
-              padding: EdgeInsets.all(24),
-              child: _cardContent()
-          ),
-        ),
+          );
+        } : null,
+      )
+      .scale(pressed ? 0.95 : 1.0, animate: true)
+      .animate(Duration(milliseconds: 150), Curves.easeOut);
+
+    return cardItem(
+      child: Padding(
+        padding: EdgeInsets.all(24),
+        child: _cardContent(),
       ),
     );
   }
@@ -220,9 +233,7 @@ class _TwoTPCardState extends State<TwoTPCard>
   }
 }
 
-// A fake/dummy card that produces an output similar to that of TwoTPCard
-// Used for visualization
-class FakeTwoTPCard extends StatelessWidget {
+class FakeTwoTPCard extends StatefulWidget {
   /// [digits] is the length of the code
   final int digits;
 
@@ -240,13 +251,24 @@ class FakeTwoTPCard extends StatelessWidget {
 
   FakeTwoTPCard(
       {this.digits = 6,
-      this.period = 30,
-      this.algorithm = "SHA1",
-      this.accountName = "",
-      this.issuer = ""});
+        this.period = 30,
+        this.algorithm = "SHA1",
+        this.accountName = "",
+        this.issuer = ""});
+
+  @override
+  _FakeTwoTPCardState createState() => _FakeTwoTPCardState();
+
+}
+
+// A fake/dummy card that produces an output similar to that of TwoTPCard
+// Used for visualization
+class _FakeTwoTPCardState extends State<FakeTwoTPCard> {
+  bool pressed = false;
 
   /// Gets the current TOTPItem and returns a Widget displaying the TOTP numbers
   Widget _getCode() {
+    var digits = widget.digits;
     List<Widget> numbers = [];
     // Check for the correct number of digits
     int validDig = (digits == 6 || digits == 8) ? digits : 6;
@@ -268,35 +290,40 @@ class FakeTwoTPCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var darkMode = Theme
-        .of(context)
-        .brightness == Brightness.dark;
+    var darkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return Material(
-      elevation: _elevation,
-      shadowColor: _shadowColor,
-      borderRadius: BorderRadius.circular(_cardBorderRadius),
-      clipBehavior: Clip.hardEdge,
-      child: Ink(
-        decoration: BoxDecoration(
-          color: Theme.of(context).backgroundColor,
-        ),
-        child: InkWell(
-          splashColor: _splashColor,
+    final cardItem = ({Widget child}) => Styled.widget(child: child)
+        .borderRadius(all: _cardBorderRadius)
+        .ripple(
           highlightColor: Colors.transparent,
-          customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(_cardBorderRadius)),
-          onTap: () {},
-          child: Container(
-            padding: EdgeInsets.all(24),
-              child: _getCardContent(darkMode: darkMode)
-          ),
-        ),
+          splashColor: _splashColor
+        )
+        .backgroundColor(Theme.of(context).backgroundColor, animate: true)
+        .clipRRect(all: _cardBorderRadius)
+        .borderRadius(all: _cardBorderRadius, animate: true)
+        .elevation(
+          pressed ? 0 : 20,
+          borderRadius: BorderRadius.circular(_cardBorderRadius),
+          shadowColor: darkMode ? _shadowColorDark : _shadowColor
+        )
+        .gestures(
+          onTapChange: (tapStatus) => setState(() => pressed = tapStatus),
+        )
+        .scale(pressed ? 0.95 : 1.0, animate: true)
+        .animate(Duration(milliseconds: 150), Curves.easeOut);
+
+    return cardItem(
+      child: Padding(
+        padding: EdgeInsets.all(24),
+        child: _cardContent(),
       ),
     );
   }
 
-  Widget _getCardContent({@required darkMode}) {
+  Widget _cardContent() {
+    var accountName = widget.accountName;
+    var issuer = widget.issuer;
+
     return Stack(
       children: <Widget>[
         Column(
@@ -322,12 +349,16 @@ class FakeTwoTPCard extends StatelessWidget {
             _getCode(),
           ],
         ),
-        _animatedCircle(darkMode: darkMode),
+        _animatedCircle(),
       ],
     );
   }
 
-  Widget _animatedCircle({@required darkMode}) {
+  Widget _animatedCircle() {
+    var darkMode = Theme
+        .of(context)
+        .brightness == Brightness.dark;
+
    return Positioned(
       right: 8,
       top: 8,

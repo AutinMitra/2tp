@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:twotp/blocs/totp/totp_bloc.dart';
 import 'package:twotp/blocs/totp/totp_event.dart';
+import 'package:twotp/components/buttons.dart';
 import 'package:twotp/components/cards.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/components/text_fields.dart';
@@ -81,7 +82,7 @@ class _EditItemPageState extends State<EditItemPage> {
   }
 
   // Removes the TOTP info
-  void remove(BuildContext context) {
+  void remove() {
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
 
@@ -92,7 +93,7 @@ class _EditItemPageState extends State<EditItemPage> {
   }
 
   /// Saves the TOTP info if valid
-  void save(BuildContext context) {
+  void save() {
     // ignore: close_sinks
     final TOTPBloc totpBloc = BlocProvider.of<TOTPBloc>(context);
     TOTPItem item = widget.totpItem;
@@ -193,24 +194,20 @@ class _EditItemPageState extends State<EditItemPage> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         Expanded(
-          child: RaisedButton(
+          child: CustomRaisedButton(
             color: Palette.darkRed,
             textColor: Colors.white,
-            child: Text("Remove", style: TextStyles.buttonText),
-            onPressed: () {
-              remove(context);
-            },
-          ),
+            child: Text("Remove",  style: TextStyles.buttonText),
+            onTap: remove,
+          )
         ),
         SizedBox(width: 12.0),
         Expanded(
-          child: RaisedButton(
+          child: CustomRaisedButton(
             color: Palette.primary,
             textColor: Colors.white,
-            child: Text("Save", style: TextStyles.buttonText),
-            onPressed: () {
-              save(context);
-            },
+            child: Text("Save",  style: TextStyles.buttonText),
+            onTap: save,
           ),
         ),
       ],
