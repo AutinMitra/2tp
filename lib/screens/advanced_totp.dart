@@ -9,6 +9,7 @@ import 'package:twotp/components/buttons.dart';
 import 'package:twotp/components/cards.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/components/text_fields.dart';
+import 'package:twotp/theme/card_colors.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
 import 'package:twotp/totp/totp.dart';
@@ -48,6 +49,7 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
       var period = _validateInt(_periodController.text) ?? 30;
       var algorithm =
           _validateString(_algorithmController.text) ?? "SHA1";
+
       TOTPItem item = TOTPItem(secret, Uuid().v4(),
           accountName: accountName,
           issuer: issuer,
@@ -87,15 +89,19 @@ class _AdvancedTOTPPageState extends State<AdvancedTOTPPage> {
     var digits = _validateInt(_digitsController.text) ?? 6;
     var period = _validateInt(_periodController.text) ?? 30;
     var algorithm = _validateString(_algorithmController.text) ?? "SHA1";
-
+    var colorConfig = CardColors.defaultConfig;
+    if(CardColors.colors.containsKey(issuer?.toLowerCase()))
+      colorConfig = CardColors.colors[issuer.toLowerCase()];
     // Update the card
     setState(() {
       _card = FakeTwoTPCard(
-          digits: digits,
-          period: period,
-          algorithm: algorithm,
-          accountName: accountName,
-          issuer: issuer);
+        digits: digits,
+        period: period,
+        algorithm: algorithm,
+        accountName: accountName,
+        issuer: issuer,
+        colorConfig: colorConfig,
+      );
     });
     return _card;
   }

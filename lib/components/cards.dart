@@ -3,15 +3,16 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:twotp/screens/edit_item.dart';
+import 'package:twotp/theme/card_colors.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/totp/totp.dart';
 
 // Some constants shared between the classes
 double _cardBorderRadius = 32;
 Color _spinnerColor = Palette.medBlue;
-Color _shadowColor = Color(0x30000000);
-Color _shadowColorDark = Color(0x10FFFFFF);
 Color _splashColor = Color(0x2ACFCFCF);
+Color _spinnerBg = Color(0x30000000);
+Color _spinnerBgDark = Color(0x30FFFFFF);
 double _gapSize = 8;
 
 /// An actual, working Card producing correct codes
@@ -23,7 +24,9 @@ class TwoTPCard extends StatefulWidget {
   /// and is by default true
   final bool enableLongPress;
 
-  TwoTPCard(this.totpItem, {this.enableLongPress = true});
+  TwoTPCard(this.totpItem, {
+      this.enableLongPress = true,
+    });
 
   @override
   _TwoTPCardState createState() => _TwoTPCardState();
@@ -102,21 +105,19 @@ class _TwoTPCardState extends State<TwoTPCard>
 
   @override
   Widget build(BuildContext context) {
-    var darkMode = Theme.of(context).brightness == Brightness.dark;
-
     final cardItem = ({Widget child}) => Styled.widget(child: child)
       .borderRadius(all: _cardBorderRadius)
       .ripple(
         highlightColor: Colors.transparent,
         splashColor: _splashColor
       )
-      .backgroundColor(Theme.of(context).backgroundColor, animate: true)
+      .backgroundColor(widget.totpItem.colorConfig.color, animate: true)
       .clipRRect(all: _cardBorderRadius)
       .borderRadius(all: _cardBorderRadius, animate: true)
       .elevation(
         pressed ? 0 : 20,
         borderRadius: BorderRadius.circular(_cardBorderRadius),
-        shadowColor: darkMode ? _shadowColorDark : _shadowColor
+        shadowColor: widget.totpItem.colorConfig.color.withOpacity(0.3)
       )
       .gestures(
         onTapChange: (tapStatus) => setState(() => pressed = tapStatus),
@@ -133,10 +134,17 @@ class _TwoTPCardState extends State<TwoTPCard>
       .scale(pressed ? 0.95 : 1.0, animate: true)
       .animate(Duration(milliseconds: 150), Curves.easeOut);
 
+    var textColor = widget.totpItem.colorConfig.dark
+      ? Colors.white
+      : Colors.black;
+
     return cardItem(
       child: Padding(
         padding: EdgeInsets.all(24),
-        child: _cardContent(),
+        child: DefaultTextStyle(
+          style: TextStyle(color: textColor),
+          child: _cardContent()
+        ),
       ),
     );
   }
@@ -203,9 +211,7 @@ class _TwoTPCardState extends State<TwoTPCard>
 
   /// Creates an animated circle showing the duration left
   Widget _animatedCircle() {
-    var darkMode = (Theme
-        .of(context)
-        .brightness == Brightness.dark);
+    var dark = widget.totpItem.colorConfig.dark;
 
     return Positioned(
       right: 8,
@@ -220,9 +226,9 @@ class _TwoTPCardState extends State<TwoTPCard>
             child: CircularProgressIndicator(
               value: _animation.value,
               strokeWidth: 5,
-              backgroundColor: (darkMode)
-                  ? Color(0x3AFFFFFF)
-                  : Palette.scLight,
+              backgroundColor: (dark)
+                  ? _spinnerBgDark
+                  : _spinnerBg,
               valueColor: new AlwaysStoppedAnimation(
                   (_warning) ? Palette.medRed : _spinnerColor
               ),
@@ -249,12 +255,19 @@ class FakeTwoTPCard extends StatefulWidget {
   /// [issuer] is the provider of the code
   final String issuer;
 
+  /// [colorConfig] is the background color of the card
+  final CardColorConfig colorConfig;
+
+
   FakeTwoTPCard(
-      {this.digits = 6,
+      {
+        this.digits = 6,
         this.period = 30,
         this.algorithm = "SHA1",
         this.accountName = "",
-        this.issuer = ""});
+        this.issuer = "",
+        this.colorConfig = CardColors.defaultConfig,
+      });
 
   @override
   _FakeTwoTPCardState createState() => _FakeTwoTPCardState();
@@ -290,21 +303,19 @@ class _FakeTwoTPCardState extends State<FakeTwoTPCard> {
 
   @override
   Widget build(BuildContext context) {
-    var darkMode = Theme.of(context).brightness == Brightness.dark;
-
     final cardItem = ({Widget child}) => Styled.widget(child: child)
         .borderRadius(all: _cardBorderRadius)
         .ripple(
           highlightColor: Colors.transparent,
           splashColor: _splashColor
         )
-        .backgroundColor(Theme.of(context).backgroundColor, animate: true)
+        .backgroundColor(widget.colorConfig.color, animate: true)
         .clipRRect(all: _cardBorderRadius)
         .borderRadius(all: _cardBorderRadius, animate: true)
         .elevation(
           pressed ? 0 : 20,
           borderRadius: BorderRadius.circular(_cardBorderRadius),
-          shadowColor: darkMode ? _shadowColorDark : _shadowColor
+        shadowColor: widget.colorConfig.color.withOpacity(0.3)
         )
         .gestures(
           onTapChange: (tapStatus) => setState(() => pressed = tapStatus),
@@ -312,10 +323,17 @@ class _FakeTwoTPCardState extends State<FakeTwoTPCard> {
         .scale(pressed ? 0.95 : 1.0, animate: true)
         .animate(Duration(milliseconds: 150), Curves.easeOut);
 
+    var textColor = widget.colorConfig.dark
+        ? Colors.white
+        : Colors.black;
+
     return cardItem(
       child: Padding(
         padding: EdgeInsets.all(24),
-        child: _cardContent(),
+        child: DefaultTextStyle(
+          style: TextStyle(color: textColor),
+          child: _cardContent()
+        ),
       ),
     );
   }
@@ -355,11 +373,9 @@ class _FakeTwoTPCardState extends State<FakeTwoTPCard> {
   }
 
   Widget _animatedCircle() {
-    var darkMode = Theme
-        .of(context)
-        .brightness == Brightness.dark;
+    var dark = widget.colorConfig.dark;
 
-   return Positioned(
+    return Positioned(
       right: 8,
       top: 8,
       child: Container(
@@ -369,9 +385,9 @@ class _FakeTwoTPCardState extends State<FakeTwoTPCard> {
         child: CircularProgressIndicator(
           value: 0.3,
           strokeWidth: 5,
-          backgroundColor: (darkMode)
-              ? Color(0x3AFFFFFF)
-              : Palette.scLight,
+          backgroundColor: (dark)
+              ? _spinnerBgDark
+              : _spinnerBg,
           valueColor: new AlwaysStoppedAnimation(_spinnerColor),
         ),
       ),
@@ -404,7 +420,7 @@ class _NumberSlot extends StatelessWidget {
         : (darkMode) ? Palette.textDark : Palette.medBlue;
     // Choose the current background color based on brightness and warning
     var bgColor = (darkMode)
-        ? Theme.of(context).scaffoldBackgroundColor
+        ? Color(0xFF252525)
         : (warning) ? Palette.lightRed : Palette.lightBlue;
 
     // Choose the digit size based on [smallDigits]

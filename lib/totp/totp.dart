@@ -4,7 +4,9 @@ import 'dart:typed_data';
 import "package:base32/base32.dart" show base32;
 import "package:crypto/crypto.dart" show Hmac, sha1, sha256, sha512;
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:uuid/uuid.dart';
+import 'package:twotp/theme/card_colors.dart';
 
 /// Generates TOTP codes
 /// References
@@ -57,38 +59,62 @@ class TOTP {
 
 // A basic model of TOTP to be used with widgets
 class TOTPItem extends Equatable {
-  // [secret] is a base32 encoded key, should be kept secret
+  /// [secret] is a base32 encoded key, should be kept secret
   final String secret;
 
-  // [id] and ID describing the key
+  /// [id] and ID describing the key
   final String id;
 
-  // [digits] the number of digits
+  /// [digits] the number of digits
   final int digits;
 
-  // [period] is the number of seconds each code is valid
+  /// [period] is the number of seconds each code is valid
   final int period;
 
-  // [algorithm] SHA1, SHA256, or SHA512
+  /// [algorithm] SHA1, SHA256, or SHA512
   final String algorithm;
 
-  // [accountName] the user of the code
+  /// [accountName] the user of the code
   final String accountName;
 
-  // [issuer] the provider of the code
+  /// [issuer] the provider of the code
   final String issuer;
 
-  TOTPItem(this.secret, this.id,
+  /// [colorConfig] is the color configuration for the card
+  final CardColorConfig colorConfig;
+
+  TOTPItem._internal(this.secret, this.id,
       {this.digits = 6,
       this.period = 30,
       this.algorithm = "SHA1",
       this.accountName = "",
-      this.issuer = ""})
+      this.issuer = "",
+      this.colorConfig = CardColors.defaultConfig})
       : assert(digits == 6 || digits == 8),
         assert(period > 0),
         assert(algorithm == "SHA1" ||
             algorithm == "SHA256" ||
             algorithm == "SHA512");
+
+  factory TOTPItem(secret, id,
+    {digits = 6,
+    period = 30,
+    algorithm = "SHA1",
+    accountName = "",
+    issuer = "",
+    colorConfig = CardColors.defaultConfig
+  }) {
+    if(CardColors.colors.containsKey(issuer.toLowerCase()))
+      colorConfig = CardColors.colors[issuer.toLowerCase()];
+    return TOTPItem._internal(secret, id,
+      digits: digits,
+      period: period,
+      algorithm: algorithm,
+      accountName: accountName,
+      issuer: issuer,
+      colorConfig: colorConfig
+    );
+  }
 
   // Generates a code, with the option of being formatted
   String generateCode(int time, {pretty = false}) {
@@ -141,14 +167,20 @@ class TOTPItem extends Equatable {
     if (queryParameters.containsKey("algorithm"))
       algorithm = queryParameters["algorithm"].toUpperCase();
 
+    var colorConfig = CardColors.defaultConfig;
+    if(CardColors.colors.containsKey(issuer.toLowerCase()))
+      colorConfig = CardColors.colors[issuer.toLowerCase()];
+
     // Validate, otherwise throw error
     try {
       return new TOTPItem(secret, Uuid().v4(),
-          digits: digits,
-          period: period,
-          algorithm: algorithm,
-          accountName: accountName,
-          issuer: issuer);
+        digits: digits,
+        period: period,
+        algorithm: algorithm,
+        accountName: accountName,
+        issuer: issuer,
+        colorConfig: colorConfig,
+      );
     } catch (error) {
       throw new FormatException("Invalid parameters");
     }
@@ -172,14 +204,26 @@ class TOTPItem extends Equatable {
   }
 
   // Parses JSON alongside with additional key
-  TOTPItem.fromJSON(Map<String, dynamic> json, String secretKey)
-      : digits = json["digits"],
-        period = json["period"],
-        algorithm = json["algorithm"],
-        accountName = json["accountName"],
-        issuer = json["issuer"],
-        id = json["id"],
-        secret = secretKey;
+  factory TOTPItem.fromJSON(Map<String, dynamic> json, String secretKey) {
+    var digits = json["digits"];
+    var period = json["period"];
+    var algorithm = json["algorithm"];
+    var accountName = json["accountName"];
+    var issuer = json["issuer"];
+    var id = json["id"];
+    var secret = secretKey;
+    var colorConfig = CardColorConfig.fromJSON(json);
+
+    return TOTPItem(
+      secret, id,
+      digits: digits,
+      period: period,
+      algorithm: algorithm,
+      accountName: accountName,
+      issuer: issuer,
+      colorConfig: colorConfig
+    );
+  }
 
   // Makes everything in JSON format except secret
   Map<String, dynamic> toJSON() {
@@ -189,13 +233,15 @@ class TOTPItem extends Equatable {
       "algorithm": algorithm,
       "accountName": accountName,
       "issuer": issuer,
-      "id": id
+      "id": id,
+      "cardColor": colorConfig.color.value,
+      "cardDark": colorConfig.dark
     };
   }
 
   @override
   String toString() {
-    return 'TOTPItem{id: $id, digits: $digits, period: $period, algorithm: $algorithm, accountName: $accountName, issuer: $issuer}';
+    return 'TOTPItem{id: $id, digits: $digits, period: $period, algorithm: $algorithm, accountName: $accountName, issuer: $issuer, colorConfg: $colorConfig}';
   }
 
   @override

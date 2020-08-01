@@ -8,6 +8,7 @@ import 'package:twotp/components/buttons.dart';
 import 'package:twotp/components/cards.dart';
 import 'package:twotp/components/scroll_behaviors.dart';
 import 'package:twotp/components/text_fields.dart';
+import 'package:twotp/theme/card_colors.dart';
 import 'package:twotp/theme/palette.dart';
 import 'package:twotp/theme/text_styles.dart';
 import 'package:twotp/totp/totp.dart';
@@ -43,6 +44,21 @@ class _EditItemPageState extends State<EditItemPage> {
   // [_card] A fake card that displays info based on TOTP characteristics
   FakeTwoTPCard _card;
 
+  @override
+  void initState() {
+    super.initState();
+    // Init all the controllers with the appropriate values
+    TOTPItem item = widget.totpItem;
+    _secretController.text = item.secret;
+    _accountNameController.text = item.accountName;
+    _issuerController.text = item.issuer;
+    _digitsController.text = item.digits.toString();
+    _periodController.text = item.period.toString();
+    _algorithmController.text = item.algorithm.toString();
+    // Generate card for the first time
+    _generateCard();
+  }
+
   // Is it a valid int
   int _isNumeric(String val) {
     try {
@@ -69,14 +85,20 @@ class _EditItemPageState extends State<EditItemPage> {
     var algorithm =
         _validateString(_algorithmController.text) ?? widget.totpItem.algorithm;
 
+    var colorConfig = CardColors.defaultConfig;
+    if(CardColors.colors.containsKey(issuer.toLowerCase()))
+      colorConfig = CardColors.colors[issuer.toLowerCase()];
+
     // Update the card with new info
     setState(() {
       _card = FakeTwoTPCard(
-          digits: digits,
-          period: period,
-          algorithm: algorithm,
-          accountName: accountName,
-          issuer: issuer);
+        digits: digits,
+        period: period,
+        algorithm: algorithm,
+        accountName: accountName,
+        issuer: issuer,
+        colorConfig: colorConfig,
+      );
     });
     return _card;
   }
@@ -121,21 +143,6 @@ class _EditItemPageState extends State<EditItemPage> {
       // Go back to home
       Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // Init all the controllers with the appropriate values
-    TOTPItem item = widget.totpItem;
-    _secretController.text = item.secret;
-    _accountNameController.text = item.accountName;
-    _issuerController.text = item.issuer;
-    _digitsController.text = item.digits.toString();
-    _periodController.text = item.period.toString();
-    _algorithmController.text = item.algorithm.toString();
-    // Generate card for the first time
-    _generateCard();
   }
 
   @override
